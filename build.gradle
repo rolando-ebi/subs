@@ -1,0 +1,54 @@
+allprojects {
+    ext.version_base = '1.0.0'
+    version = version_base
+}
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+    apply plugin: 'eclipse'
+
+    group = 'uk.ac.ebi.subs'
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
+    task wrapper(type: Wrapper) {
+        gradleVersion = '2.2'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    task copyConfiguration << {
+        println "Target environment: $environment"
+
+        copy {
+            from "src/main/environment/resources/${environment}"
+            into "src/main/resources"
+            include "**/*"
+        }
+    }
+
+    task copyTestResourcesConfiguration << {
+        println "Copying test resources for environment : ${environment}"
+
+        copy {
+            from "src/test/environment/resources/${environment}"
+            into "src/test/resources"
+            include "**/*"
+        }
+    }
+
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    task sourceJar(type: Jar) { from sourceSets.main.allJava }
+
+}
