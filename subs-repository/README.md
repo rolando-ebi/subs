@@ -1,4 +1,4 @@
-subs-data-model is the core object model for the EMBL-EBI Unified submission interface (USI). 
+subs-repository is the a library for accessing Submission objects from a MongoDB repository for the EMBL-EBI Unified submission interface (USI). 
 
 ## Building
 
