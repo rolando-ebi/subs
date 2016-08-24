@@ -1,1 +1,3 @@
+rootProject.name = 'subs'
+
 include "subs-data-model"
