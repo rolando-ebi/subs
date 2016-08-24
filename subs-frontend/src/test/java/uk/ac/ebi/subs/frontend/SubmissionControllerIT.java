@@ -1,5 +1,6 @@
 package uk.ac.ebi.subs.frontend;
 
+import org.apache.catalina.connector.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +17,11 @@ import uk.ac.ebi.subs.FrontendApplication;
 import uk.ac.ebi.subs.data.submittable.Submission;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -27,18 +31,29 @@ public class SubmissionControllerIT {
     @LocalServerPort
     private int port;
 
-    private URL base;
+    private URL submit;
+    private URL submissions;
     private TestRestTemplate template;
+
+    Submission sub;
 
     @Before
     public void setUp() throws Exception {
-        this.base = new URL("http://localhost:" + port + "/");
+        this.submit = new URL("http://localhost:" + port + "/submit/");
+        this.submissions = new URL("http://localhost:" + port + "/submissions/");
+
         template = new TestRestTemplate();
+
+        sub = new Submission();
+        sub.getDomain().setName("exampleDomain");
+        sub.getSubmitter().setEmail("test@example.ac.uk");
     }
 
     @Test
-    public void getHello() throws Exception {
-        ResponseEntity<String> response = template.getForEntity(base.toString(), String.class);
-        assertThat(response.getBody(), equalTo("Greetings from Spring Boot!"));
+    public void doSubmit() {
+        template.put(submit.toString(), sub);
+
+//        ResponseEntity<ArrayList> response = template.getForEntity(submissions.toString(), ArrayList.class);
+
     }
 }

@@ -22,7 +22,7 @@ public class SubmissionController {
     }
 
 
-    @RequestMapping(value = "/submission", method = RequestMethod.PUT)
+    @RequestMapping(value = "/submit", method = RequestMethod.PUT)
     public void storeSubmission(@RequestBody Submission submission) {
         submissionService.storeSubmission(submission);
     }
