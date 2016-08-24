@@ -1,0 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'war'
+
+dependencies {
+    compile project(':subs-repository')
+    compile project(':subs-data-model')
+
+    compile("org.springframework.boot:spring-boot-starter-web")
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+
+    testCompile("junit:junit")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("com.google.code.gson:gson:2.7") //bug in spring boot, see https://github.com/spring-projects/spring-boot/issues/6502
+}
