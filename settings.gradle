@@ -1,3 +1,5 @@
 rootProject.name = 'subs'
 
 include "subs-data-model"
+include "subs-repository"
+include "subs-frontend"
