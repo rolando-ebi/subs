@@ -16,13 +16,9 @@ import org.springframework.messaging.converter.MessageConverter;
 @Configuration
 public class MessagingConfig {
 
-
-
-
     @Bean
     public MessageConverter messageConverter() {
         return new MappingJackson2MessageConverter();
     }
-
 
 }
