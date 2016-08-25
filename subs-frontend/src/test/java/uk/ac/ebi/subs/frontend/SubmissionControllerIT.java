@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -28,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.subs.FrontendApplication;
 import uk.ac.ebi.subs.data.submittable.Submission;
+import uk.ac.ebi.subs.messaging.Channels;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 import static org.springframework.hateoas.client.Hop.rel;
 
@@ -53,6 +55,11 @@ public class SubmissionControllerIT {
     private URL submissions;
 
     private TestRestTemplate template;
+
+    @RabbitListener(queues = Channels.SUBMISSION_SUBMITTED)
+    public void handleSampleCreation(Submission submission) {
+        System.out.println("Received a newly created submission: accession = " + submission.getId());
+    }
 
 
     @Autowired
