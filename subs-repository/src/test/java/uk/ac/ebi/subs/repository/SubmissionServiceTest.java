@@ -60,9 +60,11 @@ public class SubmissionServiceTest {
 
         testSub.getSubmitter().setEmail("test@example.ac.uk");
         testSub.getDomain().setName("testDomain" + Math.random());
-        testSub.getSubmissionItems().addAll(Arrays.asList(
-                p, st, sa, a, ad
-        ));
+        testSub.getProjects().add(p);
+        testSub.getStudies().add(st);
+        testSub.getSamples().add(sa);
+        testSub.getAssays().add(a);
+        testSub.getAssayData().add(ad);
     }
 
     @After
