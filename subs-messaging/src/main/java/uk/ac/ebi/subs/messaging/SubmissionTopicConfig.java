@@ -10,7 +10,7 @@ public class SubmissionTopicConfig {
     private final String topic = Topics.SUBMISSIONS;
 
     @Bean
-    TopicExchange exchange() {
+    TopicExchange submissionExchange() {
         return new TopicExchange(topic);
     }
 

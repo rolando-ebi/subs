@@ -2,5 +2,5 @@ package uk.ac.ebi.subs.messaging;
 
 
 public class Topics {
-    public static final String SUBMISSIONS = "submission.exchange";
+    public static final String SUBMISSIONS = "submission.submissionExchange";
 }
