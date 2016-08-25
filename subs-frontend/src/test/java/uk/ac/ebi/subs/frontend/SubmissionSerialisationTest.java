@@ -46,9 +46,7 @@ public class SubmissionSerialisationTest {
         sub.getDomain().setName("exampleDomain");
         sub.getSubmitter().setEmail("test@example.ac.uk");
 
-
-        Resource r = new ClassPathResource("expected.json", this.getClass());
-        exampleJson = new String(Files.readAllBytes(Paths.get(r.getURI())), "UTF-8");
+        exampleJson = "{\"submitter\":{\"email\":\"test@example.ac.uk\"},\"domain\":{\"name\":\"exampleDomain\"},\"submissionItems\":[]}";
     }
 
     @Test

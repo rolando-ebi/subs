@@ -1,9 +1,12 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
+        classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3")
+        classpath("net.saliman:gradle-cobertura-plugin:2.3.2")
     }
 }
 
@@ -13,6 +16,11 @@ allprojects {
     ext.version_base = '1.0.0'
     version = version_base
 
+    apply plugin: 'net.saliman.cobertura'
+    apply plugin: "com.github.kt3k.coveralls"
+
+    cobertura.coverageFormats = ['html', 'xml'] // coveralls plugin depends on xml format report
+    cobertura.coverageIgnoreTrivial = true // do not worry about getters and setters
 }
 
 subprojects {

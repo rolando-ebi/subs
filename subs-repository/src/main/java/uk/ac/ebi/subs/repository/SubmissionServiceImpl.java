@@ -28,4 +28,9 @@ public class SubmissionServiceImpl implements SubmissionService {
     public void storeSubmission(Submission submission){
         submissionRepository.save(submission);
     }
+
+    @Override
+    public Submission fetchSubmission(String id) {
+        return submissionRepository.findOne(id);
+    }
 }

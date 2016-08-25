@@ -12,4 +12,6 @@ public interface SubmissionService {
     Page<Submission> fetchSubmissions(Pageable pageable);
 
     void storeSubmission(Submission submission);
+
+    Submission fetchSubmission(String id);
 }
