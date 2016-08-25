@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SAMPLE alias="SnowK2"
+        center_name="Institute of Biological, Environmental &amp; Rural Sciences, Aberystwyth University United Kingdom"
+        accession="">
+    <IDENTIFIERS>
+        <PRIMARY_ID></PRIMARY_ID>
+        <SUBMITTER_ID namespace="IBERSABERYSTWYTH">SnowK2</SUBMITTER_ID>
+    </IDENTIFIERS>
+    <TITLE>Bacteria; SnowK2</TITLE>
+    <SAMPLE_NAME>
+        <TAXON_ID>2</TAXON_ID>
+        <SCIENTIFIC_NAME>Bacteria</SCIENTIFIC_NAME>
+        <COMMON_NAME>eubacteria</COMMON_NAME>
+    </SAMPLE_NAME>
+    <SAMPLE_ATTRIBUTES>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>investigation type</TAG>
+            <VALUE>mimarks-survey</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>project name</TAG>
+            <VALUE>LarsbreenSnow</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>sequencing method</TAG>
+            <VALUE>pyrosequencing</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>collection date</TAG>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>environmental package</TAG>
+            <VALUE>water</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>geographic location (longitude)</TAG>
+            <VALUE>15.38</VALUE>
+            <UNITS>DD</UNITS>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>geographic location (country and/or sea,region)</TAG>
+            <VALUE>Svalbard</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>environment (biome)</TAG>
+            <VALUE>freshwater biome</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>environment (feature)</TAG>
+            <VALUE>glacier</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>environment (material)</TAG>
+            <VALUE>snow</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>depth</TAG>
+            <VALUE>NOT_A_NUMBER</VALUE>
+            <UNITS>m</UNITS>
+        </SAMPLE_ATTRIBUTE>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>ENA-CHECKLIST</TAG>
+            <VALUE>ERC000024</VALUE>
+        </SAMPLE_ATTRIBUTE>
+    </SAMPLE_ATTRIBUTES>
+</SAMPLE>
