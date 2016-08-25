@@ -56,9 +56,12 @@ public class SubmissionControllerIT {
 
     private TestRestTemplate template;
 
+    private List<Submission> submissionsReceived;
+
     @RabbitListener(queues = Channels.SUBMISSION_SUBMITTED)
     public void handleSampleCreation(Submission submission) {
         System.out.println("Received a newly created submission: accession = " + submission.getId());
+        this.submissionsReceived.add(submission);
     }
 
 
@@ -77,6 +80,8 @@ public class SubmissionControllerIT {
         sub = new Submission();
         sub.getDomain().setName("integrationTestExampleDomain");
         sub.getSubmitter().setEmail("test@example.ac.uk");
+
+        this.submissionsReceived = new ArrayList<>();
     }
 
     @After
@@ -112,5 +117,7 @@ public class SubmissionControllerIT {
             }
         }
         assertThat(matchCount, equalTo(1));
+
+        assertThat(submissionsReceived.size(),equalTo(1));
     }
 }
