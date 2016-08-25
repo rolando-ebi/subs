@@ -4,8 +4,5 @@ include "subs-data-model"
 include "subs-repository"
 include "subs-frontend"
 include "subs-validation"
-<<<<<<< HEAD
 include 'subs-samples-agent'
-=======
 include "subs-messaging"
->>>>>>> master
