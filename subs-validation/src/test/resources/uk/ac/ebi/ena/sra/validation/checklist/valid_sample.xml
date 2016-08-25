@@ -1,0 +1,49 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<SAMPLE_SET>
+    <SAMPLE>
+        <IDENTIFIERS>
+            <SUBMITTER_ID namespace="EBI">sample_checklist_validation_test_1</SUBMITTER_ID>
+        </IDENTIFIERS>
+        <TITLE>sample_title_test</TITLE>
+        <SAMPLE_NAME>
+            <TAXON_ID>256318</TAXON_ID>
+            <SCIENTIFIC_NAME>metagenome sequence</SCIENTIFIC_NAME>
+        </SAMPLE_NAME>
+        <SAMPLE_ATTRIBUTES>
+            <SAMPLE_ATTRIBUTE>
+                <TAG>test_mandatory</TAG>
+                <VALUE>anything</VALUE>
+            </SAMPLE_ATTRIBUTE>
+            <SAMPLE_ATTRIBUTE>
+                <TAG>test_recommended</TAG>
+                <VALUE>anything</VALUE>
+            </SAMPLE_ATTRIBUTE>
+            <SAMPLE_ATTRIBUTE>
+                <TAG>test_multiplicity</TAG>
+                <VALUE>anything</VALUE>
+            </SAMPLE_ATTRIBUTE>
+            <SAMPLE_ATTRIBUTE>
+                <TAG>test_null_value</TAG>
+                <VALUE>0.12</VALUE>
+            </SAMPLE_ATTRIBUTE>
+            <SAMPLE_ATTRIBUTE>
+                <TAG>test_regex_value</TAG>
+                <VALUE>1.54</VALUE>
+            </SAMPLE_ATTRIBUTE>
+            <SAMPLE_ATTRIBUTE>
+                <TAG>test_invalid_value</TAG>
+                <VALUE>possible_value_1</VALUE>
+            </SAMPLE_ATTRIBUTE>
+            <SAMPLE_ATTRIBUTE>
+                <TAG>test_invalid_unit</TAG>
+                <VALUE>anything</VALUE>
+                <UNITS>valid_unit</UNITS>
+            </SAMPLE_ATTRIBUTE>
+            <SAMPLE_ATTRIBUTE>
+                <TAG>1.83</TAG>
+                <VALUE>Units field</VALUE>
+                <UNITS>m</UNITS>
+            </SAMPLE_ATTRIBUTE>
+        </SAMPLE_ATTRIBUTES>
+    </SAMPLE>
+</SAMPLE_SET>
