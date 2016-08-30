@@ -13,6 +13,11 @@ public class AttributeImpl implements Attribute {
         this.units = units;
     }
 
+    public AttributeImpl(String tagName, String tagValue) {
+        this.tagName = tagName;
+        this.tagValue = tagValue;
+    }
+
     public AttributeImpl(String tagName, String tagValue, String units, String sampleId) {
         this.tagName = tagName;
         this.tagValue = tagValue;

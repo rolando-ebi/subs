@@ -1,7 +1,9 @@
 package uk.ac.ebi.subs.validation.checklist;
 
 import uk.ac.ebi.ena.sra.xml.ChecklistType;
+import uk.ac.ebi.subs.validation.Severity;
 import uk.ac.ebi.subs.validation.ValidationException;
+import uk.ac.ebi.subs.validation.ValidationMessageManager;
 import uk.ac.ebi.subs.validation.ValidationResult;
 
 import java.util.ArrayList;
@@ -25,6 +27,9 @@ public class ChecklistValidatorImpl extends AbstractAttributeValidator implement
     Set<FieldValidatorImpl> fieldValidatorSet = new HashSet<FieldValidatorImpl>();
     List<FieldValidator> fieldValidatorList = new ArrayList<FieldValidator>();
 
+    static {
+        ValidationMessageManager.addBundle("uk.ac.ebi.ena.sra.validation.validationMessages");
+    }
 
     public ChecklistValidatorImpl(String id, List<FieldValidatorImpl> fieldValidatorList) {
         super(id);
@@ -79,11 +84,13 @@ public class ChecklistValidatorImpl extends AbstractAttributeValidator implement
 
     @Override
     public boolean validate(List<Attribute> attributeList, ValidationResult validationResult) throws ValidationException {
-        boolean validateStatus = super.validate(attributeList, validationResult);
-        if (validate(validationResult) && (validateStatus)) {
-            return true;
-        } else {
+        reset();
+        super.validate(attributeList, validationResult);
+        validate(validationResult);
+        if (validationResult.count(Severity.ERROR) > 0) {
             return false;
+        } else {
+            return true;
         }
     }
 
