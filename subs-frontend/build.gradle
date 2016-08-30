@@ -4,6 +4,7 @@ apply plugin: 'spring-boot'
 dependencies {
     compile project(':subs-repository')
     compile project(':subs-data-model')
+    compile project(':subs-messaging')
 
     compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile("org.springframework.boot:spring-boot-starter-web")

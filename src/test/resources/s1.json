@@ -1,0 +1,136 @@
+{
+  "submitter": {
+    "email": "test@ebi.ac.uk"
+  },
+  "domain": {
+    "name": "testDomain"
+  },
+  "projects": [
+    {
+      "realm": "Usi",
+      "title": "USI test project",
+      "description": "this is a project for the USI development team to use while testing",
+      "releaseDate": "2200-01-01",
+      "publications": [
+        {
+          "doi": "doi:10.1038/nature15393"
+        }
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "alias": "donOne",
+      "realm": "Usi",
+      "title": "USI Donkey One",
+      "taxonId": 9793,
+      "taxon": "Equus asinus",
+      "attributes": [
+        {
+          "name": "material",
+          "value": "organism",
+          "term": {
+            "sourceName": "obi",
+            "termId": "OBI_0100026"
+          }
+        }
+      ]
+    },
+    {
+      "alias": "donTwo",
+      "realm": "Usi",
+      "title": "USI Donkey Two",
+      "taxonId": 9793,
+      "taxon": "Equus asinus",
+      "sampleLinks": [
+        {
+          "relationshipNature": "Child of",
+          "alias": "d1"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "material",
+          "value": "organism",
+          "term": {
+            "sourceName": "obi",
+            "termId": "OBI_0100026"
+          }
+        }
+      ]
+    }
+  ],
+  "studies": [
+    {
+      "alias": "donkeyWGS1",
+      "realm": "Sequencing",
+      "title": "WGS of the reference donkey",
+      "description": "Whole genome sequencing of the reference donkey, to produce a gold standard reference genome"
+    }
+  ],
+  "assays": [
+    {
+      "alias": "donkeySeq1",
+      "realm": "Sequencing",
+      "studyRef": {
+        "alias": "donkeyWGS1"
+      },
+      "sampleRef": {
+        "alias": "donOne"
+      },
+      "attributes": [
+        {
+          "name": "platform",
+          "value": "ILLUMINA"
+        },
+        {
+          "name": "instrument",
+          "value": "Illumina HiSeq 2000"
+        },
+        {
+          "name": "library_name",
+          "value": "LB:L140128A_G03_H140205A_D03: S1"
+        },
+        {
+          "name": "library_strategy",
+          "value": "WGS"
+        },
+        {
+          "name": "library_source",
+          "value": "GENOMIC"
+        },
+        {
+          "name": "library_selection",
+          "value": "RANDOM"
+        },
+        {
+          "name": "library_layout",
+          "value": "PAIRED"
+        }
+      ]
+    }
+  ],
+  "assayData": [
+    {
+      "alias": "donkeySeq1Run1",
+      "realm": "Sequencing",
+      "assayRef": {
+        "alias": "donkeySeq1Run1"
+      },
+      "files": [
+        {
+          "name": "d0156495933_F.fastq.gz",
+          "checksum": "cb5f54d86e3a984c65a10ff1ebda67f7",
+          "label": "F1",
+          "type": "fastq"
+        },
+        {
+          "name": "d0156495933_R.fastq.gz",
+          "checksum": "cb5f54d86e3a984c65a10ff1ebda67f7",
+          "label": "R2",
+          "type": "fastq"
+        }
+      ]
+    }
+  ]
+}

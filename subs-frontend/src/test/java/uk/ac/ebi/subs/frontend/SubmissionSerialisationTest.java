@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 import uk.ac.ebi.subs.FrontendApplication;
+import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.submittable.Submission;
 
 import java.io.BufferedReader;
@@ -45,8 +46,9 @@ public class SubmissionSerialisationTest {
         sub = new Submission();
         sub.getDomain().setName("exampleDomain");
         sub.getSubmitter().setEmail("test@example.ac.uk");
+        sub.getSamples().add(new Sample());
 
-        exampleJson = "{\"submitter\":{\"email\":\"test@example.ac.uk\"},\"domain\":{\"name\":\"exampleDomain\"},\"submissionItems\":[]}";
+        exampleJson = "{\"submitter\":{\"email\":\"test@example.ac.uk\"},\"domain\":{\"name\":\"exampleDomain\"}, \"samples\": [{}]}";
     }
 
     @Test
