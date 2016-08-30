@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CHECKLIST_SET>
+    <CHECKLIST accession="ERCX01" checklistType="Sample">
+        <IDENTIFIERS>
+            <PRIMARY_ID>ERCX01</PRIMARY_ID>
+        </IDENTIFIERS>
+        <DESCRIPTOR>
+            <LABEL>Test Label</LABEL>
+            <NAME>Test Checklist</NAME>
+            <DESCRIPTION>Checklist only to be used as a test case</DESCRIPTION>
+            <AUTHORITY>ENA</AUTHORITY>
+            <FIELD_GROUP restrictionType="Any number or none of the fields">
+                <NAME>field group 1</NAME>
+                <FIELD>
+                    <LABEL>Text field</LABEL>
+                    <NAME>Text field</NAME>
+                    <DESCRIPTION>Text field test</DESCRIPTION>
+                    <FIELD_TYPE>
+                        <TEXT_FIELD/>
+                    </FIELD_TYPE>
+                    <MANDATORY>mandatory</MANDATORY>
+                    <MULTIPLICITY>multiple</MULTIPLICITY>
+                </FIELD>
+                <FIELD>
+                    <LABEL>Text field 2</LABEL>
+                    <NAME>Text field 2</NAME>
+                    <DESCRIPTION>Text field 2 test</DESCRIPTION>
+                    <FIELD_TYPE>
+                        <TEXT_FIELD/>
+                    </FIELD_TYPE>
+                    <MANDATORY>mandatory</MANDATORY>
+                    <MULTIPLICITY>multiple</MULTIPLICITY>
+                </FIELD>
+                <FIELD>
+                    <LABEL>Text area field</LABEL>
+                    <NAME>Text area field</NAME>
+                    <DESCRIPTION>Text area field test</DESCRIPTION>
+                    <FIELD_TYPE>
+                        <TEXT_AREA_FIELD>
+                            <MIN_LENGTH>5</MIN_LENGTH>
+                            <MAX_LENGTH>10</MAX_LENGTH>
+                        </TEXT_AREA_FIELD>
+                    </FIELD_TYPE>
+                    <MANDATORY>mandatory</MANDATORY>
+                    <MULTIPLICITY>multiple</MULTIPLICITY>
+                </FIELD>
+                <FIELD>
+                    <LABEL>Regex field</LABEL>
+                    <NAME>Regex field</NAME>
+                    <DESCRIPTION>Regular expression field</DESCRIPTION>
+                    <FIELD_TYPE>
+                        <TEXT_FIELD>
+                            <REGEX_VALUE>\w+\s\d{2}</REGEX_VALUE>
+                        </TEXT_FIELD>
+                    </FIELD_TYPE>
+                    <MANDATORY>mandatory</MANDATORY>
+                    <MULTIPLICITY>multiple</MULTIPLICITY>
+                </FIELD>
+                <FIELD>
+                    <LABEL>Text choice field</LABEL>
+                    <NAME>Text choice field</NAME>
+                    <DESCRIPTION>Text choice test field</DESCRIPTION>
+                    <FIELD_TYPE>
+                        <TEXT_CHOICE_FIELD>
+                            <TEXT_VALUE>
+                                <VALUE>United Kingdom</VALUE>
+                                <SYNONYM>UK</SYNONYM>
+                                <SYNONYM>Great Britain</SYNONYM>
+                            </TEXT_VALUE>
+                            <TEXT_VALUE>
+                                <VALUE>Germany</VALUE>
+                            </TEXT_VALUE>
+                            <TEXT_VALUE>
+                                <VALUE>France</VALUE>
+                            </TEXT_VALUE>
+                            <TEXT_VALUE>
+                                <VALUE>United States</VALUE>
+                                <SYNONYM>US</SYNONYM>
+                            </TEXT_VALUE>
+                        </TEXT_CHOICE_FIELD>
+                    </FIELD_TYPE>
+                    <MANDATORY>mandatory</MANDATORY>
+                    <MULTIPLICITY>multiple</MULTIPLICITY>
+                </FIELD>
+                <FIELD>
+                    <LABEL>Taxon field</LABEL>
+                    <NAME>Taxon field</NAME>
+                    <DESCRIPTION>Taxon field test</DESCRIPTION>
+                    <FIELD_TYPE>
+                        <TAXON_FIELD></TAXON_FIELD>
+                    </FIELD_TYPE>
+                    <MANDATORY>mandatory</MANDATORY>
+                    <MULTIPLICITY>multiple</MULTIPLICITY>
+                </FIELD>
+                <FIELD>
+                    <LABEL>Date field</LABEL>
+                    <NAME>Date field</NAME>
+                    <DESCRIPTION>Date field test</DESCRIPTION>
+                    <FIELD_TYPE>
+                        <DATE_FIELD>1997-07-16T19:20:30+01:00</DATE_FIELD>
+                    </FIELD_TYPE>
+                    <MANDATORY>optional</MANDATORY>
+                    <MULTIPLICITY>multiple</MULTIPLICITY>
+                </FIELD>
+                <FIELD>
+                    <LABEL>Units field</LABEL>
+                    <NAME>Units field</NAME>
+                    <DESCRIPTION>Units field test</DESCRIPTION>
+                    <UNITS>
+                        <UNIT>cm</UNIT>
+                        <UNIT>m</UNIT>
+                        <UNIT>mm</UNIT>
+                    </UNITS>
+                    <FIELD_TYPE>
+                        <TEXT_FIELD>
+                            <REGEX_VALUE>(0|((0\.)|([1-9][0-9]*\.?))[0-9]*)([Ee][+-]?[0-9]+)?
+                            </REGEX_VALUE>
+                        </TEXT_FIELD>
+                    </FIELD_TYPE>
+                    <MANDATORY>optional</MANDATORY>
+                    <MULTIPLICITY>multiple</MULTIPLICITY>
+                </FIELD>
+            </FIELD_GROUP>
+        </DESCRIPTOR>
+    </CHECKLIST>
+</CHECKLIST_SET>
