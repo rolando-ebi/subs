@@ -111,8 +111,10 @@ public class SubmissionControllerIT {
 
         int matchCount = 0;
 
-        for (Submission submission:         submissionRepository.findAll()) {
-            if (submission.getDomain().getName().equals(sub.getDomain().getName())) {
+        for (Submission submission: submissionRepository.findAll()) {
+            if (submission.getDomain() != null &&
+                    submission.getDomain().getName() != null &&
+                    submission.getDomain().getName().equals(sub.getDomain().getName())) {
                 matchCount++;
             }
         }

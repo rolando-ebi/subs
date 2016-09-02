@@ -6,3 +6,5 @@ include "subs-frontend"
 include "subs-validation"
 include "subs-messaging"
 include "subs-dispatcher"
+
+include "subs-enaagent"
