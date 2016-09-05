@@ -7,7 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.subs.data.component.Realm;
+import uk.ac.ebi.subs.data.component.Archive;
+import uk.ac.ebi.subs.data.component.Domain;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.subs.EnaAgentApplication;
 
@@ -57,31 +58,40 @@ public class EnaAgentSubsProcessorTest {
 
     @Before
     public void setUp(){
+        Domain domain = new Domain();
+        domain.setName("test domain");
+
         sa = new Sample();
         sa.setAlias("bob");
         sa.setAccession("S1");
-        sa.setRealm(Realm.Usi);
+        sa.setArchive(Archive.Usi);
+        sa.setDomain(domain);
 
         st = new Study();
-        st.setRealm(Realm.Sequencing);
+        st.setArchive(Archive.Ena);
         st.setAlias("study1");
+        st.setDomain(domain);
 
         as = new Assay();
-        as.setRealm(Realm.Sequencing);
+        as.setArchive(Archive.Ena);
         as.setAlias("exp1");
         as.setSampleRef(sa.asLink());
         as.setStudyRef(st.asLink());
+        as.setDomain(domain);
 
         ad = new AssayData();
         ad.setAlias("run1");
-        ad.setRealm(Realm.Sequencing);
+        ad.setArchive(Archive.Ena);
         ad.setAssayRef(as.asLink());
+        ad.setDomain(domain);
 
         arrayStudy = new Study();
-        arrayStudy.setRealm(Realm.Arrays);
+        arrayStudy.setArchive(Archive.ArrayExpress);
         arrayStudy.setAlias("not to be accessioned here");
+        arrayStudy.setDomain(domain);
 
         sub = new Submission();
+        sub.setDomain(domain);
         sub.getSamples().add(sa);
         sub.getStudies().add(st);
         sub.getAssays().add(as);

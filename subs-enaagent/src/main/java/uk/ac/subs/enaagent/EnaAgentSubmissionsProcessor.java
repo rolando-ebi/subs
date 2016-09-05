@@ -5,7 +5,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
-import uk.ac.ebi.subs.data.component.Realm;
+import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.messaging.Channels;
 import uk.ac.subs.enarepo.EnaAssayDataRepository;
@@ -49,18 +49,18 @@ public class EnaAgentSubmissionsProcessor {
     public void processSubmission(Submission submission) {
 
         submission.getStudies().stream()
-                .filter(s -> s.getRealm() == Realm.Sequencing)
+                .filter(s -> s.getArchive() == Archive.Ena)
                 .forEach(s -> processStudy(s, submission));
 
 
         submission.getAssays().stream()
-                .filter(a -> a.getRealm() == Realm.Sequencing)
+                .filter(a -> a.getArchive() == Archive.Ena)
                 .forEach(a -> processAssay(a, submission));
 
 
 
         submission.getAssayData().stream()
-                .filter(ad -> ad.getRealm() == Realm.Sequencing)
+                .filter(ad -> ad.getArchive() == Archive.Ena)
                 .forEach(ad -> processAssayData(ad, submission));
     }
 
