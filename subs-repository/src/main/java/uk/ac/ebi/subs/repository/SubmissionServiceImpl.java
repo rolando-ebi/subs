@@ -34,6 +34,13 @@ public class SubmissionServiceImpl implements SubmissionService {
         return submissionRepository.findOne(id);
     }
 
+    @Override
+    public Page<Submission> fetchSubmissionsByDomainName(Pageable pageable, String domainName) {
+        return submissionRepository.findByDomainName(domainName,pageable);
+    }
 
-
+    @Override
+    public List<Submission> fetchSubmissionsByDomainName(String domainName) {
+        return submissionRepository.findByDomainName(domainName);
+    }
 }

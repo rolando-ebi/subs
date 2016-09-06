@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.web.bind.annotation.*;
+import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.submittable.Submission;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.messaging.Channels;
@@ -31,36 +32,42 @@ public class SubmissionController {
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
     @Autowired
-    public SubmissionController (RabbitMessagingTemplate rabbitMessagingTemplate, MessageConverter messageConverter){
+    public SubmissionController(RabbitMessagingTemplate rabbitMessagingTemplate, MessageConverter messageConverter) {
         this.rabbitMessagingTemplate = rabbitMessagingTemplate;
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RequestMapping(value="/submissions",method = RequestMethod.GET, produces = {"application/hal+json"} )
+    @RequestMapping(value = "/submissions", method = RequestMethod.GET, produces = {"application/hal+json"})
     public PagedResources<Submission> submissions(Pageable pageable, PagedResourcesAssembler assembler) {
-        Page<Submission> submissions= submissionService.fetchSubmissions(pageable);
+
+        Page<Submission> submissions = submissionService.fetchSubmissions(pageable);
+
+        return assembler.toResource(submissions, submissionResourceAssembler);
+    }
+
+    @RequestMapping(value = "/domains/{domainName}/submissions", method = RequestMethod.GET, produces = {"application/hal+json"})
+    public PagedResources<Submission> submissionsByDomain(@PathVariable String domainName, Pageable pageable, PagedResourcesAssembler assembler) {
+        Page<Submission> submissions = submissionService.fetchSubmissions(pageable);
         return assembler.toResource(submissions, submissionResourceAssembler);
     }
 
 
-
-
     @RequestMapping(value = "/submit", method = RequestMethod.PUT)
-    public void submit(@RequestBody Submission submission){
+    public void submit(@RequestBody Submission submission) {
 
 
-        for (Submittable submittable : submission.allSubmissionItems()){
-            if (submittable.getDomain() == null){
+        for (Submittable submittable : submission.allSubmissionItems()) {
+            if (submittable.getDomain() == null) {
                 submittable.setDomain(submission.getDomain());
             }
         }
 
 
         submissionService.storeSubmission(submission);
-        rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_SUBMITTED,submission);
+        rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_SUBMITTED, submission);
     }
 
-    @RequestMapping("/submission/{id}")
+    @RequestMapping(value = "/submission/{id}", method = RequestMethod.GET, produces = {"application/hal+json"})
     public HttpEntity<SubmissionResource> getSubmission(@PathVariable("id") String id) {
         Submission s = submissionService.fetchSubmission(id);
 
@@ -70,4 +77,5 @@ public class SubmissionController {
 
         return new ResponseEntity<SubmissionResource>(sr, HttpStatus.OK);
     }
+
 }

@@ -11,6 +11,10 @@ public interface SubmissionService {
 
     Page<Submission> fetchSubmissions(Pageable pageable);
 
+    Page<Submission> fetchSubmissionsByDomainName(Pageable pageable,String domainName);
+
+    List<Submission> fetchSubmissionsByDomainName(String domainName);
+
     void storeSubmission(Submission submission);
 
     Submission fetchSubmission(String id);
