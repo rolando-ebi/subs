@@ -7,5 +7,5 @@ include "subs-validation"
 include 'subs-samples-agent'
 include "subs-messaging"
 include "subs-dispatcher"
-
 include "subs-enaagent"
+include 'subs-progress-monitor'
