@@ -4,6 +4,7 @@ include "subs-data-model"
 include "subs-repository"
 include "subs-frontend"
 include "subs-validation"
+include 'subs-samples-agent'
 include "subs-messaging"
 include "subs-dispatcher"
 
