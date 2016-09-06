@@ -8,6 +8,7 @@ import java.util.List;
 public abstract class AbstractAttributeValidator implements ChecklistValidator {
     public static final String FILTER_REGEX = "[,;\\s_:.#\\\\\\/]";
     private String id = null;
+    private String name = null;
 
     public AbstractAttributeValidator(String id) {
         this.id = id;
@@ -42,5 +43,14 @@ public abstract class AbstractAttributeValidator implements ChecklistValidator {
     }
 
     public void reset() {
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

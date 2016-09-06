@@ -19,6 +19,8 @@ public interface ChecklistValidator {
 
     String getId();
 
+    String getName();
+
     public void reset();
 
 }

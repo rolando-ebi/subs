@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ChecklistValidatorFactoryImpl extends ChecklistValidatorFactory {
     public static String DEFAULT_CHECKLIST_RESOURCE_FILE = "/uk/ac/ebi/subs/validator/checklist/checklist.xml";
@@ -31,6 +32,11 @@ public class ChecklistValidatorFactoryImpl extends ChecklistValidatorFactory {
         } else {
             return new ChecklistValidatorImpl(checklistType);
         }
+    }
+
+    @Override
+    public Set<String> getChecklistIDSet() {
+        return checklistTypeMap.keySet();
     }
 
     public Map<String, ChecklistType> getChecklistTypeMap() {

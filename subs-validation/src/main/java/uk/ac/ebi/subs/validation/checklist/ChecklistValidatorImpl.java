@@ -40,6 +40,7 @@ public class ChecklistValidatorImpl extends AbstractAttributeValidator implement
 
     public ChecklistValidatorImpl(ChecklistType checklistType) {
         super(checklistType.getAccession());
+        setName(checklistType.getDESCRIPTOR().getNAME());
         for (ChecklistType.DESCRIPTOR.FIELDGROUP fieldGroup : checklistType.getDESCRIPTOR().getFIELDGROUPArray()) {
             Set<FieldValidatorImpl> fieldValidatorSet = new HashSet<FieldValidatorImpl>();
             for (ChecklistType.DESCRIPTOR.FIELDGROUP.FIELD field : fieldGroup.getFIELDArray()) {
