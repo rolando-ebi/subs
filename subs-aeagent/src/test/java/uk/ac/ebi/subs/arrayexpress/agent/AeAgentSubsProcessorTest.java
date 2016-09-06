@@ -1,5 +1,4 @@
-package uk.ac.subs.enaagent;
-
+package uk.ac.ebi.subs.arrayexpress.agent;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,17 +6,19 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.ac.ebi.subs.ArrayExpressAgentApplication;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.Domain;
 import uk.ac.ebi.subs.data.submittable.*;
-import uk.ac.subs.EnaAgentApplication;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = EnaAgentApplication.class)
-public class EnaAgentSubsProcessorTest {
+@SpringBootTest(classes = ArrayExpressAgentApplication.class)
+public class AeAgentSubsProcessorTest {
 
     Submission sub;
     Sample sa;
@@ -25,10 +26,10 @@ public class EnaAgentSubsProcessorTest {
     Assay as;
     AssayData ad;
 
-    Study arrayStudy;
+    Study enaStudy;
 
     @Autowired
-    EnaAgentSubmissionsProcessor processor;
+    ArrayExpressSubmissionProcessor processor;
 
     @Test
     public void test(){
@@ -36,25 +37,19 @@ public class EnaAgentSubsProcessorTest {
 
         String processedStatus = "processed";
 
-        assertThat("study accessioned", st.getAccession(), startsWith("ENA-STU-"));
+        assertThat("study accessioned", st.getAccession(), startsWith("AE-MTAB-"));
         assertThat("study status", st.getStatus(),equalTo(processedStatus));
 
-        assertThat("assay accessioned", as.getAccession(), startsWith("ENA-EXP-"));
+        assertThat("assay accessioned", as.getAccession(), nullValue());
         assertThat("assay status", as.getStatus(),equalTo(processedStatus));
 
-        assertThat("assay data accessioned", ad.getAccession(), startsWith("ENA-RUN-"));
+        assertThat("assay data accessioned", ad.getAccession(), nullValue());
         assertThat("assay data status", ad.getStatus(),equalTo(processedStatus));
 
-        assertThat("array study untouched", arrayStudy.getAccession(),nullValue());
-        assertThat("array study status is null", arrayStudy.getStatus(),nullValue());
-
-        assertThat("sample reference in assay", as.getSampleRef().getAccession(), equalTo(sa.getAccession()));
-        assertThat("study reference in assay", as.getStudyRef().getAccession(), equalTo(st.getAccession()));
-        assertThat("assay reference in assay data ", ad.getAssayRef().getAccession(), equalTo(as.getAccession()));
-
+        assertThat("ena study untouched", enaStudy.getAccession(),nullValue());
+        assertThat("ena study status is null", enaStudy.getStatus(),nullValue());
 
     }
-
 
     @Before
     public void setUp(){
@@ -68,12 +63,12 @@ public class EnaAgentSubsProcessorTest {
         sa.setDomain(domain);
 
         st = new Study();
-        st.setArchive(Archive.Ena);
+        st.setArchive(Archive.ArrayExpress);
         st.setAlias("study1");
         st.setDomain(domain);
 
         as = new Assay();
-        as.setArchive(Archive.Ena);
+        as.setArchive(Archive.ArrayExpress);
         as.setAlias("exp1");
         as.setSampleRef(sa.asLink());
         as.setStudyRef(st.asLink());
@@ -81,14 +76,14 @@ public class EnaAgentSubsProcessorTest {
 
         ad = new AssayData();
         ad.setAlias("run1");
-        ad.setArchive(Archive.Ena);
+        ad.setArchive(Archive.ArrayExpress);
         ad.setAssayRef(as.asLink());
         ad.setDomain(domain);
 
-        arrayStudy = new Study();
-        arrayStudy.setArchive(Archive.ArrayExpress);
-        arrayStudy.setAlias("not to be accessioned here");
-        arrayStudy.setDomain(domain);
+        enaStudy = new Study();
+        enaStudy.setArchive(Archive.Ena);
+        enaStudy.setAlias("not to be accessioned here");
+        enaStudy.setDomain(domain);
 
         sub = new Submission();
         sub.setDomain(domain);
@@ -97,7 +92,4 @@ public class EnaAgentSubsProcessorTest {
         sub.getAssays().add(as);
         sub.getAssayData().add(ad);
     }
-
-
-
 }

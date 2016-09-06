@@ -8,3 +8,4 @@ include "subs-messaging"
 include "subs-dispatcher"
 
 include "subs-enaagent"
+include "subs-aeagent"

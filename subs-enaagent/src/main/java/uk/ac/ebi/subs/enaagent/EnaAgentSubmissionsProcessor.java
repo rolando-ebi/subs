@@ -1,4 +1,4 @@
-package uk.ac.subs.enaagent;
+package uk.ac.ebi.subs.enaagent;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
@@ -7,10 +7,10 @@ import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.*;
+import uk.ac.ebi.subs.enarepo.EnaAssayDataRepository;
+import uk.ac.ebi.subs.enarepo.EnaAssayRepository;
+import uk.ac.ebi.subs.enarepo.EnaStudyRepository;
 import uk.ac.ebi.subs.messaging.Channels;
-import uk.ac.subs.enarepo.EnaAssayDataRepository;
-import uk.ac.subs.enarepo.EnaAssayRepository;
-import uk.ac.subs.enarepo.EnaStudyRepository;
 
 import java.util.*;
 

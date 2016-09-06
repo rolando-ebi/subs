@@ -1,4 +1,4 @@
-package uk.ac.subs.enarepo;
+package uk.ac.ebi.subs.enarepo;
 
 
 import org.springframework.data.mongodb.repository.MongoRepository;
