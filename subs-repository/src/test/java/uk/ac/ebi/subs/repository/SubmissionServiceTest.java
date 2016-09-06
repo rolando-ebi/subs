@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.subs.data.component.Realm;
+import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.*;
 
 import java.util.Arrays;
@@ -30,6 +30,10 @@ public class SubmissionServiceTest {
     @Before
     public void buildUp() {
         testSub = new Submission();
+        testSub.getSubmitter().setEmail("test@example.ac.uk");
+        testSub.getDomain().setName("testDomain" + Math.random());
+
+
 
         Project p = new Project();
         Study st = new Study();
@@ -37,34 +41,39 @@ public class SubmissionServiceTest {
         Assay a = new Assay();
         AssayData ad = new AssayData();
 
+        for (Submittable sub : Arrays.asList(p,st,sa,a,ad)){
+            sub.setDomain(testSub.getDomain());
+        }
+
         p.setTitle("Test project");
-        p.setRealm(Realm.Usi);
+        p.setArchive(Archive.Usi);
 
         st.setTitle("Test Seq Project");
-        st.setRealm(Realm.Sequencing);
+        st.setArchive(Archive.Ena);
         st.setProjectRef(p.asLink());
 
         sa.setTitle("Test sample");
         sa.setDescription("A mouflon");
         sa.setTaxonId(9938);
         sa.setTaxon("Ovis aries musimon");
-        sa.setRealm(Realm.Usi);
+        sa.setArchive(Archive.Usi);
 
         a.setTitle("Test assay");
-        a.setRealm(Realm.Sequencing);
+        a.setArchive(Archive.Ena);
         a.setSampleRef(sa.asLink());
         a.setStudyRef(st.asLink());
 
         ad.setTitle("Test assay data");
         ad.setAssayRef(a.asLink());
 
-        testSub.getSubmitter().setEmail("test@example.ac.uk");
-        testSub.getDomain().setName("testDomain" + Math.random());
+
         testSub.getProjects().add(p);
         testSub.getStudies().add(st);
         testSub.getSamples().add(sa);
         testSub.getAssays().add(a);
         testSub.getAssayData().add(ad);
+
+
     }
 
     @After
