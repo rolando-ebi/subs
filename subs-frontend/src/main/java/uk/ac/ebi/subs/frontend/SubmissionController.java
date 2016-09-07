@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.subs.data.submittable.Submission;
+import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.messaging.Channels;
 import uk.ac.ebi.subs.repository.SubmissionService;
 
@@ -46,6 +47,15 @@ public class SubmissionController {
 
     @RequestMapping(value = "/submit", method = RequestMethod.PUT)
     public void submit(@RequestBody Submission submission){
+
+
+        for (Submittable submittable : submission.allSubmissionItems()){
+            if (submittable.getDomain() == null){
+                submittable.setDomain(submission.getDomain());
+            }
+        }
+
+
         submissionService.storeSubmission(submission);
         rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_SUBMITTED,submission);
     }
