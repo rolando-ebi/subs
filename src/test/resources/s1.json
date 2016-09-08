@@ -7,7 +7,7 @@
   },
   "projects": [
     {
-      "realm": "Usi",
+      "archive": "Usi",
       "title": "USI test project",
       "description": "this is a project for the USI development team to use while testing",
       "releaseDate": "2200-01-01",
@@ -21,7 +21,7 @@
   "samples": [
     {
       "alias": "donOne",
-      "realm": "Usi",
+      "archive": "Usi",
       "title": "USI Donkey One",
       "taxonId": 9793,
       "taxon": "Equus asinus",
@@ -38,7 +38,7 @@
     },
     {
       "alias": "donTwo",
-      "realm": "Usi",
+      "archive": "Usi",
       "title": "USI Donkey Two",
       "taxonId": 9793,
       "taxon": "Equus asinus",
@@ -63,7 +63,7 @@
   "studies": [
     {
       "alias": "donkeyWGS1",
-      "realm": "Sequencing",
+      "archive": "Ena",
       "title": "WGS of the reference donkey",
       "description": "Whole genome sequencing of the reference donkey, to produce a gold standard reference genome"
     }
@@ -71,12 +71,16 @@
   "assays": [
     {
       "alias": "donkeySeq1",
-      "realm": "Sequencing",
+      "archive": "Ena",
       "studyRef": {
-        "alias": "donkeyWGS1"
+        "alias": "donkeyWGS1",
+        "archive": "Ena",
+        "domain": "testDomain"
       },
       "sampleRef": {
-        "alias": "donOne"
+        "alias": "donOne",
+        "archive": "Usi",
+        "domain": "testDomain"
       },
       "attributes": [
         {
@@ -113,9 +117,16 @@
   "assayData": [
     {
       "alias": "donkeySeq1Run1",
-      "realm": "Sequencing",
+      "archive": "Ena",
       "assayRef": {
-        "alias": "donkeySeq1Run1"
+        "alias": "donkeySeq1",
+        "archive": "Ena",
+        "domain": "testDomain"
+      },
+      "sampleRef": {
+        "alias": "donOne",
+        "archive": "Usi",
+        "domain": "testDomain"
       },
       "files": [
         {
