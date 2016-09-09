@@ -31,7 +31,7 @@
           "value": "organism",
           "term": {
             "sourceName": "obi",
-            "termId": "OBI_0100026"
+            "termID": "OBI_0100026"
           }
         }
       ]
@@ -54,7 +54,7 @@
           "value": "organism",
           "term": {
             "sourceName": "obi",
-            "termId": "OBI_0100026"
+            "termID": "OBI_0100026"
           }
         }
       ]
