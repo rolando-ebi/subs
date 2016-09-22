@@ -11,6 +11,10 @@ jdk:
 
 install: true
 
+before_script:
+  - sleep 15
+  - mongo mydb_test --eval 'db.addUser("travis", "test");'
+
 script: ./gradlew check
 
 after_success:

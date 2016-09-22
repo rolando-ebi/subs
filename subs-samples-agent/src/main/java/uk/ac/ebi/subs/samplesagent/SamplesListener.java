@@ -8,18 +8,19 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.submittable.Submission;
 import uk.ac.ebi.subs.messaging.Channels;
-import uk.ac.ebi.subs.samplesrepo.SampleService;
+import uk.ac.ebi.subs.samplesrepo.SampleRepository;
 
 import java.util.List;
 
 @Service
 public class SamplesListener {
 
-    private static int i = 0;
+    @Autowired
+    private SampleRepository repository;
 
     private RabbitMessagingTemplate rabbitTemplate;
 
-    private SampleService sampleService;
+    private static int i = 0;
 
     @Autowired
     public SamplesListener(RabbitMessagingTemplate rabbitTemplate, MessageConverter messageConverter) {
@@ -27,34 +28,24 @@ public class SamplesListener {
         this.rabbitTemplate.setMessageConverter(messageConverter);
     }
 
-    @Autowired
-    public void setSampleService(SampleService sampleService) {
-        this.sampleService = sampleService;
-    }
-
     @RabbitListener(queues = Channels.SAMPLES_PROCESSING)
     public void handleSubmission(Submission submission) {
 
-        List<Sample> samples = handleSamples(submission); // Accessioning samples
+        processSamples(submission);
 
-        if(!samples.isEmpty()) {
-            sampleService.saveSamples(samples);
-        }
-
-        //Send back to SUBMISSION_PROCESSED queue
         rabbitTemplate.convertAndSend(Channels.SUBMISSION_PROCESSED, submission);
     }
 
-    public List<Sample> handleSamples(Submission submission) {
-
+    private void processSamples(Submission submission) {
         List<Sample> samples = submission.getSamples();
-        if (!samples.isEmpty()) {
-            for (Sample sample : samples) {
-                sample.setAccession(generateSampleAccession());
-            }
-        }
-        return samples;
+        samples.forEach(sample -> {
+            sample.setAccession(generateSampleAccession());
+            sample.setStatus("ok");
+        });
+
+        repository.save(samples);
     }
+
 
     private String generateSampleAccession() {
         return "S" + ++i;
