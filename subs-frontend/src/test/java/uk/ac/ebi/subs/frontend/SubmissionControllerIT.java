@@ -35,10 +35,7 @@ import static org.springframework.hateoas.client.Hop.rel;
 
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -77,8 +74,10 @@ public class SubmissionControllerIT {
 
         template = new TestRestTemplate(restTemplate());
 
+        UUID uuid = UUID.randomUUID();
+
         sub = new Submission();
-        sub.getDomain().setName("integrationTestExampleDomain");
+        sub.getDomain().setName("integrationTestExampleDomain."+uuid.toString());
         sub.getSubmitter().setEmail("test@example.ac.uk");
 
         this.submissionsReceived = new ArrayList<>();
@@ -86,7 +85,7 @@ public class SubmissionControllerIT {
 
     @After
     public void tearDown() {
-        for (Submission repSub : submissionRepository.findAll()) {
+        for (Submission repSub : submissionRepository.findByDomainName(sub.getDomain().getName())) {
             if (sub.getDomain().getName().equals(repSub.getDomain().getName())) {
                 submissionRepository.delete(repSub);
             }
@@ -109,16 +108,8 @@ public class SubmissionControllerIT {
     public void doSubmit() throws URISyntaxException {
         template.put(submit.toString(), sub);
 
-        int matchCount = 0;
-
-        for (Submission submission: submissionRepository.findAll()) {
-            if (submission.getDomain() != null &&
-                    submission.getDomain().getName() != null &&
-                    submission.getDomain().getName().equals(sub.getDomain().getName())) {
-                matchCount++;
-            }
-        }
-        assertThat(matchCount, equalTo(1));
+        List<Submission> subs = submissionRepository.findByDomainName(sub.getDomain().getName());
+        assertThat(subs.size(), equalTo(1));
 
         assertThat(submissionsReceived.size(),equalTo(1));
     }

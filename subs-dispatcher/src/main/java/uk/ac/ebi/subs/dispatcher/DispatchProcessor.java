@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.Submission;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.messaging.Channels;
@@ -40,10 +41,17 @@ public class DispatchProcessor {
         int arrayExpressCount = 0;
 
         for (Submittable submittable : submission.allSubmissionItems()) {
-            if (submittable.isAccessioned()) {
+            if (submittable.isAccessioned() ||
+                    (submittable.getStatus() != null && submittable.getStatus().equals("processed"))) {
                 continue;
             }
-            switch (submittable.getArchive()) {
+
+            Archive archive = submittable.getArchive();
+            if (archive == null){
+                archive = Archive.Usi; //default
+            }
+
+            switch (archive) {
                 case ArrayExpress:
                     arrayExpressCount++;
                     break;

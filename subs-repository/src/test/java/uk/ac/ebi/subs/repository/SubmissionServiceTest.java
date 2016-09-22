@@ -54,7 +54,7 @@ public class SubmissionServiceTest {
 
         sa.setTitle("Test sample");
         sa.setDescription("A mouflon");
-        sa.setTaxonId(9938);
+        sa.setTaxonId(9938L);
         sa.setTaxon("Ovis aries musimon");
         sa.setArchive(Archive.Usi);
 
