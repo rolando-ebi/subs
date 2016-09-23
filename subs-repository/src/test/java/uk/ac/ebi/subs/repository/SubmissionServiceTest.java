@@ -50,7 +50,7 @@ public class SubmissionServiceTest {
 
         st.setTitle("Test Seq Project");
         st.setArchive(Archive.Ena);
-        st.setProjectRef(p.asLink());
+        st.setProjectRef(p.asRef());
 
         sa.setTitle("Test sample");
         sa.setDescription("A mouflon");
@@ -60,11 +60,11 @@ public class SubmissionServiceTest {
 
         a.setTitle("Test assay");
         a.setArchive(Archive.Ena);
-        a.setSampleRef(sa.asLink());
-        a.setStudyRef(st.asLink());
+        a.setSampleRef(sa.asRef());
+        a.setStudyRef(st.asRef());
 
         ad.setTitle("Test assay data");
-        ad.setAssayRef(a.asLink());
+        ad.setAssayRef(a.asRef());
 
 
         testSub.getProjects().add(p);

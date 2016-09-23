@@ -26,8 +26,6 @@ public class SubmissionController {
     @Autowired
     SubmissionService submissionService;
 
-    @Autowired
-    SubmissionResourceAssembler submissionResourceAssembler;
 
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
@@ -37,45 +35,18 @@ public class SubmissionController {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RequestMapping(value = "/submissions", method = RequestMethod.GET, produces = {"application/hal+json"})
-    public PagedResources<Submission> submissions(Pageable pageable, PagedResourcesAssembler assembler) {
-
-        Page<Submission> submissions = submissionService.fetchSubmissions(pageable);
-
-        return assembler.toResource(submissions, submissionResourceAssembler);
-    }
-
-    @RequestMapping(value = "/domains/{domainName}/submissions", method = RequestMethod.GET, produces = {"application/hal+json"})
-    public PagedResources<Submission> submissionsByDomain(@PathVariable String domainName, Pageable pageable, PagedResourcesAssembler assembler) {
-        Page<Submission> submissions = submissionService.fetchSubmissions(pageable);
-        return assembler.toResource(submissions, submissionResourceAssembler);
-    }
-
-
     @RequestMapping(value = "/submit", method = RequestMethod.PUT)
     public void submit(@RequestBody Submission submission) {
 
-
-        for (Submittable submittable : submission.allSubmissionItems()) {
-            if (submittable.getDomain() == null) {
-                submittable.setDomain(submission.getDomain());
-            }
-        }
-
+        submission.allSubmissionItems().forEach(
+                s -> {
+                    if (s.getDomain() == null) {
+                        s.setDomain(submission.getDomain());
+                    }
+                }
+        );
 
         submissionService.storeSubmission(submission);
         rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_SUBMITTED, submission);
     }
-
-    @RequestMapping(value = "/submission/{id}", method = RequestMethod.GET, produces = {"application/hal+json"})
-    public HttpEntity<SubmissionResource> getSubmission(@PathVariable("id") String id) {
-        Submission s = submissionService.fetchSubmission(id);
-
-
-        SubmissionResource sr = new SubmissionResource(s);
-        sr.add(linkTo(methodOn(SubmissionController.class).getSubmission(id)).withSelfRel());
-
-        return new ResponseEntity<SubmissionResource>(sr, HttpStatus.OK);
-    }
-
 }

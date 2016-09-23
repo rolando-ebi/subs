@@ -75,14 +75,14 @@ public class EnaAgentSubsProcessorTest {
         as = new Assay();
         as.setArchive(Archive.Ena);
         as.setAlias("exp1");
-        as.setSampleRef(sa.asLink());
-        as.setStudyRef(st.asLink());
+        as.setSampleRef(sa.asRef());
+        as.setStudyRef(st.asRef());
         as.setDomain(domain);
 
         ad = new AssayData();
         ad.setAlias("run1");
         ad.setArchive(Archive.Ena);
-        ad.setAssayRef(as.asLink());
+        ad.setAssayRef(as.asRef());
         ad.setDomain(domain);
 
         arrayStudy = new Study();
