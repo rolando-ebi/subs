@@ -35,7 +35,7 @@ public class SubmissionController {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RequestMapping(value = "/submit", method = RequestMethod.PUT)
+    @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
     public void submit(@RequestBody Submission submission) {
 
         submission.allSubmissionItems().forEach(
