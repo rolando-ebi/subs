@@ -7,13 +7,9 @@ import uk.ac.ebi.subs.data.submittable.Submission;
 import java.util.List;
 
 public interface SubmissionService {
-    List<Submission> fetchSubmissions();
-
     Page<Submission> fetchSubmissions(Pageable pageable);
 
     Page<Submission> fetchSubmissionsByDomainName(Pageable pageable,String domainName);
-
-    List<Submission> fetchSubmissionsByDomainName(String domainName);
 
     void storeSubmission(Submission submission);
 
