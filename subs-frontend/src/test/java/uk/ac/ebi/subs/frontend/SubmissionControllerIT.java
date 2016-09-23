@@ -49,7 +49,6 @@ public class SubmissionControllerIT {
     private int port;
 
     private URL submit;
-    private URL submissions;
 
     private TestRestTemplate template;
 
@@ -69,8 +68,8 @@ public class SubmissionControllerIT {
 
     @Before
     public void setUp() throws Exception {
-        this.submit = new URL("http://localhost:" + port + "/submit/");
-        this.submissions = new URL("http://localhost:" + port + "/submissions/");
+        this.submit = new URL("http://localhost:" + this.port + "/submit/");
+
 
         template = new TestRestTemplate(restTemplate());
 
