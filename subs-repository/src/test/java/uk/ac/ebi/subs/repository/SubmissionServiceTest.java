@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.subs.data.component.Archive;
+import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
 
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class SubmissionServiceTest {
 
         st.setTitle("Test Seq Project");
         st.setArchive(Archive.Ena);
-        st.setProjectRef(p.asLink());
+        st.setProjectRef((ProjectRef) p.asRef());
 
         sa.setTitle("Test sample");
         sa.setDescription("A mouflon");
@@ -60,11 +60,11 @@ public class SubmissionServiceTest {
 
         a.setTitle("Test assay");
         a.setArchive(Archive.Ena);
-        a.setSampleRef(sa.asLink());
-        a.setStudyRef(st.asLink());
+        a.setSampleRef((SampleRef) sa.asRef());
+        a.setStudyRef((StudyRef) st.asRef());
 
         ad.setTitle("Test assay data");
-        ad.setAssayRef(a.asLink());
+        ad.setAssayRef((AssayRef) a.asRef());
 
 
         testSub.getProjects().add(p);

@@ -15,11 +15,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     SubmissionRepository submissionRepository;
 
     @Override
-    public List<Submission> fetchSubmissions() {
-        return submissionRepository.findAll();
-    }
-
-    @Override
     public Page<Submission> fetchSubmissions(Pageable pageable) {
         return submissionRepository.findAll(pageable);
     }
@@ -37,10 +32,5 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Page<Submission> fetchSubmissionsByDomainName(Pageable pageable, String domainName) {
         return submissionRepository.findByDomainName(domainName,pageable);
-    }
-
-    @Override
-    public List<Submission> fetchSubmissionsByDomainName(String domainName) {
-        return submissionRepository.findByDomainName(domainName);
     }
 }

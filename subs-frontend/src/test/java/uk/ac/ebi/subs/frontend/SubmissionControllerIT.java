@@ -15,6 +15,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resources;
@@ -49,10 +53,8 @@ public class SubmissionControllerIT {
     private int port;
 
     private URL submit;
-    private URL submissions;
 
     private TestRestTemplate template;
-
     private List<Submission> submissionsReceived;
 
     @RabbitListener(queues = Channels.SUBMISSION_SUBMITTED)
@@ -65,14 +67,15 @@ public class SubmissionControllerIT {
     @Autowired
     SubmissionRepository submissionRepository;
 
-    Submission sub;
+    @Autowired RestTemplate restTemplate;
+
+    private Submission sub;
 
     @Before
     public void setUp() throws Exception {
-        this.submit = new URL("http://localhost:" + port + "/submit/");
-        this.submissions = new URL("http://localhost:" + port + "/submissions/");
+        this.submit = new URL("http://localhost:" + this.port + "/api/submit/");
 
-        template = new TestRestTemplate(restTemplate());
+        template = new TestRestTemplate(restTemplate);
 
         UUID uuid = UUID.randomUUID();
 
@@ -85,31 +88,23 @@ public class SubmissionControllerIT {
 
     @After
     public void tearDown() {
-        for (Submission repSub : submissionRepository.findByDomainName(sub.getDomain().getName())) {
+        Pageable pageable = new PageRequest(0,100);
+
+        for (Submission repSub : submissionRepository.findByDomainName(sub.getDomain().getName(),pageable)) {
             if (sub.getDomain().getName().equals(repSub.getDomain().getName())) {
                 submissionRepository.delete(repSub);
             }
         }
     }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new Jackson2HalModule());
 
-        final MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setSupportedMediaTypes(MediaType.parseMediaTypes("application/hal+json"));
-        converter.setObjectMapper(mapper);
-
-        return new RestTemplate(Collections.<HttpMessageConverter<?>>singletonList(converter));
-    }
 
     @Test
     public void doSubmit() throws URISyntaxException {
         template.put(submit.toString(), sub);
 
-        List<Submission> subs = submissionRepository.findByDomainName(sub.getDomain().getName());
-        assertThat(subs.size(), equalTo(1));
+        Page<Submission> subs = submissionRepository.findByDomainName(sub.getDomain().getName(),new PageRequest(0,100));
+        assertThat(subs.getTotalElements(), equalTo(1L));
 
         assertThat(submissionsReceived.size(),equalTo(1));
     }

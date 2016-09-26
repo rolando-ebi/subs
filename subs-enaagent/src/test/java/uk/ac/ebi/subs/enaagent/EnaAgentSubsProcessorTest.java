@@ -7,8 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.subs.data.component.Archive;
-import uk.ac.ebi.subs.data.component.Domain;
+import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.EnaAgentApplication;
 
@@ -75,14 +74,14 @@ public class EnaAgentSubsProcessorTest {
         as = new Assay();
         as.setArchive(Archive.Ena);
         as.setAlias("exp1");
-        as.setSampleRef(sa.asLink());
-        as.setStudyRef(st.asLink());
+        as.setSampleRef((SampleRef) sa.asRef());
+        as.setStudyRef((StudyRef) st.asRef());
         as.setDomain(domain);
 
         ad = new AssayData();
         ad.setAlias("run1");
         ad.setArchive(Archive.Ena);
-        ad.setAssayRef(as.asLink());
+        ad.setAssayRef((AssayRef) as.asRef());
         ad.setDomain(domain);
 
         arrayStudy = new Study();

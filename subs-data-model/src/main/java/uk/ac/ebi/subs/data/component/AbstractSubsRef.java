@@ -1,26 +1,22 @@
 package uk.ac.ebi.subs.data.component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.Transient;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
 import java.util.Collection;
 import java.util.Optional;
 
-public class SubsLink<T extends Submittable> {
+public abstract  class AbstractSubsRef<T extends Submittable> {
     String alias;
     String accession;
     String archive;
     String domain;
 
-    T referencedObject;
 
-    public T getReferencedObject() {
-        return referencedObject;
-    }
+    public abstract T getReferencedObject();
 
-    public void setReferencedObject(T referencedObject) {
-        this.referencedObject = referencedObject;
-    }
+    public abstract void setReferencedObject(T referencedObject);
 
     public String getArchive() {
         return archive;
@@ -61,12 +57,12 @@ public class SubsLink<T extends Submittable> {
 
     @Override
     public String toString() {
-        return "SubsLink{" +
+        return "AbstractSubsRef{" +
                 "alias='" + alias + '\'' +
                 ", accession='" + accession + '\'' +
                 ", archive='" + archive + '\'' +
                 ", domain='" + domain + '\'' +
-                ", referencedObject=" + referencedObject +
+                ", referencedObject=" + this.getReferencedObject() +
                 '}';
     }
 
@@ -87,7 +83,7 @@ public class SubsLink<T extends Submittable> {
         if (item.isAccessioned()) {
             this.setAccession(item.getAccession());
         }
-        this.referencedObject = item;
+        this.setReferencedObject(item);
     }
 
     public boolean isMatch(T submittable) {
