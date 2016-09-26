@@ -4,6 +4,7 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'spring-boot'
+apply plugin: 'org.asciidoctor.convert'
 
 dependencies {
     compile project(':subs-repository')
@@ -32,6 +33,8 @@ test {
 
 asciidoctor {
     attributes 'snippets': snippetsDir
+    sourceDir file('src/main/resources/docs')
+    backends 'html5'
     inputs.dir snippetsDir
     dependsOn test
 }

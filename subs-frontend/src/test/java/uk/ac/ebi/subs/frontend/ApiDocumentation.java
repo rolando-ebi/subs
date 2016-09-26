@@ -36,9 +36,21 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.halLinks;
 
+/**
+ * Use this class to create document snippets. Ascii docotor will weave them into html documents,
+ * using the files in src/resources/docs/ascidocs
+ *
+ * https://github.com/EBISPOT/OLS/blob/master/ols-web/src/test/java/uk/ac/ebi/spot/ols/api/ApiDocumentation.java
+ *
+ * gives this
+ *
+ * http://www.ebi.ac.uk/ols/docs/api
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = FrontendApplication.class)
 public class ApiDocumentation {
+
+
     @Rule
     public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("build/generated-snippets");
 
@@ -55,18 +67,6 @@ public class ApiDocumentation {
 
     private MockMvc mockMvc;
 
-    /*
-        TODO
-        Useful example:
-
-        https://github.com/EBISPOT/OLS/blob/master/ols-web/src/test/java/uk/ac/ebi/spot/ols/api/ApiDocumentation.java
-
-        gives this
-
-        http://www.ebi.ac.uk/ols/docs/api
-
-     */
-
     @Before
     public void setUp() {
         this.document = document("{method-name}"
@@ -82,7 +82,7 @@ public class ApiDocumentation {
     }
 
     @Test
-    public void submissions() throws Exception {
+    public void submissionsByDomain() throws Exception {
         this.submissionRepository.deleteAll();
 
         Submission sub = Helpers.generateTestSubmission();
@@ -93,18 +93,57 @@ public class ApiDocumentation {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(
-                        document("submission-list-example",
+                        document("submissions/by-domain",
                                 links(
                                         halLinks(),
                                         linkWithRel("self").description("Canonical link for this resource") //TODO
                                 ),
                                 responseFields(
-                                        fieldWithPath("_links").description("<<resources-page-links,Links>> to other resources"),
+                                        fieldWithPath("_links").description("Links to other resources"),
                                         fieldWithPath("_embedded.submissions").description("Submissions matching the domain name"),
                                         fieldWithPath("page.size").description("The number of resources in this page"),
                                         fieldWithPath("page.totalElements").description("The total number of resources"),
                                         fieldWithPath("page.totalPages").description("The total number of pages"),
                                         fieldWithPath("page.number").description("The page number")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    public void submissionById() throws Exception {
+        this.submissionRepository.deleteAll();
+
+        Submission sub = Helpers.generateTestSubmission();
+
+        this.submissionRepository.save(sub);
+
+        this.mockMvc.perform(get("/api/submissions/{id}",sub.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(
+                        document("submissions/by-id",
+                                links(
+                                        halLinks(),
+                                        linkWithRel("self").description("Canonical link for this resource"), //TODO
+                                        linkWithRel("submission").description("Canonical link for this resource") //TODO
+                                ),
+                                responseFields(
+                                        fieldWithPath("_links").description("<<resources-page-links,Links>> to other resources"),
+                                        fieldWithPath("submitter").description("User who created this submission"),
+                                        fieldWithPath("domain").description("Domain this submission belongs to"),
+                                        fieldWithPath("submissionDate").description("Date that this submission was submitted"),
+                                        fieldWithPath("status").description("Submission status"),
+                                        fieldWithPath("analyses").description("Analyses in this submission"),
+                                        fieldWithPath("assays").description("Assays in this submission"),
+                                        fieldWithPath("assayData").description("Assay data in this submission"),
+                                        fieldWithPath("egaDacs").description("EGA DACs in this submission"),
+                                        fieldWithPath("egaDacPolicies").description("EGA DAC Policies in this submission"),
+                                        fieldWithPath("egaDatasets").description("EGA Datasets in this submission"),
+                                        fieldWithPath("projects").description("Projects in this submission"),
+                                        fieldWithPath("samples").description("Samples in this submission"),
+                                        fieldWithPath("sampleGroups").description("Sample Groups in this submission"),
+                                        fieldWithPath("studies").description("Studies in this submission")
                                 )
                         )
                 );

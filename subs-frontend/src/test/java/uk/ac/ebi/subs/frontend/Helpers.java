@@ -6,6 +6,7 @@ import uk.ac.ebi.subs.data.submittable.Submission;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Helpers {
 
@@ -29,6 +30,7 @@ public class Helpers {
     public static Submission generateTestSubmission() {
         Submission sub = new Submission();
         Domain d = new Domain();
+        sub.setId(UUID.randomUUID().toString());
         d.setName("my-domain");
         sub.setDomain(d);
         sub.setSamples(generateTestSamples());
