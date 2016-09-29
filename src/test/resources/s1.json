@@ -42,7 +42,7 @@
       "title": "USI Donkey Two",
       "taxonId": 9793,
       "taxon": "Equus asinus",
-      "sampleLinks": [
+      "sampleRelationships": [
         {
           "relationshipNature": "Child of",
           "alias": "d1"
