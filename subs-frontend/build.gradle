@@ -5,6 +5,8 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'org.asciidoctor.convert'
+apply plugin: 'application'
+mainClassName = "uk.ac.ebi.subs.FrontendApplication"
 
 dependencies {
     compile project(':subs-repository')
