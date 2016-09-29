@@ -46,15 +46,11 @@ public class EnaAgentSubmissionsProcessor {
 
     @RabbitListener(queues = {Queues.ENA_AGENT})
     public void handleSubmission(Submission submission) {
-       // logger.info("received submission {}",submission.getId());
-        logger.info("received submission {} {}",submission.getId(),submission.getLastHandler());
+        logger.info("received submission {}",submission.getId());
 
         processSubmission(submission);
 
         logger.info("processed submission {}",submission.getId());
-
-        //TODO debug stuff
-        submission.setLastHandler(this.getClass().toString());
 
         rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submission);
 

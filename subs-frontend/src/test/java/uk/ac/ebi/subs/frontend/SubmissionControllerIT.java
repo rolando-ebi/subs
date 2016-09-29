@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.subs.FrontendApplication;
 import uk.ac.ebi.subs.data.submittable.Submission;
+import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
@@ -38,7 +39,7 @@ public class SubmissionControllerIT {
     private TestRestTemplate template;
     private List<Submission> submissionsReceived;
 
-    @RabbitListener(queues = Topics.EVENT_SUBMISSION_SUBMITTED)
+    @RabbitListener(queues = Queues.SUBMISSION_DISPATCHER)
     public void handleSampleCreation(Submission submission) {
         System.out.println("Received a newly created submission: accession = " + submission.getId());
         this.submissionsReceived.add(submission);

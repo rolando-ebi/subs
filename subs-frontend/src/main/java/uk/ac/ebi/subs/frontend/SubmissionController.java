@@ -43,9 +43,6 @@ public class SubmissionController {
         submissionService.storeSubmission(submission);
         logger.info("stored submission {}",submission.getId());
 
-        //TODO debug stuff
-        submission.setLastHandler(this.getClass().toString());
-
 
         rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_SUBMITTED, submission);
 
