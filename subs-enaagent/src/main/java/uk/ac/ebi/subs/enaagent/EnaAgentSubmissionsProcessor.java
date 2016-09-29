@@ -1,5 +1,7 @@
 package uk.ac.ebi.subs.enaagent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import java.util.*;
 
 @Service
 public class EnaAgentSubmissionsProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(EnaAgentSubmissionsProcessor.class);
 
     String processedStatusValue = "processed";
 
@@ -40,10 +44,15 @@ public class EnaAgentSubmissionsProcessor {
 
     @RabbitListener(queues = {Channels.ENA_PROCESSING})
     public void handleSubmission(Submission submission) {
+        logger.info("received submission {}",submission.getId());
 
         processSubmission(submission);
 
+        logger.info("processed submission {}",submission.getId());
+
         rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_PROCESSED, submission);
+
+        logger.info("sent submission {}",submission.getId());
     }
 
     public void processSubmission(Submission submission) {

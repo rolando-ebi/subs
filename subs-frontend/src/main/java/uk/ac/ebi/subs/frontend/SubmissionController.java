@@ -1,5 +1,7 @@
 package uk.ac.ebi.subs.frontend;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 @RestController
 public class SubmissionController {
 
+    private static final Logger logger = LoggerFactory.getLogger(SubmissionController.class);
+
     @Autowired
     SubmissionService submissionService;
 
@@ -37,6 +41,7 @@ public class SubmissionController {
 
     @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
     public void submit(@RequestBody Submission submission) {
+        logger.info("received submission for domain {}",submission.getDomain().getName());
 
         submission.allSubmissionItems().forEach(
                 s -> {
@@ -47,6 +52,10 @@ public class SubmissionController {
         );
 
         submissionService.storeSubmission(submission);
+        logger.info("stored submission {}",submission.getId());
+
         rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_SUBMITTED, submission);
+
+        logger.info("sent submission {}",submission.getId());
     }
 }
