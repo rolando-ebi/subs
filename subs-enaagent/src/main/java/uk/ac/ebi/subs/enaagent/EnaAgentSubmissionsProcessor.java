@@ -12,7 +12,9 @@ import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.enarepo.EnaAssayDataRepository;
 import uk.ac.ebi.subs.enarepo.EnaAssayRepository;
 import uk.ac.ebi.subs.enarepo.EnaStudyRepository;
-import uk.ac.ebi.subs.messaging.Channels;
+import uk.ac.ebi.subs.messaging.Exchanges;
+import uk.ac.ebi.subs.messaging.Queues;
+import uk.ac.ebi.subs.messaging.Topics;
 
 import java.util.*;
 
@@ -42,15 +44,19 @@ public class EnaAgentSubmissionsProcessor {
     }
 
 
-    @RabbitListener(queues = {Channels.ENA_PROCESSING})
+    @RabbitListener(queues = {Queues.ENA_AGENT})
     public void handleSubmission(Submission submission) {
-        logger.info("received submission {}",submission.getId());
+       // logger.info("received submission {}",submission.getId());
+        logger.info("received submission {} {}",submission.getId(),submission.getLastHandler());
 
         processSubmission(submission);
 
         logger.info("processed submission {}",submission.getId());
 
-        rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_PROCESSED, submission);
+        //TODO debug stuff
+        submission.setLastHandler(this.getClass().toString());
+
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submission);
 
         logger.info("sent submission {}",submission.getId());
     }
