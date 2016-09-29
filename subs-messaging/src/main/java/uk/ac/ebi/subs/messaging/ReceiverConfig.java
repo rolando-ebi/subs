@@ -1,4 +1,4 @@
-package uk.ac.ebi.subs.enaagent;
+package uk.ac.ebi.subs.messaging;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Configuration
-public class ReceiverConfigurer implements RabbitListenerConfigurer {
+public class ReceiverConfig implements RabbitListenerConfigurer {
 
     @Bean
     public MappingJackson2MessageConverter jackson2Converter() {
