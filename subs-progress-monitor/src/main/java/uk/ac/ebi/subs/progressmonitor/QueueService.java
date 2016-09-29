@@ -1,12 +1,15 @@
 package uk.ac.ebi.subs.progressmonitor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.ac.ebi.subs.data.submittable.*;
-import uk.ac.ebi.subs.messaging.Channels;
+import uk.ac.ebi.subs.messaging.Queues;
+import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.repository.SubmissionService;
 
 import java.util.ArrayList;
@@ -14,6 +17,9 @@ import java.util.List;
 
 @Component
 public class QueueService {
+
+
+    private static final Logger logger = LoggerFactory.getLogger(QueueService.class);
 
     private RabbitMessagingTemplate rabbitMessagingTemplate;
     private SubmissionService submissionService;
@@ -26,13 +32,19 @@ public class QueueService {
         this.submissionService = submissionService;
     }
 
-    @RabbitListener(queues = Channels.SUBMISSION_PROCESSED)
+    @RabbitListener(queues = Queues.SUBMISSION_MONITOR)
     public void checkForProcessedSubmissions(Submission queueSubmission) {
+        logger.info("received submission {}",queueSubmission.getId());
+
         Submission mongoSubmission = submissionService.fetchSubmission(queueSubmission.getId());
 
         if(checkForUpdates(queueSubmission, mongoSubmission)) {
             //FIXME - Is this store/save doing an upsert? Check and fix if required.
             submissionService.storeSubmission(mongoSubmission);
+            logger.info("updated submission {}",queueSubmission.getId());
+        }
+        else {
+            logger.info("no changes for submission {}",queueSubmission.getId());
         }
     }
 

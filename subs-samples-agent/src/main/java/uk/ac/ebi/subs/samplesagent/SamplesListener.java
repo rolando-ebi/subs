@@ -1,5 +1,7 @@
 package uk.ac.ebi.subs.samplesagent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,13 +9,17 @@ import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.submittable.Submission;
-import uk.ac.ebi.subs.messaging.Channels;
+import uk.ac.ebi.subs.messaging.Exchanges;
+import uk.ac.ebi.subs.messaging.Queues;
+import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.samplesrepo.SampleRepository;
 
 import java.util.List;
 
 @Service
 public class SamplesListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(SamplesListener.class);
 
     @Autowired
     private SampleRepository repository;
@@ -28,12 +34,17 @@ public class SamplesListener {
         this.rabbitTemplate.setMessageConverter(messageConverter);
     }
 
-    @RabbitListener(queues = Channels.SAMPLES_PROCESSING)
+    @RabbitListener(queues = Queues.BIOSAMPLES_AGENT)
     public void handleSubmission(Submission submission) {
+        logger.info("received submission {}",submission.getId());
 
         processSamples(submission);
 
-        rabbitTemplate.convertAndSend(Channels.SUBMISSION_PROCESSED, submission);
+        logger.info("processed submission {}",submission.getId());
+
+        rabbitTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submission);
+
+        logger.info("sent submission {}",submission.getId());
     }
 
     private void processSamples(Submission submission) {

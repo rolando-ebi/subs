@@ -1,5 +1,7 @@
 package uk.ac.ebi.subs.arrayexpress.agent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +11,11 @@ import uk.ac.ebi.subs.arrayexpress.model.ArrayExpressStudy;
 import uk.ac.ebi.subs.arrayexpress.repo.ArrayExpressStudyRepository;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.*;
-import uk.ac.ebi.subs.messaging.Channels;
+import uk.ac.ebi.subs.messaging.Exchanges;
+import uk.ac.ebi.subs.messaging.Queues;
+import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.arrayexpress.model.SampleDataRelationship;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class ArrayExpressSubmissionProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(ArrayExpressSubmissionProcessor.class);
 
     String processedStatusValue = "processed";
 
@@ -35,12 +39,19 @@ public class ArrayExpressSubmissionProcessor {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RabbitListener(queues = {Channels.AE_PROCESSING})
+    @RabbitListener(queues = {Queues.AE_AGENT})
     public void handleSubmission(Submission submission) {
+
+        logger.info("received submission {}",submission.getId());
 
         processSubmission(submission);
 
-        rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_PROCESSED, submission);
+        logger.info("processed submission {}",submission.getId());
+
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submission);
+
+        logger.info("sent submission {}",submission.getId());
+
     }
 
     public void processSubmission(Submission submission) {

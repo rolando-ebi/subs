@@ -13,7 +13,6 @@ import java.util.*;
         @CompoundIndex(name = "domain_rev_submission_date", def = "{ 'domain.name': 1, 'submissionDate': -1 }")
 })
 public class Submission {
-
     @Id
     String id;
     Submitter submitter = new Submitter();

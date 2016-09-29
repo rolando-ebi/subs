@@ -1,27 +1,20 @@
 package uk.ac.ebi.subs.frontend;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.web.bind.annotation.*;
-import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.submittable.Submission;
-import uk.ac.ebi.subs.data.submittable.Submittable;
-import uk.ac.ebi.subs.messaging.Channels;
+import uk.ac.ebi.subs.messaging.Topics;
+import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.repository.SubmissionService;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 @RestController
 public class SubmissionController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SubmissionController.class);
 
     @Autowired
     SubmissionService submissionService;
@@ -37,6 +30,7 @@ public class SubmissionController {
 
     @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
     public void submit(@RequestBody Submission submission) {
+        logger.info("received submission for domain {}",submission.getDomain().getName());
 
         submission.allSubmissionItems().forEach(
                 s -> {
@@ -47,6 +41,11 @@ public class SubmissionController {
         );
 
         submissionService.storeSubmission(submission);
-        rabbitMessagingTemplate.convertAndSend(Channels.SUBMISSION_SUBMITTED, submission);
+        logger.info("stored submission {}",submission.getId());
+
+
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_SUBMITTED, submission);
+
+        logger.info("sent submission {}",submission.getId());
     }
 }

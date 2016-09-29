@@ -1,5 +1,7 @@
 package uk.ac.ebi.subs.dispatcher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +10,16 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.Submission;
 import uk.ac.ebi.subs.data.submittable.Submittable;
-import uk.ac.ebi.subs.messaging.Channels;
+import uk.ac.ebi.subs.messaging.Exchanges;
+import uk.ac.ebi.subs.messaging.Queues;
+import uk.ac.ebi.subs.messaging.Topics;
 
 
 @Service
 public class DispatchProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(DispatchProcessor.class);
+
 
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
@@ -23,8 +30,10 @@ public class DispatchProcessor {
     }
 
 
-    @RabbitListener(queues = {Channels.SUBMISSION_SUBMITTED, Channels.SUBMISSION_PROCESSED})
+    @RabbitListener(queues = {Queues.SUBMISSION_DISPATCHER})
     public void handleSubmissionEvent(Submission submission) {
+
+        logger.info("received submission {}",submission.getId());
 
         /*
         * this is a deliberately simple implementation for prototyping
@@ -66,15 +75,19 @@ public class DispatchProcessor {
         String targetQueue = null;
 
         if (sampleCount > 0) {
-            targetQueue = Channels.SAMPLES_PROCESSING;
+            targetQueue = Topics.SAMPLES_PROCESSING;
         } else if (enaCount > 0) {
-            targetQueue = Channels.ENA_PROCESSING;
+            targetQueue = Topics.ENA_PROCESSING;
         } else if (arrayExpressCount > 0) {
-            targetQueue = Channels.AE_PROCESSING;
+            targetQueue = Topics.AE_PROCESSING;
         }
 
         if (targetQueue != null) {
-            rabbitMessagingTemplate.convertAndSend(targetQueue, submission);
+            rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,targetQueue, submission);
+            logger.info("sent submission {} to {}",submission.getId(),targetQueue);
+        }
+        else {
+            logger.info("completed submission {}",submission.getId());
         }
     }
 }
