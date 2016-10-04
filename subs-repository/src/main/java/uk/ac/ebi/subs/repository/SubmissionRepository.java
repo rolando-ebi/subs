@@ -8,13 +8,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
-import uk.ac.ebi.subs.data.submittable.Sample;
-import uk.ac.ebi.subs.data.submittable.Submission;
-import uk.ac.ebi.subs.data.submittable.Submittable;
-
-import java.util.List;
+import uk.ac.ebi.subs.data.Submission;
 
 @RepositoryRestResource(collectionResourceRel = "submissions")
 public interface SubmissionRepository extends MongoRepository<Submission,String>{

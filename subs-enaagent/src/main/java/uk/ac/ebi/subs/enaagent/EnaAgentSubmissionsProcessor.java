@@ -7,6 +7,8 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.enarepo.EnaAssayDataRepository;
@@ -45,16 +47,18 @@ public class EnaAgentSubmissionsProcessor {
 
 
     @RabbitListener(queues = {Queues.ENA_AGENT})
-    public void handleSubmission(Submission submission) {
-        logger.info("received submission {}",submission.getId());
+    public void handleSubmission(SubmissionEnvelope submissionEnvelope) {
+        logger.info("received submission {}",submissionEnvelope.getSubmission().getId());
 
-        processSubmission(submission);
+        processSubmission(submissionEnvelope.getSubmission());
 
-        logger.info("processed submission {}",submission.getId());
+        submissionEnvelope.addHandler(Archive.Ena);
 
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submission);
+        logger.info("processed submission {}",submissionEnvelope.getSubmission().getId());
 
-        logger.info("sent submission {}",submission.getId());
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submissionEnvelope);
+
+        logger.info("sent submission {}",submissionEnvelope.getSubmission().getId());
     }
 
     public void processSubmission(Submission submission) {

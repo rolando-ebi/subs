@@ -15,9 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.subs.FrontendApplication;
-import uk.ac.ebi.subs.data.submittable.Submission;
+import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.messaging.Queues;
-import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
 import java.net.URISyntaxException;
@@ -56,6 +55,8 @@ public class SubmissionControllerIT {
     @Before
     public void setUp() throws Exception {
         this.submit = new URL("http://localhost:" + this.port + "/api/submit/");
+
+        submissionRepository.deleteAll();
 
         template = new TestRestTemplate(restTemplate);
 
