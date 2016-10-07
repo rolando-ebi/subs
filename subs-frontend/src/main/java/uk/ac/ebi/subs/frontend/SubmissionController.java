@@ -47,11 +47,13 @@ public class SubmissionController {
         submissionService.storeSubmission(submission);
         logger.info("stored submission {}", submission.getId());
 
+        SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(submission);
+        submissionEnvelope.addHandler(this.getClass());
 
         rabbitMessagingTemplate.convertAndSend(
                 Exchanges.SUBMISSIONS,
                 Topics.EVENT_SUBMISSION_SUBMITTED,
-                new SubmissionEnvelope(submission)
+                submissionEnvelope
         );
 
         logger.info("sent submission {}", submission.getId());

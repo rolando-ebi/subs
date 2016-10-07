@@ -48,11 +48,14 @@ public class EnaAgentSubmissionsProcessor {
 
     @RabbitListener(queues = {Queues.ENA_AGENT})
     public void handleSubmission(SubmissionEnvelope submissionEnvelope) {
-        logger.info("received submission {}",submissionEnvelope.getSubmission().getId());
+
+        logger.info("received submission {}, most recent handler was ",
+                submissionEnvelope.getSubmission().getId(),
+                submissionEnvelope.mostRecentHandler());
 
         processSubmission(submissionEnvelope.getSubmission());
 
-        submissionEnvelope.addHandler(Archive.Ena);
+        submissionEnvelope.addHandler(this.getClass());
 
         logger.info("processed submission {}",submissionEnvelope.getSubmission().getId());
 
