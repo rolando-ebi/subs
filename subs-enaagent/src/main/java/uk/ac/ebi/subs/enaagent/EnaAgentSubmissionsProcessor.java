@@ -53,7 +53,7 @@ public class EnaAgentSubmissionsProcessor {
                 submissionEnvelope.getSubmission().getId(),
                 submissionEnvelope.mostRecentHandler());
 
-        processSubmission(submissionEnvelope.getSubmission());
+        processSubmission(submissionEnvelope);
 
         submissionEnvelope.addHandler(this.getClass());
 
@@ -64,26 +64,26 @@ public class EnaAgentSubmissionsProcessor {
         logger.info("sent submission {}",submissionEnvelope.getSubmission().getId());
     }
 
-    public void processSubmission(Submission submission) {
+    public void processSubmission(SubmissionEnvelope submissionEnvelope) {
 
-        submission.getStudies().stream()
+        submissionEnvelope.getSubmission().getStudies().stream()
                 .filter(s -> s.getArchive() == Archive.Ena)
-                .forEach(s -> processStudy(s, submission));
+                .forEach(s -> processStudy(s, submissionEnvelope));
 
 
-        submission.getAssays().stream()
+        submissionEnvelope.getSubmission().getAssays().stream()
                 .filter(a -> a.getArchive() == Archive.Ena)
-                .forEach(a -> processAssay(a, submission));
+                .forEach(a -> processAssay(a, submissionEnvelope));
 
 
 
-        submission.getAssayData().stream()
+        submissionEnvelope.getSubmission().getAssayData().stream()
                 .filter(ad -> ad.getArchive() == Archive.Ena)
-                .forEach(ad -> processAssayData(ad, submission));
+                .forEach(ad -> processAssayData(ad, submissionEnvelope));
     }
 
 
-    private void processStudy(Study study, Submission submission) {
+    private void processStudy(Study study, SubmissionEnvelope submissionEnvelope) {
 
         if (!study.isAccessioned()) {
             study.setAccession("ENA-STU-" + UUID.randomUUID());
@@ -94,10 +94,18 @@ public class EnaAgentSubmissionsProcessor {
     }
 
 
-    private void processAssay(Assay assay, Submission submission) {
+    private void processAssay(Assay assay, SubmissionEnvelope submissionEnvelope) {
+        Submission submission = submissionEnvelope.getSubmission();
 
         assay.getSampleRef().fillIn(submission.getSamples());
+
+        if (assay.getSampleRef().getReferencedObject() == null){
+            assay.getSampleRef().fillIn(submissionEnvelope.getSupportingSamples());
+        }
+
         assay.getStudyRef().fillIn(submission.getStudies());
+
+
 
         if (!assay.isAccessioned()) {
             assay.setAccession("ENA-EXP-" + UUID.randomUUID());
@@ -107,8 +115,8 @@ public class EnaAgentSubmissionsProcessor {
         assay.setStatus(processedStatusValue);
     }
 
-    private void processAssayData(AssayData assayData, Submission submission) {
-        assayData.getAssayRef().fillIn(submission.getAssays());
+    private void processAssayData(AssayData assayData, SubmissionEnvelope submissionEnvelope) {
+        assayData.getAssayRef().fillIn(submissionEnvelope.getSubmission().getAssays());
 
         if (!assayData.isAccessioned()) {
             assayData.setAccession("ENA-RUN-" + UUID.randomUUID());

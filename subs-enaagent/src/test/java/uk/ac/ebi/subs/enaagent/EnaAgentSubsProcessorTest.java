@@ -34,7 +34,7 @@ public class EnaAgentSubsProcessorTest {
 
     @Test
     public void test(){
-        processor.processSubmission(subEnv.getSubmission());
+        processor.processSubmission(subEnv);
 
         String processedStatus = "processed";
 
