@@ -69,15 +69,11 @@ public class SubmissionControllerIT {
         this.submissionsReceived = new ArrayList<>();
     }
 
+
+
     @After
     public void tearDown() {
-        Pageable pageable = new PageRequest(0,100);
-
-        for (Submission repSub : submissionRepository.findByDomainName(sub.getDomain().getName(),pageable)) {
-            if (sub.getDomain().getName().equals(repSub.getDomain().getName())) {
-                submissionRepository.delete(repSub);
-            }
-        }
+        submissionRepository.deleteAll();
     }
 
 
