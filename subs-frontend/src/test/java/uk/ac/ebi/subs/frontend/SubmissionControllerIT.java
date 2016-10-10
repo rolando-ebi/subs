@@ -54,7 +54,7 @@ public class SubmissionControllerIT {
 
     @Before
     public void setUp() throws Exception {
-        this.submit = new URL("http://localhost:" + this.port + "/api/submit/");
+        this.submit = new URL("http://localhost:" + this.port + "/api/submit");
 
         submissionRepository.deleteAll();
 
@@ -79,11 +79,13 @@ public class SubmissionControllerIT {
 
 
     @Test
-    public void doSubmit() throws URISyntaxException {
+    public void doSubmit() throws URISyntaxException, InterruptedException {
         template.put(submit.toString(), sub);
 
         Page<Submission> subs = submissionRepository.findByDomainName(sub.getDomain().getName(),new PageRequest(0,100));
         assertThat(subs.getTotalElements(), equalTo(1L));
+
+        Thread.sleep(1000);
 
         assertThat(submissionsReceived.size(),equalTo(1));
     }
