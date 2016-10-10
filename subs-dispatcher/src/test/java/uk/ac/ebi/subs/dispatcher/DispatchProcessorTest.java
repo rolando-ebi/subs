@@ -10,15 +10,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.subs.DispatcherApplication;
+import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.Archive;
+import uk.ac.ebi.subs.data.submittable.Assay;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.submittable.Study;
-import uk.ac.ebi.subs.data.submittable.Submission;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.messaging.Topics;
 
 import java.util.Date;
+
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DispatcherApplication.class)
@@ -28,6 +35,7 @@ public class DispatchProcessorTest {
     int messagesToBioSamples = 0;
     int messagesToAe = 0;
 
+    SubmissionEnvelope subEnv;
     Submission sub;
     Sample sample;
     Study enaStudy;
@@ -38,6 +46,9 @@ public class DispatchProcessorTest {
 
     @Autowired
     MessageConverter messageConverter;
+
+    @Autowired
+    DispatchProcessor dispatchProcessor;
 
     @Before
     public void setUp() {
@@ -67,25 +78,29 @@ public class DispatchProcessorTest {
         aeStudy.setArchive(Archive.ArrayExpress);
 
         sub.getStudies().add(aeStudy);
+
+        subEnv = new SubmissionEnvelope(sub);
+        System.out.println(subEnv);
     }
 
     @Test
     public void testTheLoop() throws InterruptedException {
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_SUBMITTED, sub);
+        //TODO these messages are received with a null submission in the envelope
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_SUBMITTED, subEnv);
 
 
         sample.setAccession("SAMPLE1");
 
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, sub);
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_PROCESSED, subEnv);
 
 
         enaStudy.setAccession("ENA1");
 
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, sub);
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_PROCESSED, subEnv);
 
         aeStudy.setAccession("AE1");
 
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, sub);
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_PROCESSED, subEnv);
 
 
         Thread.sleep(500);
@@ -96,10 +111,30 @@ public class DispatchProcessorTest {
     }
 
 
+    @Test
+    public void testSupportingSamples() {
+
+        Submission submission = new Submission();
+        SubmissionEnvelope envelope = new SubmissionEnvelope(submission);
+
+        Assay a = new Assay();
+
+        a.getSampleRef().setArchive(Archive.Usi.name());
+        a.getSampleRef().setAlias("bob");
+        a.getSampleRef().setAlias("S1");
+        submission.getAssays().add(a);
+
+        dispatchProcessor.determineSupportingInformationRequired(envelope);
+
+        assertThat("supporting info requirement identified ", envelope.getSupportingSamplesRequired(), hasSize(1));
+        assertThat("supporting info not filled out yet", envelope.getSupportingSamples(), empty());
+
+
+    }
 
 
     @RabbitListener(queues = Queues.ENA_AGENT)
-    public void handleEna(Submission submission) {
+    public void handleEna(SubmissionEnvelope submissionEnvelope) {
         synchronized (this) {
             this.messagesToEna++;
             System.out.println("ENA!");
@@ -107,7 +142,7 @@ public class DispatchProcessorTest {
     }
 
     @RabbitListener(queues = Queues.BIOSAMPLES_AGENT)
-    public void handleSamples(Submission submission) {
+    public void handleSamples(SubmissionEnvelope submissionEnvelope) {
         synchronized (this) {
             this.messagesToBioSamples++;
             System.out.println("BioSamples!");
@@ -115,7 +150,7 @@ public class DispatchProcessorTest {
     }
 
     @RabbitListener(queues = Queues.AE_AGENT)
-    public void handleAe(Submission submission) {
+    public void handleAe(SubmissionEnvelope submissionEnvelope) {
         synchronized (this) {
             this.messagesToAe++;
             System.out.println("AE!");

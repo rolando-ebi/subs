@@ -15,9 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.subs.FrontendApplication;
-import uk.ac.ebi.subs.data.submittable.Submission;
+import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.messaging.Queues;
-import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
 import java.net.URISyntaxException;
@@ -55,7 +54,9 @@ public class SubmissionControllerIT {
 
     @Before
     public void setUp() throws Exception {
-        this.submit = new URL("http://localhost:" + this.port + "/api/submit/");
+        this.submit = new URL("http://localhost:" + this.port + "/api/submit");
+
+        submissionRepository.deleteAll();
 
         template = new TestRestTemplate(restTemplate);
 
@@ -68,25 +69,23 @@ public class SubmissionControllerIT {
         this.submissionsReceived = new ArrayList<>();
     }
 
+
+
     @After
     public void tearDown() {
-        Pageable pageable = new PageRequest(0,100);
-
-        for (Submission repSub : submissionRepository.findByDomainName(sub.getDomain().getName(),pageable)) {
-            if (sub.getDomain().getName().equals(repSub.getDomain().getName())) {
-                submissionRepository.delete(repSub);
-            }
-        }
+        submissionRepository.deleteAll();
     }
 
 
 
     @Test
-    public void doSubmit() throws URISyntaxException {
+    public void doSubmit() throws URISyntaxException, InterruptedException {
         template.put(submit.toString(), sub);
 
         Page<Submission> subs = submissionRepository.findByDomainName(sub.getDomain().getName(),new PageRequest(0,100));
         assertThat(subs.getTotalElements(), equalTo(1L));
+
+        Thread.sleep(1000);
 
         assertThat(submissionsReceived.size(),equalTo(1));
     }

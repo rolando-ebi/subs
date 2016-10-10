@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.EnaAgentApplication;
@@ -18,6 +20,7 @@ import static org.junit.Assert.*;
 @SpringBootTest(classes = EnaAgentApplication.class)
 public class EnaAgentSubsProcessorTest {
 
+    SubmissionEnvelope subEnv;
     Submission sub;
     Sample sa;
     Study st;
@@ -31,7 +34,7 @@ public class EnaAgentSubsProcessorTest {
 
     @Test
     public void test(){
-        processor.processSubmission(sub);
+        processor.processSubmission(subEnv);
 
         String processedStatus = "processed";
 
@@ -95,6 +98,8 @@ public class EnaAgentSubsProcessorTest {
         sub.getStudies().add(st);
         sub.getAssays().add(as);
         sub.getAssayData().add(ad);
+
+        subEnv = new SubmissionEnvelope(sub);
     }
 
 

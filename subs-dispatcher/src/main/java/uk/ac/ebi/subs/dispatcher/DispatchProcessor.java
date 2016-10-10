@@ -7,12 +7,21 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.Archive;
-import uk.ac.ebi.subs.data.submittable.Submission;
+import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.component.AssayRef;
+import uk.ac.ebi.subs.data.component.SampleRef;
+import uk.ac.ebi.subs.data.submittable.Assay;
+import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.messaging.Topics;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 @Service
@@ -29,11 +38,18 @@ public class DispatchProcessor {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
+    @RabbitListener(queues = Queues.SUBMISSION_DISPATCHER)
+    public void handleSubmissionEvent(SubmissionEnvelope submissionEnvelope) {
+        Submission submission = submissionEnvelope.getSubmission();
 
-    @RabbitListener(queues = {Queues.SUBMISSION_DISPATCHER})
-    public void handleSubmissionEvent(Submission submission) {
+        logger.info("received submission {}, most recent handler was ",
+                submissionEnvelope.getSubmission().getId(),
+                submissionEnvelope.mostRecentHandler());
 
-        logger.info("received submission {}",submission.getId());
+
+        determineSupportingInformationRequired(submissionEnvelope);
+
+
 
         /*
         * this is a deliberately simple implementation for prototyping
@@ -44,8 +60,8 @@ public class DispatchProcessor {
         /**
          * for now, assume that anything with an accession is dealt with
          */
-
-        long sampleCount = submission.getSamples().stream().filter(s -> (!s.isAccessioned())).count();
+        long samplesToFetchCount = submissionEnvelope.getSupportingSamplesRequired().size();
+        long samplesToAccessionCount = submission.getSamples().stream().filter(s -> (!s.isAccessioned())).count();
         int enaCount = 0;
         int arrayExpressCount = 0;
 
@@ -74,7 +90,10 @@ public class DispatchProcessor {
 
         String targetQueue = null;
 
-        if (sampleCount > 0) {
+        if (samplesToFetchCount > 0){
+            targetQueue = Topics.SAMPLES_PROCESSING; //TODO could break this out into a separate topic
+        }
+        if (samplesToAccessionCount > 0) {
             targetQueue = Topics.SAMPLES_PROCESSING;
         } else if (enaCount > 0) {
             targetQueue = Topics.ENA_PROCESSING;
@@ -83,11 +102,41 @@ public class DispatchProcessor {
         }
 
         if (targetQueue != null) {
-            rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,targetQueue, submission);
+            rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,targetQueue, submissionEnvelope);
             logger.info("sent submission {} to {}",submission.getId(),targetQueue);
         }
         else {
             logger.info("completed submission {}",submission.getId());
+        }
+    }
+
+
+    void determineSupportingInformationRequired(SubmissionEnvelope submissionEnvelope){
+        List<Sample> samples = submissionEnvelope.getSubmission().getSamples();
+        List<Assay> assays = submissionEnvelope.getSubmission().getAssays();
+        Set<SampleRef> suppportingSamplesRequired = submissionEnvelope.getSupportingSamplesRequired();
+        List<Sample> supportingSamples = submissionEnvelope.getSupportingSamples();
+
+        for(Assay assay : assays) {
+            // doesn't have a sample ref, e.g. PRIDE data
+            if (assay.getSampleRef() == null) {
+                continue;
+            }
+
+            //is the sample in the submission
+            Sample s = assay.getSampleRef().findMatch(samples);
+
+            if (s == null) {
+                //is the sample already in the supporting information
+                s = assay.getSampleRef().findMatch(supportingSamples);
+            }
+
+            if (s == null) {
+                // sample referenced is not in the supporting information and is not in the submission, need to fetch it
+                suppportingSamplesRequired.add(assay.getSampleRef());
+            }
+
+
         }
     }
 }

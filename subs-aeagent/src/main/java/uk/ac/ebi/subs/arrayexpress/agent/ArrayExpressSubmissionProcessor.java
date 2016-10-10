@@ -9,6 +9,8 @@ import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.subs.arrayexpress.model.ArrayExpressStudy;
 import uk.ac.ebi.subs.arrayexpress.repo.ArrayExpressStudyRepository;
+import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.messaging.Exchanges;
@@ -40,28 +42,32 @@ public class ArrayExpressSubmissionProcessor {
     }
 
     @RabbitListener(queues = {Queues.AE_AGENT})
-    public void handleSubmission(Submission submission) {
+    public void handleSubmission(SubmissionEnvelope submissionEnvelope) {
 
-        logger.info("received submission {}",submission.getId());
+        logger.info("received submission {}, most recent handler was ",
+                submissionEnvelope.getSubmission().getId(),
+                submissionEnvelope.mostRecentHandler());
 
-        processSubmission(submission);
+        processSubmission(submissionEnvelope);
 
-        logger.info("processed submission {}",submission.getId());
+        submissionEnvelope.addHandler(this.getClass());
+        logger.info("processed submission {}",submissionEnvelope.getSubmission().getId());
 
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submission);
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submissionEnvelope);
 
-        logger.info("sent submission {}",submission.getId());
+        logger.info("sent submission {}", submissionEnvelope.getSubmission().getId());
 
     }
 
-    public void processSubmission(Submission submission) {
+    public void processSubmission(SubmissionEnvelope submissionEnvelope) {
 
-        submission.getStudies().stream()
+        submissionEnvelope.getSubmission().getStudies().stream()
                 .filter(s -> s.getArchive() == Archive.ArrayExpress)
-                .forEach(s -> processStudy(s, submission));
+                .forEach(s -> processStudy(s, submissionEnvelope));
     }
 
-    public void processStudy(Study study, Submission submission) {
+    public void processStudy(Study study, SubmissionEnvelope submissionEnvelope) {
+        Submission submission = submissionEnvelope.getSubmission();
 
         if (!study.isAccessioned()) {
             study.setAccession("AE-MTAB-" + UUID.randomUUID());
@@ -73,7 +79,7 @@ public class ArrayExpressSubmissionProcessor {
 
         submission.getAssays().stream()
                 .filter(a -> a.getArchive() == Archive.ArrayExpress && a.getStudyRef().isMatch(study))
-                .forEach(a -> processAssay(a,submission,arrayExpressStudy));
+                .forEach(a -> processAssay(a,submissionEnvelope,arrayExpressStudy));
 
 
         aeStudyRepository.save(arrayExpressStudy);
@@ -90,12 +96,18 @@ public class ArrayExpressSubmissionProcessor {
         }
     }
 
-    public void processAssay(Assay assay, Submission submission,ArrayExpressStudy arrayExpressStudy){
+    public void processAssay(Assay assay, SubmissionEnvelope submissionEnvelope,ArrayExpressStudy arrayExpressStudy){
+        Submission submission = submissionEnvelope.getSubmission();
+
         SampleDataRelationship sdr = new SampleDataRelationship();
         sdr.setAssay(assay);
 
         //find sample
         assay.getSampleRef().fillIn(submission.getSamples());
+
+        if (assay.getSampleRef().getReferencedObject() == null){
+            assay.getSampleRef().fillIn(submissionEnvelope.getSupportingSamples());
+        }
 
         if (assay.getSampleRef().getReferencedObject() == null){
             throw new RuntimeException("No sample found for "+assay.getSampleRef());
