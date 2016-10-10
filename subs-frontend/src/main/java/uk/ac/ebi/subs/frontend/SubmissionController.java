@@ -5,12 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.SubmissionEnvelope;
+import uk.ac.ebi.subs.data.validation.SubmissionValidator;
+import uk.ac.ebi.subs.data.validation.SubmitterValidator;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.repository.SubmissionService;
@@ -21,10 +22,17 @@ public class SubmissionController {
     private static final Logger logger = LoggerFactory.getLogger(SubmissionController.class);
 
     @Autowired
+    SubmissionValidator submissionValidator;
+
+    @Autowired
     SubmissionService submissionService;
 
-
     RabbitMessagingTemplate rabbitMessagingTemplate;
+
+    @InitBinder
+    private void initBinder(WebDataBinder binder) {
+        binder.setValidator(submissionValidator);
+    }
 
     @Autowired
     public SubmissionController(RabbitMessagingTemplate rabbitMessagingTemplate, MessageConverter messageConverter) {
@@ -33,7 +41,7 @@ public class SubmissionController {
     }
 
     @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
-    public void submit(@RequestBody Submission submission) {
+    public void submit(@Validated @RequestBody Submission submission) {
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
         submission.allSubmissionItems().forEach(
