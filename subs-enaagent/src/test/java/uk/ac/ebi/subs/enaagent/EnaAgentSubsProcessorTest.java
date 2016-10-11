@@ -50,7 +50,7 @@ public class EnaAgentSubsProcessorTest {
         assertThat("array study untouched", arrayStudy.getAccession(),nullValue());
         assertThat("array study status is null", arrayStudy.getStatus(),nullValue());
 
-        assertThat("sample reference in assay", as.getSampleRef().getAccession(), equalTo(sa.getAccession()));
+        assertThat("sample reference in assay", as.getSampleUses().get(0).getSampleRef().getAccession(), equalTo(sa.getAccession()));
         assertThat("study reference in assay", as.getStudyRef().getAccession(), equalTo(st.getAccession()));
         assertThat("assay reference in assay data ", ad.getAssayRef().getAccession(), equalTo(as.getAccession()));
 
@@ -77,7 +77,8 @@ public class EnaAgentSubsProcessorTest {
         as = new Assay();
         as.setArchive(Archive.Ena);
         as.setAlias("exp1");
-        as.setSampleRef((SampleRef) sa.asRef());
+        as.getSampleUses().add(new SampleUse((SampleRef) sa.asRef()));
+
         as.setStudyRef((StudyRef) st.asRef());
         as.setDomain(domain);
 

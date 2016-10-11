@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.Archive;
+import uk.ac.ebi.subs.data.component.SampleRef;
+import uk.ac.ebi.subs.data.component.SampleUse;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.enarepo.EnaAssayDataRepository;
 import uk.ac.ebi.subs.enarepo.EnaAssayRepository;
@@ -97,11 +99,13 @@ public class EnaAgentSubmissionsProcessor {
     private void processAssay(Assay assay, SubmissionEnvelope submissionEnvelope) {
         Submission submission = submissionEnvelope.getSubmission();
 
-        assay.getSampleRef().fillIn(submission.getSamples());
-
-        if (assay.getSampleRef().getReferencedObject() == null){
-            assay.getSampleRef().fillIn(submissionEnvelope.getSupportingSamples());
+        for (SampleUse su : assay.getSampleUses()){
+            SampleRef sr = su.getSampleRef();
+            sr.fillIn(submission.getSamples(),submissionEnvelope.getSupportingSamples());
         }
+
+
+
 
         assay.getStudyRef().fillIn(submission.getStudies());
 
