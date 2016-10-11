@@ -142,7 +142,8 @@ public class ApiDocumentation {
                                         fieldWithPath("projects").description("Projects in this submission"),
                                         fieldWithPath("samples").description("Samples in this submission"),
                                         fieldWithPath("sampleGroups").description("Sample Groups in this submission"),
-                                        fieldWithPath("studies").description("Studies in this submission")
+                                        fieldWithPath("studies").description("Studies in this submission"),
+                                        fieldWithPath("protocols").description("Protocols in this submission")
                                 )
                         )
                 );

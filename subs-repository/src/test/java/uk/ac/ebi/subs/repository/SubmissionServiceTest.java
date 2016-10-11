@@ -61,7 +61,7 @@ public class SubmissionServiceTest {
 
         a.setTitle("Test assay");
         a.setArchive(Archive.Ena);
-        a.setSampleRef((SampleRef) sa.asRef());
+        a.getSampleUses().add(new SampleUse( (SampleRef) sa.asRef() ));
         a.setStudyRef((StudyRef) st.asRef());
 
         ad.setTitle("Test assay data");
