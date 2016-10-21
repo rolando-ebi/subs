@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.validation.SubmissionValidator;
-import uk.ac.ebi.subs.data.validation.SubmitterValidator;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.repository.SubmissionService;
+
+import java.util.UUID;
 
 @RestController
 public class SubmissionController {
@@ -49,6 +50,7 @@ public class SubmissionController {
                     if (s.getDomain() == null) {
                         s.setDomain(submission.getDomain());
                     }
+                    s.setId(UUID.randomUUID().toString());
                 }
         );
 
