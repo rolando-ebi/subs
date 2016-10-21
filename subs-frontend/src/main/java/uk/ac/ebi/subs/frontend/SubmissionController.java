@@ -13,7 +13,9 @@ import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.validation.SubmissionValidator;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Topics;
-import uk.ac.ebi.subs.repository.SubmissionService;
+import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.submittable.AssayRepository;
+import uk.ac.ebi.subs.repository.submittable.SampleRepository;
 
 import java.util.UUID;
 
@@ -25,8 +27,9 @@ public class SubmissionController {
     @Autowired
     SubmissionValidator submissionValidator;
 
-    @Autowired
-    SubmissionService submissionService;
+    @Autowired SubmissionRepository submissionRepository;
+    @Autowired SampleRepository sampleRepository;
+    @Autowired AssayRepository assayRepository;
 
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
@@ -54,8 +57,7 @@ public class SubmissionController {
                 }
         );
 
-        submissionService.storeSubmission(submission);
-        logger.info("stored submission {}", submission.getId());
+        saveSubmissionContents(submission);
 
         SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(submission);
         submissionEnvelope.addHandler(this.getClass());
@@ -67,5 +69,17 @@ public class SubmissionController {
         );
 
         logger.info("sent submission {}", submission.getId());
+    }
+
+    private void saveSubmissionContents(Submission submission) {
+
+        sampleRepository.save(submission.getSamples());
+        logger.debug("stored samples {}");
+
+        assayRepository.save(submission.getAssays());
+        logger.debug("stored assays {}");
+
+        submissionRepository.save(submission);
+        logger.info("stored submission {}", submission.getId());
     }
 }
