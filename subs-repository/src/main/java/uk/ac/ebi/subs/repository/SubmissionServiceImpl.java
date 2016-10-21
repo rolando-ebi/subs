@@ -1,14 +1,7 @@
 package uk.ac.ebi.subs.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import uk.ac.ebi.subs.data.Submission;
-
-@Service
-public class SubmissionServiceImpl implements SubmissionService {
-
+public class SubmissionServiceImpl {
+/*
     @Autowired
     SubmissionRepository submissionRepository;
 
@@ -31,4 +24,5 @@ public class SubmissionServiceImpl implements SubmissionService {
     public Page<Submission> fetchSubmissionsByDomainName(Pageable pageable, String domainName) {
         return submissionRepository.findByDomainName(domainName,pageable);
     }
+    */
 }
