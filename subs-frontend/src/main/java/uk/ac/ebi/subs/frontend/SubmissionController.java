@@ -14,6 +14,7 @@ import uk.ac.ebi.subs.data.validation.SubmissionValidator;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.submittable.AssayDataRepository;
 import uk.ac.ebi.subs.repository.submittable.AssayRepository;
 import uk.ac.ebi.subs.repository.submittable.SampleRepository;
 
@@ -30,6 +31,7 @@ public class SubmissionController {
     @Autowired SubmissionRepository submissionRepository;
     @Autowired SampleRepository sampleRepository;
     @Autowired AssayRepository assayRepository;
+    @Autowired AssayDataRepository assayDataRepository;
 
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
@@ -74,12 +76,15 @@ public class SubmissionController {
     private void saveSubmissionContents(Submission submission) {
 
         sampleRepository.save(submission.getSamples());
-        logger.debug("stored samples {}");
+        logger.debug("saved samples {}");
 
         assayRepository.save(submission.getAssays());
-        logger.debug("stored assays {}");
+        logger.debug("saved assays {}");
+
+        assayDataRepository.save(submission.getAssayData());
+        logger.debug("saved assayData {}");
 
         submissionRepository.save(submission);
-        logger.info("stored submission {}", submission.getId());
+        logger.info("saved submission {}", submission.getId());
     }
 }
