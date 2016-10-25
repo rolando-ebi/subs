@@ -16,12 +16,14 @@ public class Helpers {
         sample1.setDescription("Donor 1");
         sample1.setTaxon("Homo sapiens");
         sample1.setTaxonId(9606L);
+        sample1.setId(UUID.randomUUID().toString());
         samples.add(sample1);
 
         Sample sample2 = new Sample();
         sample2.setDescription("Donor 2");
         sample2.setTaxon("Homo sapiens");
         sample2.setTaxonId(9606L);
+        sample2.setId(UUID.randomUUID().toString());
         samples.add(sample2);
 
         return samples;
