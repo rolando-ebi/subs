@@ -50,6 +50,8 @@ public class SubmissionController {
     public void submit(@Validated @RequestBody Submission submission) {
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
+        submission.setId(UUID.randomUUID().toString());
+
         submission.allSubmissionItems().forEach(
                 s -> {
                     if (s.getDomain() == null) {
