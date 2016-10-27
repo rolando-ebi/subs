@@ -12,6 +12,11 @@ import uk.ac.ebi.subs.data.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.EnaAgentApplication;
+import uk.ac.ebi.subs.processing.AgentResults;
+import uk.ac.ebi.subs.processing.Certificate;
+import uk.ac.ebi.subs.processing.ProcessingStatus;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -34,7 +39,8 @@ public class EnaAgentSubsProcessorTest {
 
     @Test
     public void test(){
-        processor.processSubmission(subEnv);
+        AgentResults agentResults = processor.processSubmission(subEnv);
+        List<Certificate> certs = agentResults.getCertificates();
 
         String processedStatus = "processed";
 
@@ -54,7 +60,16 @@ public class EnaAgentSubsProcessorTest {
         assertThat("study reference in assay", as.getStudyRef().getAccession(), equalTo(st.getAccession()));
         assertThat("assay reference in assay data ", ad.getAssayRef().getAccession(), equalTo(as.getAccession()));
 
+        assertThat("correct certs",
+                certs,
+                containsInAnyOrder(
+                        new Certificate(st,Archive.Ena, ProcessingStatus.Processed, st.getAccession()),
+                        new Certificate(as,Archive.Ena, ProcessingStatus.Processed,as.getAccession()),
+                        new Certificate(ad,Archive.Ena, ProcessingStatus.Processed,ad.getAccession())
+                )
 
+        );
+        assertThat("correct submission id",agentResults.getSubmissionUuid(), equalTo(sub.getId()));
     }
 
 
@@ -99,6 +114,7 @@ public class EnaAgentSubsProcessorTest {
         sub.getStudies().add(st);
         sub.getAssays().add(as);
         sub.getAssayData().add(ad);
+        sub.setId("this-is-a-fake-id");
 
         subEnv = new SubmissionEnvelope(sub);
     }
