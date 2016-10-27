@@ -20,6 +20,8 @@ public class ExchangeConfig {
     }
 
 
+    @Bean Queue suppInfoQueue() {return new Queue(Queues.SUBMISSION_SUPPORTING_INFO,true); }
+
     @Bean Queue dispatcherQueue() {
         return new Queue(Queues.SUBMISSION_DISPATCHER,true);
     }
@@ -38,13 +40,26 @@ public class ExchangeConfig {
         return new Queue(Queues.AE_AGENT,true);
     }
 
+    @Bean Queue sampleSuppInfoQueue() {return new Queue(Queues.SUBMISSION_NEEDS_SAMPLE_INFO,true); }
+
+
+
     @Bean
     Binding dispatcherBinding(Queue dispatcherQueue, TopicExchange submissionExchange) {
         return BindingBuilder.bind(dispatcherQueue).to(submissionExchange).with(Queues.SUBMISSION_DISPATCHER_ROUTING_KEY);
     }
 
+    @Bean
+    Binding suppInfoBinding(Queue suppInfoQueue, TopicExchange submissionExchange) {
+        return BindingBuilder.bind(suppInfoQueue).to(submissionExchange).with(Queues.SUBMISSION_SUPPORTING_INFO_ROUTING_KEY);
+    }
+
     @Bean Binding monitorBinding(Queue monitorQueue, TopicExchange submissionExchange){
         return BindingBuilder.bind(monitorQueue).to(submissionExchange).with(Queues.SUBMISSION_MONITOR_ROUTING_KEY);
+    }
+
+    @Bean Binding sampleSuppInfoBinding(Queue sampleSuppInfoQueue, TopicExchange submissionExchange){
+        return BindingBuilder.bind(sampleSuppInfoQueue).to(submissionExchange).with(Queues.SUBMISSION_NEEDS_SAMPLE_INFO_ROUTING_KEY);
     }
 
     @Bean

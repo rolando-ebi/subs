@@ -7,28 +7,45 @@ public class Topics {
     /**
      * The User has submitted a Submission
      */
-    public static final String EVENT_SUBMISSION_SUBMITTED = "usi.submission.flow.submitted";
+    public static final String EVENT_SUBMISSION_SUBMITTED = "usi.submissionenvelope.submitted";
+
+
     /**
-     * An Agent has processed a Submission
+     * The monitor has updated a Submission
      */
-    public static final String EVENT_SUBMISSION_PROCESSED = "usi.submission.flow.processed";
+    public static final String EVENT_SUBMISSION_UPDATED = "usi.submissionenvelope.updated";
 
 
+    /**
+     * An Agent has produced AgentResults
+     */
+    public static final String EVENT_SUBMISSION_AGENT_RESULTS = "usi.agentresults.produced";
+
+
+    /**
+     * Supporting information required from BioSamples
+     */
+    public static final String EVENT_SUBMISSION_NEEDS_SAMPLES = "usi.submissionenvelope.supportinginformation.samples";
+
+    /**
+     * Supporting information provided
+     */
+    public static final String EVENT_SUBISSION_SUPPORTING_INFO_PROVIDED = "usi.submissionenvelope.supportinginformation.provided";
 
     /**
      * Samples processing required
      */
-    public static final String SAMPLES_PROCESSING = "usi.submission.agents.biosamples";
+    public static final String SAMPLES_PROCESSING = "usi.submissionenvelope.dispatched.biosamples";
 
     /**
      * ENA processing required
      */
-    public static final String ENA_PROCESSING = "usi.submission.agents.ena";
+    public static final String ENA_PROCESSING = "usi.submissionenvelope.dispatched.ena";
 
     /**
      * AE processing required
      */
-    public static final String AE_PROCESSING = "usi.submission.agents.arrayexpress";
+    public static final String AE_PROCESSING = "usi.submissionenvelope.dispatched.arrayexpress";
 
 
 }
