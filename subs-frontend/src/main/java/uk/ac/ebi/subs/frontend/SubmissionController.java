@@ -54,9 +54,6 @@ public class SubmissionController {
 
     @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
     public void submit(@Validated @RequestBody Submission submission) {
-
-        logger.info("hai ho ho foe no");
-
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
         submission.setId(UUID.randomUUID().toString());
@@ -73,13 +70,13 @@ public class SubmissionController {
         saveSubmissionContents(submission);
 
         SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(submission);
-        submissionEnvelope.addHandler(this.getClass());
 
         rabbitMessagingTemplate.convertAndSend(
                 Exchanges.SUBMISSIONS,
                 Topics.EVENT_SUBMISSION_SUBMITTED,
                 submissionEnvelope
         );
+
 
         logger.info("sent submission {}", submission.getId());
     }
