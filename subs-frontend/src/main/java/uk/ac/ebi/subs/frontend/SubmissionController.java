@@ -54,11 +54,14 @@ public class SubmissionController {
 
     @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
     public void submit(@Validated @RequestBody Submission submission) {
+
+        logger.info("hai ho ho foe no");
+
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
         submission.setId(UUID.randomUUID().toString());
 
-        submission.allSubmissionItems().forEach(
+        submission.allSubmissionItemsStream().forEach(
                 s -> {
                     if (s.getDomain() == null) {
                         s.setDomain(submission.getDomain());
