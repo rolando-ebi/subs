@@ -64,7 +64,7 @@ public class EnaAgentSubmissionsProcessor {
 
         logger.info("processed submission {}",submissionEnvelope.getSubmission().getId());
 
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, agentResults);
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_AGENT_RESULTS, agentResults);
 
         logger.info("sent submission {}",submissionEnvelope.getSubmission().getId());
     }
