@@ -1,6 +1,7 @@
-package uk.ac.ebi.subs.data;
+package uk.ac.ebi.subs.processing;
 
 
+import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.submittable.Sample;
 
