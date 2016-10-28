@@ -3,6 +3,7 @@ package uk.ac.ebi.subs.processing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AgentResults {
     String submissionUuid;
@@ -41,5 +42,19 @@ public class AgentResults {
                 "submissionUuid='" + submissionUuid + '\'' +
                 ", certificates=" + certificates +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AgentResults that = (AgentResults) o;
+        return Objects.equals(submissionUuid, that.submissionUuid) &&
+                Objects.equals(certificates, that.certificates);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(submissionUuid, certificates);
     }
 }
