@@ -42,6 +42,7 @@ public class ExchangeConfig {
 
     @Bean Queue sampleSuppInfoQueue() {return new Queue(Queues.SUBMISSION_NEEDS_SAMPLE_INFO,true); }
 
+    @Bean Queue suppInfoProvidedQueue() {return new Queue(Queues.SUBMISSION_SUPPORTING_INFO_PROVIDED,true); }
 
 
     @Bean
@@ -52,6 +53,11 @@ public class ExchangeConfig {
     @Bean
     Binding suppInfoBinding(Queue suppInfoQueue, TopicExchange submissionExchange) {
         return BindingBuilder.bind(suppInfoQueue).to(submissionExchange).with(Queues.SUBMISSION_SUPPORTING_INFO_ROUTING_KEY);
+    }
+
+    @Bean
+    Binding suppInfoProvidedBinding(Queue suppInfoProvidedQueue, TopicExchange submissionExchange) {
+        return BindingBuilder.bind(suppInfoProvidedQueue).to(submissionExchange).with(Queues.SUBMISSION_SUPPORTING_INFO_PROVIDED_ROUTING_KEY);
     }
 
     @Bean Binding monitorBinding(Queue monitorQueue, TopicExchange submissionExchange){
