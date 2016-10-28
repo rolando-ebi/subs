@@ -14,15 +14,13 @@ public class Certificate {
     String accession;
 
     public Certificate(Submittable submittable,Archive archive, ProcessingStatus processingStatus){
-        this.uuid = submittable.getAlias(); //TODO make it a UUID
+        this.uuid = submittable.getId();
         this.archive = archive;
         this.processingStatus = processingStatus;
     }
 
     public Certificate(Submittable submittable,Archive archive, ProcessingStatus processingStatus, String accession){
-        this.uuid = submittable.getAlias(); //TODO make it a UUID
-        this.archive = archive;
-        this.processingStatus = processingStatus;
+        this(submittable,archive,processingStatus);
         this.accession = accession;
     }
 
