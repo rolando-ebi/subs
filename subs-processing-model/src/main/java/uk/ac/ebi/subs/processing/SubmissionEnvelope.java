@@ -1,13 +1,17 @@
 package uk.ac.ebi.subs.processing;
 
 
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.submittable.Sample;
 
 import java.util.*;
 
+
 public class SubmissionEnvelope {
+
+    String id;
 
     Submission submission;
 
