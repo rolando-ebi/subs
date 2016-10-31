@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.processing.ProcessingStatus;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.validation.SubmissionValidator;
 import uk.ac.ebi.subs.messaging.Exchanges;
@@ -56,7 +57,10 @@ public class SubmissionController {
     public String submit(@Validated @RequestBody Submission submission) {
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
+        submission.setStatus(ProcessingStatus.Submitted.name());
+
         submission.setId(UUID.randomUUID().toString());
+
 
         submission.allSubmissionItemsStream().forEach(
                 s -> {
