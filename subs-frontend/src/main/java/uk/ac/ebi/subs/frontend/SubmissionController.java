@@ -53,7 +53,7 @@ public class SubmissionController {
     }
 
     @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
-    public Submission submit(@Validated @RequestBody Submission submission) {
+    public String submit(@Validated @RequestBody Submission submission) {
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
         submission.setId(UUID.randomUUID().toString());
@@ -80,7 +80,7 @@ public class SubmissionController {
 
         logger.info("sent submission {}", submission.getId());
 
-        return submission;
+        return submission.getId();
     }
 
     private void saveSubmissionContents(Submission submission) {
