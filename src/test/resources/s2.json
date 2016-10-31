@@ -1,0 +1,83 @@
+{
+  "submitter": {
+    "email": "test2@ebi.ac.uk"
+  },
+  "domain": {
+    "name": "testDomain"
+  },
+  "assays": [
+    {
+      "alias": "donkeySeq2",
+      "archive": "Ena",
+      "studyRef": {
+        "alias": "donkeyWGS1",
+        "archive": "Ena",
+        "domain": "testDomain"
+      },
+      "sampleUses": [
+        {
+          "sampleRef": {
+            "alias": "donOne",
+            "archive": "Usi",
+            "domain": "testDomain"
+          }
+        }
+      ],
+      "attributes": [
+        {
+          "name": "platform",
+          "value": "ILLUMINA"
+        },
+        {
+          "name": "instrument",
+          "value": "Illumina HiSeq 2000"
+        },
+        {
+          "name": "library_name",
+          "value": "LB:L140128A_G03_H140205A_D03: S2"
+        },
+        {
+          "name": "library_strategy",
+          "value": "WGS"
+        },
+        {
+          "name": "library_source",
+          "value": "GENOMIC"
+        },
+        {
+          "name": "library_selection",
+          "value": "RANDOM"
+        },
+        {
+          "name": "library_layout",
+          "value": "PAIRED"
+        }
+      ]
+    }
+  ],
+  "assayData": [
+    {
+      "alias": "donkeySeq2Run1",
+      "archive": "Ena",
+      "assayRef": {
+        "alias": "donkeySeq2",
+        "archive": "Ena",
+        "domain": "testDomain"
+      },
+      "files": [
+        {
+          "name": "d01564959332_F.fastq.gz",
+          "checksum": "cb5f54d86e3a984c65a10ff1ebda67f7",
+          "label": "F1",
+          "type": "fastq"
+        },
+        {
+          "name": "d01564959332_R.fastq.gz",
+          "checksum": "cb5f54d86e3a984c65a10ff1ebda67f7",
+          "label": "R2",
+          "type": "fastq"
+        }
+      ]
+    }
+  ]
+}

@@ -77,11 +77,15 @@
         "archive": "Ena",
         "domain": "testDomain"
       },
-      "sampleRef": {
-        "alias": "donOne",
-        "archive": "Usi",
-        "domain": "testDomain"
-      },
+      "sampleUses": [
+        {
+          "sampleRef": {
+            "alias": "donOne",
+            "archive": "Usi",
+            "domain": "testDomain"
+          }
+        }
+      ],
       "attributes": [
         {
           "name": "platform",
@@ -121,11 +125,6 @@
       "assayRef": {
         "alias": "donkeySeq1",
         "archive": "Ena",
-        "domain": "testDomain"
-      },
-      "sampleRef": {
-        "alias": "donOne",
-        "archive": "Usi",
         "domain": "testDomain"
       },
       "files": [
