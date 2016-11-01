@@ -53,8 +53,8 @@ public class SubmissionController {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
-    public void submit(@Validated @RequestBody Submission submission) {
+    @RequestMapping(value = "/api/submit", method = RequestMethod.POST)
+    public String submit(@Validated @RequestBody Submission submission) {
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
         submission.setStatus(ProcessingStatus.Submitted.name());
@@ -83,6 +83,8 @@ public class SubmissionController {
 
 
         logger.info("sent submission {}", submission.getId());
+
+        return submission.getId();
     }
 
     private void saveSubmissionContents(Submission submission) {
