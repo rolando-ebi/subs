@@ -14,7 +14,6 @@ import uk.ac.ebi.subs.data.validation.SubmissionValidator;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
-import uk.ac.ebi.subs.repository.submittable.*;
 
 import java.util.UUID;
 
@@ -26,18 +25,8 @@ public class SubmissionController {
     @Autowired
     SubmissionValidator submissionValidator;
 
-    @Autowired SubmissionRepository submissionRepository;
-    @Autowired AnalysisRepository analysisRepository;
-    @Autowired AssayRepository assayRepository;
-    @Autowired AssayDataRepository assayDataRepository;
-    @Autowired EgaDacRepository egaDacRepository;
-    @Autowired EgaDacPolicyRepository egaDacPolicyRepository;
-    @Autowired EgaDatasetRepository egaDatasetRepository;
-    @Autowired ProjectRepository projectRepository;
-    @Autowired ProtocolRepository protocolRepository;
-    @Autowired SampleRepository sampleRepository;
-    @Autowired SampleGroupRepository sampleGroupRepository;
-    @Autowired StudyRepository studyRepository;
+    @Autowired
+    SubmissionRepository submissionRepository;
 
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
@@ -67,7 +56,8 @@ public class SubmissionController {
                 }
         );
 
-        saveSubmissionContents(submission);
+        submissionRepository.save(submission);
+        logger.info("saved submission {}", submission.getId());
 
         SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(submission);
         submissionEnvelope.addHandler(this.getClass());
@@ -81,41 +71,4 @@ public class SubmissionController {
         logger.info("sent submission {}", submission.getId());
     }
 
-    private void saveSubmissionContents(Submission submission) {
-        analysisRepository.save(submission.getAnalyses());
-        logger.debug("saved analyses {}");
-
-        assayRepository.save(submission.getAssays());
-        logger.debug("saved assays {}");
-
-        assayDataRepository.save(submission.getAssayData());
-        logger.debug("saved assayData {}");
-
-        egaDacRepository.save(submission.getEgaDacs());
-        logger.debug("saved egaDacs {}");
-
-        egaDacPolicyRepository.save(submission.getEgaDacPolicies());
-        logger.debug("saved egaDacPolicies {}");
-
-        egaDatasetRepository.save(submission.getEgaDatasets());
-        logger.debug("saved egaDatasets {}");
-
-        projectRepository.save(submission.getProjects());
-        logger.debug("saved projects {}");
-
-        protocolRepository.save(submission.getProtocols());
-        logger.debug("saved protocols {}");
-
-        sampleRepository.save(submission.getSamples());
-        logger.debug("saved samples {}");
-
-        sampleGroupRepository.save(submission.getSampleGroups());
-        logger.debug("saved sampleGroups {}");
-
-        studyRepository.save(submission.getStudies());
-        logger.debug("saved studies {}");
-
-        submissionRepository.save(submission);
-        logger.info("saved submission {}", submission.getId());
-    }
 }
