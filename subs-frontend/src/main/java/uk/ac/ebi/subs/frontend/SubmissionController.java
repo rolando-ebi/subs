@@ -54,7 +54,7 @@ public class SubmissionController {
     }
 
     @RequestMapping(value = "/api/submit", method = RequestMethod.POST)
-    public String submit(@Validated @RequestBody Submission submission) {
+    public Submission submit(@Validated @RequestBody Submission submission) {
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
         submission.setStatus(ProcessingStatus.Submitted.name());
@@ -84,7 +84,7 @@ public class SubmissionController {
 
         logger.info("sent submission {}", submission.getId());
 
-        return submission.getId();
+        return submission;
     }
 
     private void saveSubmissionContents(Submission submission) {

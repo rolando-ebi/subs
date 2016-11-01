@@ -37,7 +37,6 @@ public class SubmissionControllerIT {
 
     private URL submit;
 
-    private TestRestTemplate template;
     private List<Submission> submissionsReceived;
 
     @RabbitListener(queues = Queues.SUBMISSION_DISPATCHER)
@@ -99,8 +98,6 @@ public class SubmissionControllerIT {
 
         deleteAllRepos();
 
-        template = new TestRestTemplate(restTemplate);
-
         sub = new Submission();
         sub.getDomain().setName("integrationTestExampleDomain."+UUID.randomUUID().toString());
         sub.getSubmitter().setEmail("test@example.ac.uk");
@@ -119,7 +116,7 @@ public class SubmissionControllerIT {
 
     @Test
     public void doSubmit() throws URISyntaxException, InterruptedException {
-        template.put(submit.toString(), sub);
+        Submission receivedSub = restTemplate.postForObject(submit.toString(), sub, sub.getClass());
 
         Page<Submission> subs = submissionRepository.findAll(new PageRequest(0,100));
         assertThat(subs.getTotalElements(), equalTo(1L));
