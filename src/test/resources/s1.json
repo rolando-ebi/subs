@@ -21,7 +21,7 @@
   "samples": [
     {
       "alias": "donOne",
-      "archive": "Usi",
+      "archive": "BioSamples",
       "title": "USI Donkey One",
       "taxonId": 9793,
       "taxon": "Equus asinus",
@@ -38,7 +38,7 @@
     },
     {
       "alias": "donTwo",
-      "archive": "Usi",
+      "archive": "BioSamples",
       "title": "USI Donkey Two",
       "taxonId": 9793,
       "taxon": "Equus asinus",
