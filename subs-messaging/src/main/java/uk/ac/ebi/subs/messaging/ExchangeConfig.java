@@ -32,6 +32,8 @@ public class ExchangeConfig {
         return new Queue(Queues.BIOSAMPLES_AGENT,true);
     }
 
+    @Bean Queue monitorSubStatusQueue() {return new Queue(Queues.SUBMISSION_MONITOR_STATUS_UPDATE);}
+
     @Bean Queue enaQueue() {
         return new Queue(Queues.ENA_AGENT,true);
     }
@@ -62,6 +64,10 @@ public class ExchangeConfig {
 
     @Bean Binding monitorBinding(Queue monitorQueue, TopicExchange submissionExchange){
         return BindingBuilder.bind(monitorQueue).to(submissionExchange).with(Queues.SUBMISSION_MONITOR_ROUTING_KEY);
+    }
+
+    @Bean Binding monitorStatusUpdateBinding(Queue monitorSubStatusQueue, TopicExchange submissionExchange){
+        return BindingBuilder.bind(monitorSubStatusQueue).to(submissionExchange).with(Queues.SUBMISSION_MONITOR_STATUS_UPDATE_ROUTING_KEY);
     }
 
     @Bean Binding sampleSuppInfoBinding(Queue sampleSuppInfoQueue, TopicExchange submissionExchange){

@@ -24,6 +24,7 @@ public class Certificate {
         this.accession = accession;
     }
 
+
     public Certificate() {
     }
 
