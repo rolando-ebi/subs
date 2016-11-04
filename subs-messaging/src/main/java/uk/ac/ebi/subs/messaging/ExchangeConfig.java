@@ -137,27 +137,26 @@ public class ExchangeConfig {
     }
 
     /**
-     * Queue for updated sample envelopes to be used by ENA
+     * Queue for updated samples envelopes to be used by ENA
      * @return
      */
     @Bean Queue enaSamplesUpdated() {return new Queue(Queues.ENA_SAMPLES_UPDATED,true);}
 
     @Bean
     Binding enaSamplesUpdatedBinding(Queue enaSamplesUpdated, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(enaSamplesUpdated).to(submissionExchange).with(Queues.ENA_SAMPLES_UPDATED);
+        return BindingBuilder.bind(enaSamplesUpdated).to(submissionExchange).with(Queues.SAMPLES_UPDATED_ROUTING_KEY);
     }
 
 
     /**
      * Queue for updated sample envelopes to be used by AE
      * @return
-     *
      */
     @Bean Queue aeSamplesUpdated() {return new Queue(Queues.AE_SAMPLES_UPDATED,true);}
 
     @Bean
     Binding aeSamplesUpdatedBinding(Queue aeSamplesUpdated, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(aeSamplesUpdated).to(submissionExchange).with(Queues.AE_SAMPLES_UPDATED);
+        return BindingBuilder.bind(aeSamplesUpdated).to(submissionExchange).with(Queues.SAMPLES_UPDATED_ROUTING_KEY);
     }
 
 
