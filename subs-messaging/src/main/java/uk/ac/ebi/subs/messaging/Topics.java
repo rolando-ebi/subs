@@ -4,6 +4,8 @@ package uk.ac.ebi.subs.messaging;
  * Created by davidr on 25/08/2016.
  */
 public class Topics {
+
+
     /**
      * The User has submitted a Submission
      */
@@ -33,6 +35,11 @@ public class Topics {
     public static final String EVENT_SUBMISSION_NEEDS_SAMPLES = "usi.submissionenvelope.supportinginformation.samples";
 
     /**
+     * Samples have been updated in BioSamples
+     */
+    public static final String EVENT_SAMPLES_UPDATED = "usi.updatedsamplesenvelope.samplesupdated";
+
+    /**
      * Supporting information provided
      */
     public static final String EVENT_SUBISSION_SUPPORTING_INFO_PROVIDED = "usi.submissionenvelope.supportinginformation.provided";
@@ -51,6 +58,7 @@ public class Topics {
      * AE processing required
      */
     public static final String AE_PROCESSING = "usi.submissionenvelope.dispatched.arrayexpress";
+
 
 
 }
