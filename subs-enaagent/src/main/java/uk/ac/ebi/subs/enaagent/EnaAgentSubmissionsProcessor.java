@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.processing.SubmissionEnvelope;
+import uk.ac.ebi.subs.enarepo.EnaSampleRepository;
+import uk.ac.ebi.subs.processing.*;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.component.SampleUse;
@@ -19,9 +20,6 @@ import uk.ac.ebi.subs.enarepo.EnaStudyRepository;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.messaging.Topics;
-import uk.ac.ebi.subs.processing.AgentResults;
-import uk.ac.ebi.subs.processing.Certificate;
-import uk.ac.ebi.subs.processing.ProcessingStatus;
 
 import java.util.*;
 
@@ -42,12 +40,33 @@ public class EnaAgentSubmissionsProcessor {
     @Autowired
     EnaAssayDataRepository enaAssayDataRepository;
 
+    @Autowired
+    EnaSampleRepository enaSampleRepository;
+
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
     @Autowired
     public EnaAgentSubmissionsProcessor(RabbitMessagingTemplate rabbitMessagingTemplate, MessageConverter messageConverter) {
         this.rabbitMessagingTemplate = rabbitMessagingTemplate;
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
+    }
+
+    @RabbitListener(queues = Queues.ENA_SAMPLES_UPDATED)
+    public void handleSampleUpdate(UpdatedSamplesEnvelope updatedSamplesEnvelope){
+        logger.info("received updated samples for submission {}",updatedSamplesEnvelope.getSubmissionId());
+
+        updatedSamplesEnvelope.getUpdatedSamples().forEach( s ->{
+            if (s.getAccession() == null) return;
+
+            Sample knownSample = enaSampleRepository.findByAccession(s.getAccession());
+
+            if (knownSample == null) return;
+
+            enaSampleRepository.save(s);
+            logger.debug("updates sample {} using submission {}",s.getAccession(),updatedSamplesEnvelope.getSubmissionId());
+        });
+
+        logger.info("finished updating samples for submission {}", updatedSamplesEnvelope.getSubmissionId());
     }
 
 
@@ -107,6 +126,8 @@ public class EnaAgentSubmissionsProcessor {
         for (SampleUse su : assay.getSampleUses()){
             SampleRef sr = su.getSampleRef();
             sr.fillIn(submission.getSamples(),submissionEnvelope.getSupportingSamples());
+
+            if (sr.getReferencedObject() != null) enaSampleRepository.save(sr.getReferencedObject());
         }
 
 
