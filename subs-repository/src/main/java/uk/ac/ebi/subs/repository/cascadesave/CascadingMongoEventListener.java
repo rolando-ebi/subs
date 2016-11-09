@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import uk.ac.ebi.subs.data.annotation.CascadeSave;
-import uk.ac.ebi.subs.repository.submittable.AbstractSubsEntityRepository;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -32,9 +31,6 @@ public class CascadingMongoEventListener extends AbstractMongoEventListener {
 
     @Autowired
     MongoOperations mongoOperations;
-
-    @Autowired
-    AbstractSubsEntityRepository absRepository;
 
     @Override
     public void onBeforeConvert(BeforeConvertEvent event) {
@@ -64,7 +60,7 @@ public class CascadingMongoEventListener extends AbstractMongoEventListener {
                 }
 
                 if (list != null) {
-                    absRepository.save(list);
+                    list.forEach(mongoOperations::save);
                 } else {
                     mongoOperations.save(field.get(event.getSource()));
                 }
