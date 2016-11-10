@@ -14,14 +14,12 @@ import org.springframework.util.ReflectionUtils;
 import uk.ac.ebi.subs.data.annotation.CascadeSave;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * What is happening?
  * When object MongoTemplate#save method is called, before the object is actually saved it's being converted into a DBObject from MongoDB API.
  * CascadingMongoEventListener, implemented below, provides a hook that catches the object before its converted and:
  *  - Goes through all its fields to check if there are fields annotated with @DBRef and @CascadeSave at once;
- *  - When the field is found checks if its a list and determines the object class to save accordingly;
  *  - Checks if the @Id annotation is present in the object.
  *  - Saves the child object.
  **/
@@ -40,17 +38,8 @@ public class CascadingMongoEventListener extends AbstractMongoEventListener {
             ReflectionUtils.makeAccessible(field);
 
             if (field.isAnnotationPresent(DBRef.class) && field.isAnnotationPresent(CascadeSave.class)) {
-                Class<?> clazz;
-                List list = null;
 
-                if (field.get(event.getSource()) instanceof List) {
-                    list = (List) field.get(event.getSource());
-                    if (list.isEmpty())
-                        return;
-                    clazz = list.get(0).getClass();
-                } else {
-                    clazz = field.get(event.getSource()).getClass();
-                }
+                Class<?> clazz = field.getAnnotation(CascadeSave.class).classToSave();
 
                 DbRefFieldCallback callback = new DbRefFieldCallback();
                 ReflectionUtils.doWithFields(clazz, callback);
@@ -59,8 +48,9 @@ public class CascadingMongoEventListener extends AbstractMongoEventListener {
                     throw new MappingException("Cannot perform cascade save on child object without id set");
                 }
 
-                if (list != null) {
-                    list.forEach(mongoOperations::save);
+                Iterable iterable = field.get(event.getSource()) instanceof Iterable ? (Iterable) field.get(event.getSource()) : null;
+                if (iterable != null) {
+                    iterable.forEach(mongoOperations::save);
                 } else {
                     mongoOperations.save(field.get(event.getSource()));
                 }
