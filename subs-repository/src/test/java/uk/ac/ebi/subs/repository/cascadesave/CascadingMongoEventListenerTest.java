@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.submittable.Assay;
 import uk.ac.ebi.subs.data.submittable.Sample;
-import uk.ac.ebi.subs.repository.submittable.AbstractSubsEntityRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +21,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = CascadingMongoEventListener.class)
-@EnableMongoRepositories(basePackageClasses = AbstractSubsEntityRepository.class)
+@EnableMongoRepositories(basePackages = "uk.ac.ebi.subs.repository.submittable")
 @EnableAutoConfiguration
 public class CascadingMongoEventListenerTest {
 
