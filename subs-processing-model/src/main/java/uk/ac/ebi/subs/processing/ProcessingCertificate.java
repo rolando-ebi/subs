@@ -4,28 +4,27 @@ package uk.ac.ebi.subs.processing;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
-import java.util.Date;
 import java.util.Objects;
 
-public class Certificate {
-    String uuid;
+public class ProcessingCertificate {
+    String submittableId;
     Archive archive;
     ProcessingStatus processingStatus;
     String accession;
 
-    public Certificate(Submittable submittable,Archive archive, ProcessingStatus processingStatus){
-        this.uuid = submittable.getId();
+    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatus processingStatus){
+        this.submittableId = submittable.getId();
         this.archive = archive;
         this.processingStatus = processingStatus;
     }
 
-    public Certificate(Submittable submittable,Archive archive, ProcessingStatus processingStatus, String accession){
+    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatus processingStatus, String accession){
         this(submittable,archive,processingStatus);
         this.accession = accession;
     }
 
 
-    public Certificate() {
+    public ProcessingCertificate() {
     }
 
     public String getAccession() {
@@ -36,12 +35,12 @@ public class Certificate {
         this.accession = accession;
     }
 
-    public String getUUID() {
-        return uuid;
+    public String getSubmittableId() {
+        return submittableId;
     }
 
-    public void setUUID(String UUID) {
-        this.uuid = UUID;
+    public void setSubmittableId(String UUID) {
+        this.submittableId = UUID;
     }
 
     public Archive getArchive() {
@@ -62,8 +61,8 @@ public class Certificate {
 
     @Override
     public String toString() {
-        return "Certificate{" +
-                "uuid='" + uuid + '\'' +
+        return "ProcessingCertificate{" +
+                "submittableId='" + submittableId + '\'' +
                 ", archive=" + archive +
                 ", processingStatus=" + processingStatus +
                 ", accession='" + accession + '\'' +
@@ -74,8 +73,8 @@ public class Certificate {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Certificate that = (Certificate) o;
-        return Objects.equals(uuid, that.uuid) &&
+        ProcessingCertificate that = (ProcessingCertificate) o;
+        return Objects.equals(submittableId, that.submittableId) &&
                 archive == that.archive &&
                 processingStatus == that.processingStatus &&
                 Objects.equals(accession, that.accession);
@@ -83,6 +82,6 @@ public class Certificate {
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, archive, processingStatus, accession);
+        return Objects.hash(submittableId, archive, processingStatus, accession);
     }
 }

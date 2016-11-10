@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.processing.ProcessingCertificate;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.EnaAgentApplication;
-import uk.ac.ebi.subs.processing.AgentResults;
-import uk.ac.ebi.subs.processing.Certificate;
+import uk.ac.ebi.subs.processing.ProcessingCertificateEnvelope;
 import uk.ac.ebi.subs.processing.ProcessingStatus;
 
 import java.util.List;
@@ -39,8 +39,8 @@ public class EnaAgentSubsProcessorTest {
 
     @Test
     public void test(){
-        AgentResults agentResults = processor.processSubmission(subEnv);
-        List<Certificate> certs = agentResults.getCertificates();
+        ProcessingCertificateEnvelope processingCertificateEnvelope = processor.processSubmission(subEnv);
+        List<ProcessingCertificate> certs = processingCertificateEnvelope.getProcessingCertificates();
 
         String processedStatus = "processed";
 
@@ -63,13 +63,13 @@ public class EnaAgentSubsProcessorTest {
         assertThat("correct certs",
                 certs,
                 containsInAnyOrder(
-                        new Certificate(st,Archive.Ena, ProcessingStatus.Processed, st.getAccession()),
-                        new Certificate(as,Archive.Ena, ProcessingStatus.Processed,as.getAccession()),
-                        new Certificate(ad,Archive.Ena, ProcessingStatus.Processed,ad.getAccession())
+                        new ProcessingCertificate(st,Archive.Ena, ProcessingStatus.Processed, st.getAccession()),
+                        new ProcessingCertificate(as,Archive.Ena, ProcessingStatus.Processed,as.getAccession()),
+                        new ProcessingCertificate(ad,Archive.Ena, ProcessingStatus.Processed,ad.getAccession())
                 )
 
         );
-        assertThat("correct submission id",agentResults.getSubmissionUuid(), equalTo(sub.getId()));
+        assertThat("correct submission id", processingCertificateEnvelope.getSubmissionId(), equalTo(sub.getId()));
     }
 
 
