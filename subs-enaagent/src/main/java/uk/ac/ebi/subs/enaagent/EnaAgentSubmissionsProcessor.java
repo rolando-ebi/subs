@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.SubmissionEnvelope;
+import uk.ac.ebi.subs.enarepo.EnaSampleRepository;
+import uk.ac.ebi.subs.processing.*;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.component.SampleUse;
@@ -39,6 +40,9 @@ public class EnaAgentSubmissionsProcessor {
     @Autowired
     EnaAssayDataRepository enaAssayDataRepository;
 
+    @Autowired
+    EnaSampleRepository enaSampleRepository;
+
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
     @Autowired
@@ -47,45 +51,63 @@ public class EnaAgentSubmissionsProcessor {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
+    @RabbitListener(queues = Queues.ENA_SAMPLES_UPDATED)
+    public void handleSampleUpdate(UpdatedSamplesEnvelope updatedSamplesEnvelope){
+        logger.info("received updated samples for submission {}",updatedSamplesEnvelope.getSubmissionId());
+
+        updatedSamplesEnvelope.getUpdatedSamples().forEach( s ->{
+            if (s.getAccession() == null) return;
+
+            Sample knownSample = enaSampleRepository.findByAccession(s.getAccession());
+
+            if (knownSample == null) return;
+
+            enaSampleRepository.save(s);
+            logger.debug("updates sample {} using submission {}",s.getAccession(),updatedSamplesEnvelope.getSubmissionId());
+        });
+
+        logger.info("finished updating samples for submission {}", updatedSamplesEnvelope.getSubmissionId());
+    }
+
 
     @RabbitListener(queues = {Queues.ENA_AGENT})
     public void handleSubmission(SubmissionEnvelope submissionEnvelope) {
-
         logger.info("received submission {}, most recent handler was ",
-                submissionEnvelope.getSubmission().getId(),
-                submissionEnvelope.mostRecentHandler());
+                submissionEnvelope.getSubmission().getId());
 
-        processSubmission(submissionEnvelope);
-
-        submissionEnvelope.addHandler(this.getClass());
+        ProcessingCertificateEnvelope processingCertificateEnvelope = processSubmission(submissionEnvelope);
 
         logger.info("processed submission {}",submissionEnvelope.getSubmission().getId());
 
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submissionEnvelope);
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_AGENT_RESULTS, processingCertificateEnvelope);
 
         logger.info("sent submission {}",submissionEnvelope.getSubmission().getId());
     }
 
-    public void processSubmission(SubmissionEnvelope submissionEnvelope) {
+    public ProcessingCertificateEnvelope processSubmission(SubmissionEnvelope submissionEnvelope) {
+
+        List<ProcessingCertificate> certs = new ArrayList<>();
 
         submissionEnvelope.getSubmission().getStudies().stream()
                 .filter(s -> s.getArchive() == Archive.Ena)
-                .forEach(s -> processStudy(s, submissionEnvelope));
+                .forEach(s -> certs.add(processStudy(s, submissionEnvelope)));
 
 
         submissionEnvelope.getSubmission().getAssays().stream()
                 .filter(a -> a.getArchive() == Archive.Ena)
-                .forEach(a -> processAssay(a, submissionEnvelope));
+                .forEach(a -> certs.add(processAssay(a, submissionEnvelope)));
 
 
 
         submissionEnvelope.getSubmission().getAssayData().stream()
                 .filter(ad -> ad.getArchive() == Archive.Ena)
-                .forEach(ad -> processAssayData(ad, submissionEnvelope));
+                .forEach(ad -> certs.add(processAssayData(ad, submissionEnvelope)));
+
+        return new ProcessingCertificateEnvelope(submissionEnvelope.getSubmission().getId(),certs);
     }
 
 
-    private void processStudy(Study study, SubmissionEnvelope submissionEnvelope) {
+    private ProcessingCertificate processStudy(Study study, SubmissionEnvelope submissionEnvelope) {
 
         if (!study.isAccessioned()) {
             study.setAccession("ENA-STU-" + UUID.randomUUID());
@@ -93,15 +115,19 @@ public class EnaAgentSubmissionsProcessor {
 
         enaStudyRepository.save(study);
         study.setStatus(processedStatusValue);
+
+        return new ProcessingCertificate(study,Archive.Ena, ProcessingStatus.Processed, study.getAccession());
     }
 
 
-    private void processAssay(Assay assay, SubmissionEnvelope submissionEnvelope) {
+    private ProcessingCertificate processAssay(Assay assay, SubmissionEnvelope submissionEnvelope) {
         Submission submission = submissionEnvelope.getSubmission();
 
         for (SampleUse su : assay.getSampleUses()){
             SampleRef sr = su.getSampleRef();
             sr.fillIn(submission.getSamples(),submissionEnvelope.getSupportingSamples());
+
+            if (sr.getReferencedObject() != null) enaSampleRepository.save(sr.getReferencedObject());
         }
 
 
@@ -117,9 +143,11 @@ public class EnaAgentSubmissionsProcessor {
 
         enaAssayRepository.save(assay);
         assay.setStatus(processedStatusValue);
+
+        return new ProcessingCertificate(assay,Archive.Ena, ProcessingStatus.Processed, assay.getAccession());
     }
 
-    private void processAssayData(AssayData assayData, SubmissionEnvelope submissionEnvelope) {
+    private ProcessingCertificate processAssayData(AssayData assayData, SubmissionEnvelope submissionEnvelope) {
         assayData.getAssayRef().fillIn(submissionEnvelope.getSubmission().getAssays());
 
         if (!assayData.isAccessioned()) {
@@ -129,5 +157,7 @@ public class EnaAgentSubmissionsProcessor {
         enaAssayDataRepository.save(assayData);
 
         assayData.setStatus(processedStatusValue);
+
+        return new ProcessingCertificate(assayData,Archive.Ena, ProcessingStatus.Processed, assayData.getAccession());
     }
 }

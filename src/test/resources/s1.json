@@ -21,7 +21,7 @@
   "samples": [
     {
       "alias": "donOne",
-      "archive": "Usi",
+      "archive": "BioSamples",
       "title": "USI Donkey One",
       "taxonId": 9793,
       "taxon": "Equus asinus",
@@ -38,7 +38,7 @@
     },
     {
       "alias": "donTwo",
-      "archive": "Usi",
+      "archive": "BioSamples",
       "title": "USI Donkey Two",
       "taxonId": 9793,
       "taxon": "Equus asinus",
@@ -77,11 +77,15 @@
         "archive": "Ena",
         "domain": "testDomain"
       },
-      "sampleRef": {
-        "alias": "donOne",
-        "archive": "Usi",
-        "domain": "testDomain"
-      },
+      "sampleUses": [
+        {
+          "sampleRef": {
+            "alias": "donOne",
+            "archive": "Usi",
+            "domain": "testDomain"
+          }
+        }
+      ],
       "attributes": [
         {
           "name": "platform",
@@ -121,11 +125,6 @@
       "assayRef": {
         "alias": "donkeySeq1",
         "archive": "Ena",
-        "domain": "testDomain"
-      },
-      "sampleRef": {
-        "alias": "donOne",
-        "archive": "Usi",
         "domain": "testDomain"
       },
       "files": [

@@ -8,13 +8,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.ArrayExpressAgentApplication;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.SubmissionEnvelope;
+import uk.ac.ebi.subs.processing.ProcessingCertificate;
+import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
+import uk.ac.ebi.subs.processing.ProcessingStatus;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,7 +37,7 @@ public class AeAgentSubsProcessorTest {
 
     @Test
     public void test(){
-        processor.processSubmission(subEnv);
+        List<ProcessingCertificate> certs = processor.processSubmission(subEnv);
 
         String processedStatus = "processed";
 
@@ -51,6 +53,16 @@ public class AeAgentSubsProcessorTest {
         assertThat("ena study untouched", enaStudy.getAccession(),nullValue());
         assertThat("ena study status is null", enaStudy.getStatus(),nullValue());
 
+       assertThat("correct certs",
+                certs,
+                containsInAnyOrder(
+                        new ProcessingCertificate(st,Archive.ArrayExpress, ProcessingStatus.Curation, st.getAccession()),
+                        new ProcessingCertificate(as,Archive.ArrayExpress, ProcessingStatus.Curation),
+                        new ProcessingCertificate(ad,Archive.ArrayExpress, ProcessingStatus.Curation)
+                )
+
+                );
+
     }
 
     @Before
@@ -61,7 +73,7 @@ public class AeAgentSubsProcessorTest {
         sa = new Sample();
         sa.setAlias("bob");
         sa.setAccession("S1");
-        sa.setArchive(Archive.Usi);
+        sa.setArchive(Archive.BioSamples);
         sa.setDomain(domain);
 
         st = new Study();

@@ -1,16 +1,19 @@
-package uk.ac.ebi.subs.data;
+package uk.ac.ebi.subs.processing;
 
 
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.submittable.Sample;
 
 import java.util.*;
 
+
 public class SubmissionEnvelope {
 
-    Submission submission;
+    String id;
 
-    List<String> handlerHistory = new ArrayList<>();
+    Submission submission;
 
     Set<SampleRef> supportingSamplesRequired = new HashSet<>();
     List<Sample> supportingSamples = new ArrayList<>();
@@ -23,18 +26,6 @@ public class SubmissionEnvelope {
         this.submission = submission;
     }
 
-    public String mostRecentHandler(){
-        if (handlerHistory == null || handlerHistory.isEmpty()){
-            return null;
-        }
-        else {
-            return handlerHistory.get(handlerHistory.size() - 1);
-        }
-    }
-
-    public void addHandler(Class handlerClass){
-        handlerHistory.add(handlerClass.toString());
-    }
 
     public Submission getSubmission() {
         return submission;
@@ -42,14 +33,6 @@ public class SubmissionEnvelope {
 
     public void setSubmission(Submission submission) {
         this.submission = submission;
-    }
-
-    public List<String> getHandlerHistory() {
-        return handlerHistory;
-    }
-
-    public void setHandlerHistory(List<String> handlerHistory) {
-        this.handlerHistory = handlerHistory;
     }
 
     public Set<SampleRef> getSupportingSamplesRequired() {

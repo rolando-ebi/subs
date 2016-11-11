@@ -11,13 +11,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.subs.FrontendApplication;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.submittable.*;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -35,35 +37,69 @@ public class SubmissionControllerIT {
 
     private URL submit;
 
-    private TestRestTemplate template;
     private List<Submission> submissionsReceived;
 
     @RabbitListener(queues = Queues.SUBMISSION_DISPATCHER)
-    public void handleSampleCreation(Submission submission) {
-        System.out.println("Received a newly created submission: accession = " + submission.getId());
-        this.submissionsReceived.add(submission);
+    public void listenForSubmission(SubmissionEnvelope submissionEnvelope) {
+        System.out.println("Received a newly created submission: accession = " + submissionEnvelope.getSubmission().getId());
+        this.submissionsReceived.add(submissionEnvelope.getSubmission());
     }
 
 
+    @Autowired SubmissionRepository submissionRepository;
     @Autowired
-    SubmissionRepository submissionRepository;
+    AnalysisRepository analysisRepository;
+    @Autowired
+    AssayRepository assayRepository;
+    @Autowired
+    AssayDataRepository assayDataRepository;
+    @Autowired
+    EgaDacRepository egaDacRepository;
+    @Autowired
+    EgaDacPolicyRepository egaDacPolicyRepository;
+    @Autowired EgaDatasetRepository egaDatasetRepository;
+    @Autowired ProjectRepository projectRepository;
+    @Autowired ProtocolRepository protocolRepository;
+    @Autowired SampleRepository sampleRepository;
+    @Autowired SampleGroupRepository sampleGroupRepository;
+    @Autowired StudyRepository studyRepository;
 
     @Autowired RestTemplate restTemplate;
 
     private Submission sub;
 
+    private List<CrudRepository> crudRepos(){
+        return Arrays.asList(
+                submissionRepository,
+                analysisRepository,
+                assayRepository,
+                assayDataRepository,
+                egaDacRepository,
+                egaDacPolicyRepository,
+                egaDatasetRepository,
+                projectRepository,
+                protocolRepository,
+                sampleRepository,
+                sampleGroupRepository,
+                studyRepository
+        );
+    }
+
+    private void deleteAllRepos(){
+        //nuke the site from orbit
+        crudRepos().forEach(cr -> cr.deleteAll());
+    }
+
     @Before
     public void setUp() throws Exception {
         this.submit = new URL("http://localhost:" + this.port + "/api/submit");
 
-        submissionRepository.deleteAll();
 
-        template = new TestRestTemplate(restTemplate);
 
-        UUID uuid = UUID.randomUUID();
+        deleteAllRepos();
 
         sub = new Submission();
-        sub.getDomain().setName("integrationTestExampleDomain."+uuid.toString());
+        sub.getDomain().setName("integrationTestExampleDomain."+UUID.randomUUID().toString());
         sub.getSubmitter().setEmail("test@example.ac.uk");
 
         this.submissionsReceived = new ArrayList<>();
@@ -73,16 +109,16 @@ public class SubmissionControllerIT {
 
     @After
     public void tearDown() {
-        submissionRepository.deleteAll();
+        deleteAllRepos();
     }
 
 
 
     @Test
     public void doSubmit() throws URISyntaxException, InterruptedException {
-        template.put(submit.toString(), sub);
+        Submission receivedSub = restTemplate.postForObject(submit.toString(), sub, sub.getClass());
 
-        Page<Submission> subs = submissionRepository.findByDomainName(sub.getDomain().getName(),new PageRequest(0,100));
+        Page<Submission> subs = submissionRepository.findAll(new PageRequest(0,100));
         assertThat(subs.getTotalElements(), equalTo(1L));
 
         Thread.sleep(1000);

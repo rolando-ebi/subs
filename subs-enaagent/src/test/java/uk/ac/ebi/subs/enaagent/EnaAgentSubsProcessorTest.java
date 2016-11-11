@@ -8,10 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.SubmissionEnvelope;
+import uk.ac.ebi.subs.processing.ProcessingCertificate;
+import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.EnaAgentApplication;
+import uk.ac.ebi.subs.processing.ProcessingCertificateEnvelope;
+import uk.ac.ebi.subs.processing.ProcessingStatus;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -34,7 +39,8 @@ public class EnaAgentSubsProcessorTest {
 
     @Test
     public void test(){
-        processor.processSubmission(subEnv);
+        ProcessingCertificateEnvelope processingCertificateEnvelope = processor.processSubmission(subEnv);
+        List<ProcessingCertificate> certs = processingCertificateEnvelope.getProcessingCertificates();
 
         String processedStatus = "processed";
 
@@ -54,7 +60,16 @@ public class EnaAgentSubsProcessorTest {
         assertThat("study reference in assay", as.getStudyRef().getAccession(), equalTo(st.getAccession()));
         assertThat("assay reference in assay data ", ad.getAssayRef().getAccession(), equalTo(as.getAccession()));
 
+        assertThat("correct certs",
+                certs,
+                containsInAnyOrder(
+                        new ProcessingCertificate(st,Archive.Ena, ProcessingStatus.Processed, st.getAccession()),
+                        new ProcessingCertificate(as,Archive.Ena, ProcessingStatus.Processed,as.getAccession()),
+                        new ProcessingCertificate(ad,Archive.Ena, ProcessingStatus.Processed,ad.getAccession())
+                )
 
+        );
+        assertThat("correct submission id", processingCertificateEnvelope.getSubmissionId(), equalTo(sub.getId()));
     }
 
 
@@ -99,6 +114,7 @@ public class EnaAgentSubsProcessorTest {
         sub.getStudies().add(st);
         sub.getAssays().add(as);
         sub.getAssayData().add(ad);
+        sub.setId("this-is-a-fake-id");
 
         subEnv = new SubmissionEnvelope(sub);
     }
