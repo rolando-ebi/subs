@@ -3,6 +3,7 @@ apply plugin: 'spring-boot'
 
 dependencies {
     compile project(':subs-data-model')
+    compile project(':subs-processing-model')
 
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-starter-data-rest")

@@ -11,4 +11,5 @@ include "subs-enaagent"
 include 'subs-progress-monitor'
 include "subs-aeagent"
 include "subs-stress-tester"
+include "subs-processing-model"
 include "ae-subs-generator"

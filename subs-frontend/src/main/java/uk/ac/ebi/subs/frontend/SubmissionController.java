@@ -9,7 +9,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.SubmissionEnvelope;
+import uk.ac.ebi.subs.processing.ProcessingStatus;
+import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.validation.SubmissionValidator;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Topics;
@@ -41,13 +42,16 @@ public class SubmissionController {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RequestMapping(value = "/api/submit", method = RequestMethod.PUT)
-    public void submit(@Validated @RequestBody Submission submission) {
+    @RequestMapping(value = "/api/submit", method = RequestMethod.POST)
+    public Submission submit(@Validated @RequestBody Submission submission) {
         logger.info("received submission for domain {}", submission.getDomain().getName());
+
+        submission.setStatus(ProcessingStatus.Submitted.name());
 
         submission.setId(UUID.randomUUID().toString());
 
-        submission.allSubmissionItems().forEach(
+
+        submission.allSubmissionItemsStream().forEach(
                 s -> {
                     if (s.getDomain() == null) {
                         s.setDomain(submission.getDomain());
@@ -60,7 +64,6 @@ public class SubmissionController {
         logger.info("saved submission {}", submission.getId());
 
         SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(submission);
-        submissionEnvelope.addHandler(this.getClass());
 
         rabbitMessagingTemplate.convertAndSend(
                 Exchanges.SUBMISSIONS,
@@ -68,7 +71,10 @@ public class SubmissionController {
                 submissionEnvelope
         );
 
+
         logger.info("sent submission {}", submission.getId());
+
+        return submission;
     }
 
 }

@@ -33,6 +33,10 @@ subprojects {
 
     group = 'uk.ac.ebi.subs'
 
+    dependencies {
+        compile("org.springframework.boot:spring-boot-devtools")
+    }
+
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }

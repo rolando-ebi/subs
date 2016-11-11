@@ -13,7 +13,8 @@ import uk.ac.ebi.subs.arrayexpress.model.SampleDataRelationship;
 import uk.ac.ebi.subs.arrayexpress.repo.ArrayExpressStudyRepository;
 import uk.ac.ebi.subs.arrayexpress.repo.SampleDataRelatioshipRepository;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.SubmissionEnvelope;
+import uk.ac.ebi.subs.data.submittable.Sample;
+import uk.ac.ebi.subs.processing.*;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.SampleUse;
 import uk.ac.ebi.subs.data.submittable.Assay;
@@ -23,8 +24,7 @@ import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.messaging.Topics;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -47,32 +47,71 @@ public class ArrayExpressSubmissionProcessor {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RabbitListener(queues = {Queues.AE_AGENT})
+    @RabbitListener(queues = Queues.AE_SAMPLES_UPDATED)
+    public void handleSampleUpdate(UpdatedSamplesEnvelope updatedSamplesEnvelope){
+        logger.info("received updated samples for submission {}",updatedSamplesEnvelope.getSubmissionId());
+
+        Map<String,Sample> samplesByAccession = new HashMap<>();
+
+
+        updatedSamplesEnvelope.getUpdatedSamples().forEach(s -> samplesByAccession.put(s.getAccession(),s));
+
+        String[] updatedSampleAccessions = new String[0];
+        updatedSampleAccessions = (String[])samplesByAccession.keySet().toArray(updatedSampleAccessions);
+
+        List<SampleDataRelationship> sdrs = sampleDataRelatioshipRepository.findBySampleAccessions(updatedSampleAccessions);
+
+        logger.debug("found {} sdrs for sample update for submission {}",sdrs.size(),updatedSamplesEnvelope.getSubmissionId());
+
+        for(SampleDataRelationship sdr : sdrs){
+            for (SampleUse sampleUse : sdr.getSampleUses()){
+                if (sampleUse.getSampleRef() == null || sampleUse.getSampleRef().getAccession() == null) continue;
+
+                String sampleAccession = sampleUse.getSampleRef().getAccession();
+
+                if (samplesByAccession.containsKey(sampleAccession)){
+                    sampleUse.getSampleRef().setReferencedObject(samplesByAccession.get(sampleAccession));
+                    logger.debug("update sample {} in sdr {} ",sampleAccession,sdr.getId());
+                }
+            }
+        }
+
+        sampleDataRelatioshipRepository.save(sdrs);
+
+
+        logger.info("finished updating samples for submission {}", updatedSamplesEnvelope.getSubmissionId());
+    }
+
+    @RabbitListener(queues = Queues.AE_AGENT)
     public void handleSubmission(SubmissionEnvelope submissionEnvelope) {
+        logger.info("received submission {}",
+                submissionEnvelope.getSubmission().getId());
 
-        logger.info("received submission {}, most recent handler was {}",
-                submissionEnvelope.getSubmission().getId(),
-                submissionEnvelope.mostRecentHandler());
+        List<ProcessingCertificate> certs = processSubmission(submissionEnvelope);
 
-        processSubmission(submissionEnvelope);
-
-        submissionEnvelope.addHandler(this.getClass());
         logger.info("processed submission {}",submissionEnvelope.getSubmission().getId());
 
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_PROCESSED, submissionEnvelope);
+        ProcessingCertificateEnvelope processingCertificateEnvelope = new ProcessingCertificateEnvelope(submissionEnvelope.getSubmission().getId(),certs);
+
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS,Topics.EVENT_SUBMISSION_AGENT_RESULTS, processingCertificateEnvelope);
 
         logger.info("sent submission {}", submissionEnvelope.getSubmission().getId());
 
     }
 
-    public void processSubmission(SubmissionEnvelope submissionEnvelope) {
+    public List<ProcessingCertificate> processSubmission(SubmissionEnvelope submissionEnvelope) {
+
+        List<ProcessingCertificate> certs = new ArrayList<>();
 
         submissionEnvelope.getSubmission().getStudies().stream()
                 .filter(s -> s.getArchive() == Archive.ArrayExpress)
-                .forEach(s -> processStudy(s, submissionEnvelope));
+                .forEach(s -> certs.addAll(processStudy(s, submissionEnvelope)));
+
+        return certs;
     }
 
-    public void processStudy(Study study, SubmissionEnvelope submissionEnvelope) {
+    public List<ProcessingCertificate> processStudy(Study study, SubmissionEnvelope submissionEnvelope) {
+        List<ProcessingCertificate> certs = new ArrayList<>();
         Submission submission = submissionEnvelope.getSubmission();
 
         if (!study.isAccessioned()) {
@@ -83,16 +122,19 @@ public class ArrayExpressSubmissionProcessor {
         arrayExpressStudy.setAccession(study.getAccession());
         arrayExpressStudy.setStudy(study);
 
+        certs.add(new ProcessingCertificate(study,Archive.ArrayExpress, ProcessingStatus.Curation,arrayExpressStudy.getAccession()));
+
+
         submission.getAssays().stream()
                 .filter(a -> a.getArchive() == Archive.ArrayExpress && a.getStudyRef().isMatch(study))
-                .forEach(a -> processAssay(a,submissionEnvelope,arrayExpressStudy));
+                .forEach(a -> certs.addAll(processAssay(a,submissionEnvelope,arrayExpressStudy)));
 
         try {
             aeStudyRepository.save(arrayExpressStudy);
             sampleDataRelatioshipRepository.save(arrayExpressStudy.getSampleDataRelationships());
         } catch (BsonSerializationException e) {
             logger.error("ArrayExpressStudy {" + arrayExpressStudy.getAccession() + "} bson document exceeds size limit:", e);
-            return;
+            return Collections.emptyList();
         }
 
         study.setStatus(processedStatusValue);
@@ -104,14 +146,20 @@ public class ArrayExpressSubmissionProcessor {
                 ad.setStatus(processedStatusValue);
             }
         }
+
+        return certs;
     }
 
-    public void processAssay(Assay assay, SubmissionEnvelope submissionEnvelope,ArrayExpressStudy arrayExpressStudy){
+    public List<ProcessingCertificate> processAssay(Assay assay, SubmissionEnvelope submissionEnvelope, ArrayExpressStudy arrayExpressStudy){
+        List<ProcessingCertificate> certs = new ArrayList<>();
+
         Submission submission = submissionEnvelope.getSubmission();
 
         SampleDataRelationship sdr = new SampleDataRelationship();
         sdr.setId(UUID.randomUUID().toString());
         sdr.setAssay(assay);
+
+        certs.add(new ProcessingCertificate(assay,Archive.ArrayExpress,ProcessingStatus.Curation));
 
         //find sample
         for (SampleUse su : assay.getSampleUses()){
@@ -131,9 +179,15 @@ public class ArrayExpressSubmissionProcessor {
                 .filter(ad -> ad.getArchive() == Archive.ArrayExpress && ad.getAssayRef().isMatch(assay))
                 .collect(Collectors.toList());
 
+        assayData.forEach(ad ->
+            certs.add(new ProcessingCertificate(ad,Archive.ArrayExpress,ProcessingStatus.Curation))
+        );
+
         sdr.setAssayData(assayData);
 
         arrayExpressStudy.getSampleDataRelationships().add(sdr);
+
+        return certs;
     }
 
 }
