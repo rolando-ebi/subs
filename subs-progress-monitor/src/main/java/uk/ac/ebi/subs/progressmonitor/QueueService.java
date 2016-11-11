@@ -28,18 +28,8 @@ import java.util.stream.Collectors;
 public class QueueService {
     private static final Logger logger = LoggerFactory.getLogger(QueueService.class);
 
-    @Autowired SubmissionRepository submissionRepository;
-    @Autowired AnalysisRepository analysisRepository;
-    @Autowired AssayRepository assayRepository;
-    @Autowired AssayDataRepository assayDataRepository;
-    @Autowired EgaDacRepository egaDacRepository;
-    @Autowired EgaDacPolicyRepository egaDacPolicyRepository;
-    @Autowired EgaDatasetRepository egaDatasetRepository;
-    @Autowired ProjectRepository projectRepository;
-    @Autowired ProtocolRepository protocolRepository;
-    @Autowired SampleRepository sampleRepository;
-    @Autowired SampleGroupRepository sampleGroupRepository;
-    @Autowired StudyRepository studyRepository;
+    @Autowired
+    SubmissionRepository submissionRepository;
 
     @Autowired SupportingSampleRepository supportingSampleRepository;
 
@@ -113,7 +103,7 @@ public class QueueService {
             }
         );
 
-        saveSubmissionContents(submission);
+        submissionRepository.save(submission);
 
         sendSubmissionUpdated(processingCertificateEnvelope.getSubmissionId());
     }
@@ -148,43 +138,4 @@ public class QueueService {
         logger.info("submission {} update message sent", submissionId);
     }
 
-
-
-    private void saveSubmissionContents(Submission submission) {
-        analysisRepository.save(submission.getAnalyses());
-        logger.debug("saved analyses {}");
-
-        assayRepository.save(submission.getAssays());
-        logger.debug("saved assays {}");
-
-        assayDataRepository.save(submission.getAssayData());
-        logger.debug("saved assayData {}");
-
-        egaDacRepository.save(submission.getEgaDacs());
-        logger.debug("saved egaDacs {}");
-
-        egaDacPolicyRepository.save(submission.getEgaDacPolicies());
-        logger.debug("saved egaDacPolicies {}");
-
-        egaDatasetRepository.save(submission.getEgaDatasets());
-        logger.debug("saved egaDatasets {}");
-
-        projectRepository.save(submission.getProjects());
-        logger.debug("saved projects {}");
-
-        protocolRepository.save(submission.getProtocols());
-        logger.debug("saved protocols {}");
-
-        sampleRepository.save(submission.getSamples());
-        logger.debug("saved samples {}");
-
-        sampleGroupRepository.save(submission.getSampleGroups());
-        logger.debug("saved sampleGroups {}");
-
-        studyRepository.save(submission.getStudies());
-        logger.debug("saved studies {}");
-
-        submissionRepository.save(submission);
-        logger.info("saved submission {}", submission.getId());
-    }
 }

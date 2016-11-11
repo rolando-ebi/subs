@@ -23,12 +23,10 @@ import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 
 import java.util.*;
 
-
 @Service
 public class DispatchProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(DispatchProcessor.class);
-
 
     RabbitMessagingTemplate rabbitMessagingTemplate;
 

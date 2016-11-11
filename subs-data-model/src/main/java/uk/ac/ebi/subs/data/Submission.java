@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import uk.ac.ebi.subs.data.annotation.CascadeSave;
 import uk.ac.ebi.subs.data.component.Domain;
 import uk.ac.ebi.subs.data.submittable.Protocol;
 import uk.ac.ebi.subs.data.component.Submitter;
@@ -20,22 +21,32 @@ public class Submission {
     String id;
     Submitter submitter = new Submitter();
 
-
     Domain domain = new Domain();
     Date submissionDate = new Date();
     String status;
 
-    @DBRef(lazy = true) List<Analysis> analyses = new ArrayList<>();
-    @DBRef(lazy = true) List<Assay> assays = new ArrayList<>();
-    @DBRef(lazy = true) List<AssayData> assayData = new ArrayList<>();
-    @DBRef(lazy = true) List<EgaDac> egaDacs = new ArrayList<>();
-    @DBRef(lazy = true) List<EgaDacPolicy> egaDacPolicies = new ArrayList<>();
-    @DBRef(lazy = true) List<EgaDataset> egaDatasets = new ArrayList<>();
-    @DBRef(lazy = true) List<Project> projects = new ArrayList<>();
-    @DBRef(lazy = true) List<Sample> samples = new ArrayList<>();
-    @DBRef(lazy = true) List<SampleGroup> sampleGroups = new ArrayList<>();
-    @DBRef(lazy = true) List<Study> studies = new ArrayList<>();
-    @DBRef(lazy = true) List<Protocol> protocols = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = Analysis.class)
+    List<Analysis> analyses = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = Assay.class)
+    List<Assay> assays = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = AssayData.class)
+    List<AssayData> assayData = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = EgaDac.class)
+    List<EgaDac> egaDacs = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = EgaDacPolicy.class)
+    List<EgaDacPolicy> egaDacPolicies = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = EgaDataset.class)
+    List<EgaDataset> egaDatasets = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = Project.class)
+    List<Project> projects = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = Sample.class)
+    List<Sample> samples = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = SampleGroup.class)
+    List<SampleGroup> sampleGroups = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = Study.class)
+    List<Study> studies = new ArrayList<>();
+    @DBRef(lazy = true) @CascadeSave(classToSave = Protocol.class)
+    List<Protocol> protocols = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -217,6 +228,7 @@ public class Submission {
                 ", samples=" + (samples != null ? "[" + samples.size() + "]" : "[0]") +
                 ", sampleGroups=" + (sampleGroups != null ? "[" + sampleGroups.size() + "]" : "[0]") +
                 ", studies=" + (studies != null ? "[" + studies.size() + "]" : "[0]") +
+                ", protocols=" + (protocols != null ? "[" + protocols.size() + "]" : "[0]") +
                 '}';
     }
 }
