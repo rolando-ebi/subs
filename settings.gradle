@@ -13,3 +13,4 @@ include "subs-aeagent"
 include "subs-stress-tester"
 include "subs-processing-model"
 include "ae-subs-generator"
+include 'subs-samples-agent'
