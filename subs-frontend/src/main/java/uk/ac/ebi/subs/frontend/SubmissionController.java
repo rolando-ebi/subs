@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.BasePathAwareController;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -19,6 +20,7 @@ import uk.ac.ebi.subs.repository.SubmissionRepository;
 import java.util.UUID;
 
 @RestController
+@BasePathAwareController
 public class SubmissionController {
 
     private static final Logger logger = LoggerFactory.getLogger(SubmissionController.class);
@@ -42,7 +44,7 @@ public class SubmissionController {
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RequestMapping(value = "/api/submit", method = RequestMethod.POST)
+    @RequestMapping(value = "/submit", method = RequestMethod.POST)
     public Submission submit(@Validated @RequestBody Submission submission) {
         logger.info("received submission for domain {}", submission.getDomain().getName());
 
