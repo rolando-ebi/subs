@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.BasePathAwareController;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.submittable.Study;
@@ -15,7 +17,6 @@ import java.util.UUID;
 
 @RestController
 @BasePathAwareController
-@ExposesResourceFor(Study.class)
 @RequestMapping("/submissions/{submissionId}/studies")
 public class StudySubmissionController {
 
@@ -24,8 +25,11 @@ public class StudySubmissionController {
     @Autowired
     private SubmissionRepository submissionRepository;
 
+    @Autowired
+    private ResourceAssembler<Study,Resource<Study>> studyResourceAssembler;
+
     @RequestMapping(method = RequestMethod.POST)
-    public Study postSubmissionInStudy(@PathVariable String submissionId, @RequestBody Study study){
+    public Resource<Study> postStudyToSubmission(@PathVariable String submissionId, @RequestBody Study study){
         Submission submission = submissionRepository.findOne(submissionId);
 
         if (submission == null){
@@ -38,7 +42,9 @@ public class StudySubmissionController {
 
         submissionRepository.save(submission);
 
-        return study;
+        return studyResourceAssembler.toResource(study);
     }
+
+
 
 }
