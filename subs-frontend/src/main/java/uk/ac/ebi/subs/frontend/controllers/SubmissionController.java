@@ -76,4 +76,6 @@ public class SubmissionController {
         return putUpdatedResponse();
     }
 
+    //TODO delete submission + nested resources
+
 }

@@ -2,6 +2,7 @@ package uk.ac.ebi.subs.frontend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -22,6 +23,7 @@ public class ResourceAssemblerConfig {
         return submission -> {
             Resource<Submission> submissionResource = new Resource<>(submission);
 
+            //self rel
             submissionResource.add(
                     ControllerLinkBuilder.linkTo(
                             methodOn(SubmissionController.class)
@@ -30,22 +32,18 @@ public class ResourceAssemblerConfig {
                     ).withSelfRel()
             );
 
+            //study rel
+            submissionResource.add(
+                    ControllerLinkBuilder.linkTo(
+                            methodOn(SubmissionStudyController.class)
+                                .listSome(submission.getDomain().getName(),submission.getId(),new PageRequest(1,1))
+                    ).withRel("studies")
+            );
+
+
             //TODO add other relations
 
             return submissionResource;
-        };
-    }
-
-
-    @Bean
-    ResourceAssembler<Study, Resource<Study>> studyResourceAssembler() {
-        return study -> {
-            Resource<Study> studyResource = new Resource<>(study);
-
-
-            //TODO add links
-
-            return studyResource;
         };
     }
 
@@ -59,7 +57,10 @@ public class ResourceAssemblerConfig {
             studyResource.add(
                     ControllerLinkBuilder.linkTo(
                             methodOn(SubmissionStudyController.class)
-                                    .getOne(submissionStudy.getDomainName(), submissionStudy.getSubmissionId(), submissionStudy.getAlias()
+                                    .getOne(
+                                            submissionStudy.getDomainName(),
+                                            submissionStudy.getSubmissionId(),
+                                            submissionStudy.getId()
                                     )
                     ).withSelfRel()
             );

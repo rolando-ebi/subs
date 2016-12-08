@@ -1,13 +1,15 @@
 package uk.ac.ebi.subs.frontend.handlers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.frontend.services.SubmissionProcessingService;
 import uk.ac.ebi.subs.frontend.exceptions.ResourceLockedException;
+import uk.ac.ebi.subs.frontend.services.SubmissionProcessingService;
+import uk.ac.ebi.subs.frontend.updateability.OperationControlService;
 import uk.ac.ebi.subs.processing.ProcessingStatus;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
-import uk.ac.ebi.subs.frontend.updateability.OperationControlService;
 
 import java.util.UUID;
 
@@ -20,6 +22,9 @@ import java.util.UUID;
 @RepositoryEventHandler(Submission.class)
 public class SubmissionEventHandler {
 
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private OperationControlService operationControlService;
 
@@ -29,26 +34,31 @@ public class SubmissionEventHandler {
     @Autowired
     private SubmissionProcessingService submissionProcessingService;
 
+    @HandleBeforeCreate public void handleBeforeCreate(Submission submission){
+        logger.warn("create");
+        submission.setId(UUID.randomUUID().toString());
+    }
+
     /**
      * make sure the submission is ready for storing
      *  * give it an ID if it has not got one
      *  * check it can be modified if there it already exists
      * @param submission
      */
-    @HandleBeforeCreate @HandleBeforeSave public void handleBeforeSave(Submission submission) {
-        if (submission.getId() == null){
-            //new submission
-            submission.setId(UUID.randomUUID().toString());
-        }
-        else {
-            Submission storedSubmission = submissionRepository.findOne(submission.getId());
+     @HandleBeforeSave public void handleBeforeSave(Submission submission) {
+         logger.warn("save");
+         if (submission.getId() == null){
+             submission.setId("spork "+UUID.randomUUID().toString());
+         }
 
-            if (storedSubmission != null){
-                if (!operationControlService.isUpdateable(storedSubmission)){
-                    throw new ResourceLockedException();
-                }
-            }
-        }
+         Submission storedSubmission = submissionRepository.findOne(submission.getId());
+
+         if (storedSubmission != null) {
+             if (!operationControlService.isUpdateable(storedSubmission)) {
+                 throw new ResourceLockedException();
+             }
+         }
+
     }
 
 
@@ -57,6 +67,7 @@ public class SubmissionEventHandler {
      * @param submission
      */
     @HandleAfterCreate @HandleAfterSave public void handleAfterSave(Submission submission){
+        logger.warn("after");
         if (submission.getStatus() != null && submission.getStatus().equals(ProcessingStatus.Submitted.name())){
             submissionProcessingService.submitSubmissionForProcessing(submission);
         }

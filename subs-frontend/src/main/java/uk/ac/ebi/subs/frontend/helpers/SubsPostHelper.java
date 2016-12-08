@@ -51,5 +51,18 @@ public class SubsPostHelper {
 
     }
 
+    /**
+     * Where a DELETE request is used to remove a resource,
+     * respond with HttpStatus.OK
+     *
+     * HttpStatus.NO_CONTENT is also reasonable, but seems less clear to consumers
+     *
+     * @return
+     */
+    public static ResponseEntity<Void> deleteRemovedResponse(){
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+
+    }
 
 }
