@@ -1,4 +1,4 @@
-package uk.ac.ebi.subs.frontend;
+package uk.ac.ebi.subs.frontend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

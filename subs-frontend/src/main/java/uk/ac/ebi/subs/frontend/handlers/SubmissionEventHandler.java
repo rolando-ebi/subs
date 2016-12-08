@@ -3,7 +3,7 @@ package uk.ac.ebi.subs.frontend.handlers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.frontend.SubmissionProcessingService;
+import uk.ac.ebi.subs.frontend.services.SubmissionProcessingService;
 import uk.ac.ebi.subs.frontend.exceptions.ResourceLockedException;
 import uk.ac.ebi.subs.processing.ProcessingStatus;
 import uk.ac.ebi.subs.repository.SubmissionRepository;

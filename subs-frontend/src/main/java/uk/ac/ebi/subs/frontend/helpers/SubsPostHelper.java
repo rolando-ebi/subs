@@ -1,4 +1,4 @@
-package uk.ac.ebi.subs.frontend;
+package uk.ac.ebi.subs.frontend.helpers;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
@@ -36,5 +36,20 @@ public class SubsPostHelper {
 
         return responseEntity;
     }
+
+    /**
+     * Where a PUT request is used to create a resource,
+     * respond with HttpStatus.OK
+     *
+     * HttpStatus.NO_CONTENT is also reasonable, but seems less clear to consumers
+     *
+     * @return
+     */
+    public static ResponseEntity<Void> putUpdatedResponse(){
+
+        return new ResponseEntity(HttpStatus.OK);
+
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package uk.ac.ebi.subs.frontend;
+package uk.ac.ebi.subs.frontend.services;
 
 
 import uk.ac.ebi.subs.data.Submission;

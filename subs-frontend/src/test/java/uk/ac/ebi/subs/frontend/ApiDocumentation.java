@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.subs.FrontendApplication;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.frontend.controllers.SubmissionController;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
