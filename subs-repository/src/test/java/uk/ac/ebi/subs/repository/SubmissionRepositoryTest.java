@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.subs.data.FullSubmission;
+
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
@@ -25,11 +25,11 @@ public class SubmissionRepositoryTest {
     @Autowired
     SubmissionRepository submissionRepository;
 
-    FullSubmission testSub;
+    Submission testSub;
 
     @Before
     public void buildUp() {
-        testSub = new FullSubmission();
+        testSub = new Submission();
         testSub.getSubmitter().setEmail("test@example.ac.uk");
         testSub.getDomain().setName("testDomain" + Math.random());
         testSub.setId(UUID.randomUUID().toString());

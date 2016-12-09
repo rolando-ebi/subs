@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
-import uk.ac.ebi.subs.data.FullSubmission;
+
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Topics;
@@ -30,8 +30,7 @@ public class SubmissionProcessingServiceImpl implements SubmissionProcessingServ
 
     @Override
     public void submitSubmissionForProcessing(Submission submission) {
-        //TODO I AM BROKEN
-        FullSubmission fullSubmission = new FullSubmission();
+        Submission fullSubmission = new Submission();
 
         SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(fullSubmission);
 

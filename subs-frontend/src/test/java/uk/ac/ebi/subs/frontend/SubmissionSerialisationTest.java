@@ -10,7 +10,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.ObjectContent;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.subs.FrontendApplication;
-import uk.ac.ebi.subs.data.FullSubmission;
+
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.Submission;
 
@@ -32,11 +32,11 @@ public class SubmissionSerialisationTest {
     }
 
     String exampleJson;
-    FullSubmission sub;
+    Submission sub;
 
     @Before
     public void setUp() throws IOException {
-        sub = new FullSubmission();
+        sub = new Submission();
         sub.getDomain().setName("exampleDomain");
         sub.getSubmitter().setEmail("test@example.ac.uk");
         sub.getSamples().add(new Sample());

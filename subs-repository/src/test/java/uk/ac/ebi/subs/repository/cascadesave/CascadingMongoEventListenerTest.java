@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.subs.data.FullSubmission;
+
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.submittable.Assay;
 import uk.ac.ebi.subs.data.submittable.Sample;
@@ -29,7 +29,7 @@ public class CascadingMongoEventListenerTest {
     @Autowired
     MongoOperations mongoOperations;
 
-    FullSubmission submission;
+    Submission submission;
     List<Sample> samples;
     List<Assay> assays;
 
@@ -39,7 +39,7 @@ public class CascadingMongoEventListenerTest {
         mongoOperations.dropCollection(Sample.class);
 
         // Defining a submission
-        submission = new FullSubmission();
+        submission = new Submission();
         submission.setId(UUID.randomUUID().toString());
 
         // Defining 3 samples
@@ -71,12 +71,12 @@ public class CascadingMongoEventListenerTest {
         List<Submission> submissions = mongoOperations.findAll(Submission.class);
         assertEquals(submissions.size(), 1);
         assertTrue(submissions.contains(submission));
-/* TODO remove??
+
         Submission savedSubmission = submissions.get(0);
         assertEquals(savedSubmission.getSamples().size(), 3);
         assertNotNull(savedSubmission.getSamples().get(0));
         assertEquals(submission.getSamples(), savedSubmission.getSamples());
-*/
+
         List<Sample> savedSamples = mongoOperations.findAll(Sample.class);
         assertEquals(samples, savedSamples);
     }

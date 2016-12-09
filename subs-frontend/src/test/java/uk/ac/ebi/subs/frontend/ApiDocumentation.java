@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.subs.FrontendApplication;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.frontend.controllers.SubmissionController;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
@@ -51,9 +50,6 @@ public class ApiDocumentation {
     SubmissionRepository submissionRepository;
 
     @Autowired
-    SubmissionController submissionController;
-
-    @Autowired
     private WebApplicationContext context;
 
     private MockMvc mockMvc;
@@ -80,7 +76,7 @@ public class ApiDocumentation {
 
         this.submissionRepository.save(sub);
 
-        this.mockMvc.perform(get("/api/submissions/search/domain?domainName={domainName}",sub.getDomain().getName())
+        this.mockMvc.perform(get("/api/submissions/search/findByDomainName?domainName={domainName}",sub.getDomain().getName())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(

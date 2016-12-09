@@ -1,6 +1,6 @@
 package uk.ac.ebi.subs.frontend;
 
-import uk.ac.ebi.subs.data.FullSubmission;
+
 import uk.ac.ebi.subs.data.component.Domain;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.Submission;
@@ -30,8 +30,8 @@ public class Helpers {
         return samples;
     }
 
-    public static FullSubmission generateTestSubmission() {
-        FullSubmission sub = new FullSubmission();
+    public static Submission generateTestSubmission() {
+        Submission sub = new Submission();
         Domain d = new Domain();
         sub.setId(UUID.randomUUID().toString());
         d.setName("my-domain");
