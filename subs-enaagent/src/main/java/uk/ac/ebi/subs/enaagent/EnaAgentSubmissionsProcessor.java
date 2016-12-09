@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.enarepo.EnaSampleRepository;
 import uk.ac.ebi.subs.processing.*;
@@ -121,7 +122,7 @@ public class EnaAgentSubmissionsProcessor {
 
 
     private ProcessingCertificate processAssay(Assay assay, SubmissionEnvelope submissionEnvelope) {
-        Submission submission = submissionEnvelope.getSubmission();
+        FullSubmission submission = submissionEnvelope.getSubmission();
 
         for (SampleUse su : assay.getSampleUses()){
             SampleRef sr = su.getSampleRef();

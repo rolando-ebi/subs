@@ -11,6 +11,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ import static uk.ac.ebi.subs.frontend.helpers.SubsPostHelper.*;
 
 @RestController
 @BasePathAwareController
-@RequestMapping("/domains/{domainName}/submissions")
+
 public class SubmissionController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -35,14 +36,15 @@ public class SubmissionController {
 
     @Autowired
     PagedResourcesAssembler pagedResourcesAssembler;
-
-    @RequestMapping(method = RequestMethod.GET)
+/*
+    @RequestMapping("/domains/{domainName}/submissions")
     public PagedResources<Resource<Submission>> listSome(@PathVariable String domainName, Pageable pageable){
         Page<Submission> submissions = submissionRepository.findByDomainName(domainName,pageable);
         return pagedResourcesAssembler.toResource(submissions,submissionResourceAssembler);
 
     }
-
+*/
+    /*
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> postOne(@PathVariable String domainName, @Validated @RequestBody Submission submission){
         submissionRepository.insert(submission);
@@ -51,7 +53,8 @@ public class SubmissionController {
 
         return postCreatedResponse(submissionResource);
     }
-
+*/
+    /*
     @RequestMapping("/{submissionId}")
     public Resource<Submission> getOne(@PathVariable String domainName, @PathVariable String submissionId){
         Submission submission = submissionRepository.findOneByIdAndDomainName(submissionId,domainName);
@@ -75,7 +78,7 @@ public class SubmissionController {
 
         return putUpdatedResponse();
     }
-
+    */
     //TODO delete submission + nested resources
 
 }

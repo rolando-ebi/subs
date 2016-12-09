@@ -14,6 +14,7 @@ public class RepositoryHandlerConfig {
     }
 
     @Bean
-    SubmissionStudyEventHandler submissionStudyEventHandler() {return new SubmissionStudyEventHandler();}
+    SubmissionStudyEventHandler submissionStudyEventHandler() {
+        return new SubmissionStudyEventHandler();}
 
 }

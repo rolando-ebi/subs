@@ -2,6 +2,7 @@ package uk.ac.ebi.subs.processing;
 
 
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.submittable.Sample;
@@ -13,7 +14,7 @@ public class SubmissionEnvelope {
 
     String id;
 
-    Submission submission;
+    FullSubmission submission;
 
     Set<SampleRef> supportingSamplesRequired = new HashSet<>();
     List<Sample> supportingSamples = new ArrayList<>();
@@ -22,16 +23,16 @@ public class SubmissionEnvelope {
 
     public SubmissionEnvelope() {};
 
-    public  SubmissionEnvelope(Submission submission){
+    public  SubmissionEnvelope(FullSubmission submission){
         this.submission = submission;
     }
 
 
-    public Submission getSubmission() {
+    public FullSubmission getSubmission() {
         return submission;
     }
 
-    public void setSubmission(Submission submission) {
+    public void setSubmission(FullSubmission submission) {
         this.submission = submission;
     }
 

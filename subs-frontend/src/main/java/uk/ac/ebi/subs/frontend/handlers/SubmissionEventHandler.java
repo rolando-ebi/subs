@@ -47,9 +47,6 @@ public class SubmissionEventHandler {
      */
      @HandleBeforeSave public void handleBeforeSave(Submission submission) {
          logger.warn("save");
-         if (submission.getId() == null){
-             submission.setId("spork "+UUID.randomUUID().toString());
-         }
 
          Submission storedSubmission = submissionRepository.findOne(submission.getId());
 

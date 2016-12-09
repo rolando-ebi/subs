@@ -16,6 +16,6 @@ public class FrontendApplication {
 
         //TODO this property should be settable through the application.properties file in Spring BOOT 1.50
 
-        restConfiguration.setRepositoryDetectionStrategy(RepositoryDetectionStrategy.RepositoryDetectionStrategies.ANNOTATED);
+        restConfiguration.setRepositoryDetectionStrategy(RepositoryDetectionStrategy.RepositoryDetectionStrategies.DEFAULT);
     }
 }
