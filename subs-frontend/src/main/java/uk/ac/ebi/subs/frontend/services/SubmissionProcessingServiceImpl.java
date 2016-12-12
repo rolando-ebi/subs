@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
+import uk.ac.ebi.subs.repository.FullSubmissionService;
 
 /**
  * send a submission off to the rabbit exchange for processing
@@ -19,6 +21,9 @@ import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 public class SubmissionProcessingServiceImpl implements SubmissionProcessingService{
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    FullSubmissionService fullSubmissionService;
 
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
@@ -29,8 +34,8 @@ public class SubmissionProcessingServiceImpl implements SubmissionProcessingServ
     }
 
     @Override
-    public void submitSubmissionForProcessing(Submission submission) {
-        Submission fullSubmission = new Submission();
+    public void submitSubmissionForProcessing(String submissionId) {
+        FullSubmission fullSubmission = fullSubmissionService.fetchOne(submissionId);
 
         SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(fullSubmission);
 
@@ -40,6 +45,6 @@ public class SubmissionProcessingServiceImpl implements SubmissionProcessingServ
                 submissionEnvelope
         );
 
-        logger.info("sent submission {}", submission.getId());
+        logger.info("sent submission {}", fullSubmission.getId());
     }
 }

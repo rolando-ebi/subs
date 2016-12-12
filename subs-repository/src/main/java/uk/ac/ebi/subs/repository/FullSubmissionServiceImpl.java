@@ -60,7 +60,7 @@ public class FullSubmissionServiceImpl implements FullSubmissionService {
 
 
         fullSubmission.setId(minimalSub.getId());
-        fullSubmission.allSubmissionItemsStream().forEach(i -> i.setSubmissionId());
+        fullSubmission.allSubmissionItemsStream().forEach(i -> i.setSubmissionId(minimalSub.getId()));
 
         analysisRepository.insert(fullSubmission.getAnalyses());
         assayDataRepository.insert(fullSubmission.getAssayData());

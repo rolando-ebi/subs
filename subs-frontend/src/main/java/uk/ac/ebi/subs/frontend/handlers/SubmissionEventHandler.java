@@ -70,7 +70,7 @@ public class SubmissionEventHandler {
     @HandleAfterCreate @HandleAfterSave public void handleAfterSave(Submission submission){
         logger.warn("after");
         if (submission.getStatus() != null && submission.getStatus().equals(ProcessingStatus.Submitted.name())){
-            submissionProcessingService.submitSubmissionForProcessing(submission);
+            submissionProcessingService.submitSubmissionForProcessing(submission.getId());
         }
     }
 
