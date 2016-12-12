@@ -21,7 +21,6 @@ public class ResourceProcessorConfig {
     @Autowired
     RepositoryEntityLinks repositoryEntityLinks;
 
-
     @Bean
     ResourceProcessor<Resource<Submission>> submissionProcessor() {
         return new ResourceProcessor<Resource<Submission>>() {
