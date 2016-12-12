@@ -9,9 +9,15 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.PathVariable;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.submittable.Analysis;
 import uk.ac.ebi.subs.data.submittable.Study;
+
+import java.util.List;
 
 @RepositoryRestResource
 public interface StudyRepository extends MongoRepository<Study, String> {
+
+    @RestResource(exported = false)
+    List<Study> findBySubmissionId(String submissionId);
 
 }
