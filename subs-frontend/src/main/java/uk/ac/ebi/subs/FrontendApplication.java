@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy;
+import uk.ac.ebi.subs.data.Submission;
 
 @SpringBootApplication
 public class FrontendApplication {
@@ -17,5 +18,6 @@ public class FrontendApplication {
         //TODO this property should be settable through the application.properties file in Spring BOOT 1.50
 
         restConfiguration.setRepositoryDetectionStrategy(RepositoryDetectionStrategy.RepositoryDetectionStrategies.DEFAULT);
+        restConfiguration.exposeIdsFor(Submission.class);
     }
 }
