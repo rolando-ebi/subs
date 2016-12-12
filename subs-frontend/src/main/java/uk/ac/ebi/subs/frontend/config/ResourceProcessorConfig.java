@@ -24,37 +24,41 @@ public class ResourceProcessorConfig {
 
     @Bean
     ResourceProcessor<Resource<Submission>> submissionProcessor() {
-        return resource -> {
-            Submission submission = resource.getContent();
+        return new ResourceProcessor<Resource<Submission>>() {
+            @Override
+            public Resource<Submission> process(Resource<Submission> resource) {
+                Submission submission = resource.getContent();
 
-            Map<String, String> linkArgs = new HashMap<>();
-            linkArgs.put("submissionId", submission.getId());
+                Map<String, String> linkArgs = new HashMap<>();
+                linkArgs.put("submissionId", submission.getId());
 
-            Stream<Pair<String, Class>> relsToTypes = Stream.of(
-                    Pair.of(SubmissionLinks.ANALYSIS, Analysis.class),
-                    Pair.of(SubmissionLinks.ASSAY_DATA, AssayData.class),
-                    Pair.of(SubmissionLinks.ASSAY, Assay.class),
-                    Pair.of(SubmissionLinks.EGA_DAC_POLICY, EgaDacPolicy.class),
-                    Pair.of(SubmissionLinks.EGA_DAC, EgaDac.class),
-                    Pair.of(SubmissionLinks.EGA_DATASET, EgaDataset.class),
-                    Pair.of(SubmissionLinks.PROJECT, Project.class),
-                    Pair.of(SubmissionLinks.PROTOCOL, Protocol.class),
-                    Pair.of(SubmissionLinks.SAMPLE_GROUP, SampleGroup.class),
-                    Pair.of(SubmissionLinks.SAMPLE, Sample.class),
-                    Pair.of(SubmissionLinks.STUDY, Study.class)
-            );
-
-            relsToTypes.forEach(pair -> {
-                String rel = pair.getFirst();
-                Class domainType = pair.getSecond();
-
-                resource.add(
-                        repositoryEntityLinks.linkToSearchResource(domainType, rel).expand(linkArgs)
+                Stream<Pair<String, Class>> relsToTypes = Stream.of(
+                        Pair.of(SubmissionLinks.ANALYSIS, Analysis.class),
+                        Pair.of(SubmissionLinks.ASSAY_DATA, AssayData.class),
+                        Pair.of(SubmissionLinks.ASSAY, Assay.class),
+                        Pair.of(SubmissionLinks.EGA_DAC_POLICY, EgaDacPolicy.class),
+                        Pair.of(SubmissionLinks.EGA_DAC, EgaDac.class),
+                        Pair.of(SubmissionLinks.EGA_DATASET, EgaDataset.class),
+                        Pair.of(SubmissionLinks.PROJECT, Project.class),
+                        Pair.of(SubmissionLinks.PROTOCOL, Protocol.class),
+                        Pair.of(SubmissionLinks.SAMPLE_GROUP, SampleGroup.class),
+                        Pair.of(SubmissionLinks.SAMPLE, Sample.class),
+                        Pair.of(SubmissionLinks.STUDY, Study.class)
                 );
-            });
 
-            return resource;
+                relsToTypes.forEach(pair -> {
+                    String rel = pair.getFirst();
+                    Class domainType = pair.getSecond();
+
+                    resource.add(
+                            repositoryEntityLinks.linkToSearchResource(domainType, rel).expand(linkArgs)
+                    );
+                });
+
+                return resource;
+            }
         };
     }
+
 
 }
