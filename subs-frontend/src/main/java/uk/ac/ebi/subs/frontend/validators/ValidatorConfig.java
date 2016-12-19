@@ -1,15 +1,32 @@
 package uk.ac.ebi.subs.frontend.validators;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.rest.core.event.ValidatingRepositoryEventListener;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.validation.Validator;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 
 @Configuration
-public class ValidatorConfig {
+/**
+ * Frontend validator configuration.
+ * Using manual linking of validators as the automatic discovery described
+ * in the docs @see <a href="http://docs.spring.io/spring-data/rest/docs/current/reference/html/#validation">docs.spring.io</a>
+ * does not currently work
+ *
+ * Fixing this is in Spring JIRA @see <a href="https://jira.spring.io/browse/DATAREST-524">DATAREST-524</a>
+ */
+public class ValidatorConfig extends RepositoryRestConfigurerAdapter {
+
+    private static final String BEFORE_CREATE = "beforeCreate";
+    private static final String BEFORE_SAVE = "beforeSave";
+    private static final String BEFORE_LINK_SAVE = "beforeLinkSave";
+    private static final String BEFORE_DELETE = "beforeDelete";
+
 
 
     @Autowired
@@ -24,44 +41,18 @@ public class ValidatorConfig {
     @Autowired
     private ProjectValidator projectValidator;
 
-    @Bean
-    public Validator beforeCreateStudyValidator() {
-        return studyValidator;
-    }
 
-    @Bean
-    public Validator beforeSaveStudyValidator() {
-        return studyValidator;
-    }
 
-    @Bean
-    public Validator beforeCreateSubmissionValidator() {
-        return submissionValidator;
-    }
 
-    @Bean
-    public Validator beforeSaveSubmissionValidator() {
-        return submissionValidator;
-    }
+    @Override
+    public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener eventListener) {
 
-    @Bean
-    public Validator beforeCreateSampleValidator() {
-        return sampleValidator;
-    }
+        Stream<Validator> stdValidators = Stream.of(submissionValidator,projectValidator,studyValidator,sampleValidator);
 
-    @Bean
-    public Validator beforeSaveSampleValidator() {
-        return sampleValidator;
-    }
-
-    @Bean
-    public Validator beforeCreateProjectValidator() {
-        return projectValidator;
-    }
-
-    @Bean
-    public Validator beforeSaveProjectValidator() {
-        return projectValidator;
+        stdValidators.forEach(validator -> {
+            eventListener.addValidator(BEFORE_CREATE, validator);
+            eventListener.addValidator(BEFORE_SAVE, validator);
+        });
     }
 
 }
