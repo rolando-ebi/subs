@@ -1,4 +1,4 @@
-package uk.ac.ebi.subs.data.validation;
+package uk.ac.ebi.subs.frontend.validators;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
