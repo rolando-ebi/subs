@@ -38,7 +38,7 @@ public class FullSubmissionsController {
 
         fullSubmissionService.storeFullSubmission(fullSubmission);
 
-        submissionEventHandler.handleAfterSave(fullSubmission);
+        submissionEventHandler.handleAfterCreateOrSave(fullSubmission);
 
         Submission submission = new Submission(fullSubmission);
 

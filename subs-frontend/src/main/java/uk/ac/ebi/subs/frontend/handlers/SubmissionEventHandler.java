@@ -67,7 +67,7 @@ public class SubmissionEventHandler {
      * Once the submission has been stored, if it has a status of submitted, submit it for processing
      * @param submission
      */
-    @HandleAfterCreate @HandleAfterSave public void handleAfterSave(Submission submission){
+    @HandleAfterCreate @HandleAfterSave public void handleAfterCreateOrSave(Submission submission){
         logger.warn("after");
         if (submission.getStatus() != null && submission.getStatus().equals(ProcessingStatus.Submitted.name())){
             submissionProcessingService.submitSubmissionForProcessing(submission.getId());

@@ -45,6 +45,6 @@ public class SubmissionProcessingServiceImpl implements SubmissionProcessingServ
                 submissionEnvelope
         );
 
-        logger.info("sent submission {}", fullSubmission.getId());
+        logger.warn("sent submission {}", fullSubmission.getId());
     }
 }
