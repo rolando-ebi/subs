@@ -11,13 +11,6 @@ import uk.ac.ebi.subs.data.Submission;
 @SpringBootApplication
 public class FrontendApplication {
     public static void main(String[] args) {
-        ConfigurableApplicationContext ctx = SpringApplication.run(FrontendApplication.class, args);
-
-        RepositoryRestConfiguration restConfiguration = ctx.getBean(RepositoryRestConfiguration.class);
-
-        //TODO this property should be settable through the application.properties file in Spring BOOT 1.50
-
-        restConfiguration.setRepositoryDetectionStrategy(RepositoryDetectionStrategy.RepositoryDetectionStrategies.DEFAULT);
-        restConfiguration.exposeIdsFor(Submission.class);
+        SpringApplication.run(FrontendApplication.class, args);
     }
 }
