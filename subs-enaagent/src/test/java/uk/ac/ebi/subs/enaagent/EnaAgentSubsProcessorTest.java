@@ -14,7 +14,7 @@ import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.EnaAgentApplication;
 import uk.ac.ebi.subs.processing.ProcessingCertificateEnvelope;
-import uk.ac.ebi.subs.processing.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatus;
 
 import java.util.List;
 
@@ -63,9 +63,9 @@ public class EnaAgentSubsProcessorTest {
         assertThat("correct certs",
                 certs,
                 containsInAnyOrder(
-                        new ProcessingCertificate(st,Archive.Ena, ProcessingStatus.Processed, st.getAccession()),
-                        new ProcessingCertificate(as,Archive.Ena, ProcessingStatus.Processed,as.getAccession()),
-                        new ProcessingCertificate(ad,Archive.Ena, ProcessingStatus.Processed,ad.getAccession())
+                        new ProcessingCertificate(st,Archive.Ena, ProcessingStatus.Done, st.getAccession()),
+                        new ProcessingCertificate(as,Archive.Ena, ProcessingStatus.Done,as.getAccession()),
+                        new ProcessingCertificate(ad,Archive.Ena, ProcessingStatus.Done,ad.getAccession())
                 )
 
         );
