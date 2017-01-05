@@ -6,6 +6,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.BasePathAwareController;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,19 +28,30 @@ public class StatusController {
     @Autowired
     private List<Status> processingStatuses;
 
+    @Autowired
+    private PagedResourcesAssembler pagedResourcesAssembler;
+
+    @Autowired
+    private ResourceAssembler<Status,Resource<Status>> processingStatusResourceAssembler;
+
+    @Autowired
+    private ResourceAssembler<Status,Resource<Status>> releaseStatusResourceAssembler;
+
 
     @RequestMapping("processingStatuses")
-    public Page<Status> allProcessingStatus(Pageable pageable) {
-        return new PageImpl<Status>(processingStatuses, pageable, processingStatuses.size());
+    public PagedResources<Resource<Status>> allProcessingStatus(Pageable pageable) {
+        Page<Status> page = new PageImpl<Status>(processingStatuses, pageable, processingStatuses.size());
+
+        return pagedResourcesAssembler.toResource(page,processingStatusResourceAssembler);
     }
 
     @RequestMapping("processingStatuses/{status}")
-    public Status processingStatus(@PathVariable String status){
+    public Resource<Status> processingStatus(@PathVariable String status){
         Optional<Status> optionalStatus = processingStatuses.stream().filter(s -> s.getStatusName().equals(status))
                 .findFirst();
 
         if (optionalStatus.isPresent()){
-            return optionalStatus.get();
+            return processingStatusResourceAssembler.toResource(optionalStatus.get());
         }
         else {
             throw new ResourceNotFoundException();
@@ -44,17 +59,19 @@ public class StatusController {
     }
 
     @RequestMapping("releaseStatuses")
-    public Page<Status> allReleaseStatus(Pageable pageable) {
-        return new PageImpl<Status>(releaseStatuses, pageable, releaseStatuses.size());
+    public PagedResources<Resource<Status>> allReleaseStatus(Pageable pageable) {
+        Page<Status> page = new PageImpl<Status>(releaseStatuses, pageable, releaseStatuses.size());
+
+        return pagedResourcesAssembler.toResource(page,releaseStatusResourceAssembler);
     }
 
     @RequestMapping("releaseStatuses/{status}")
-    public Status releaseStatus(@PathVariable String status){
+    public Resource<Status> releaseStatus(@PathVariable String status){
         Optional<Status> optionalStatus = releaseStatuses.stream().filter(s -> s.getStatusName().equals(status))
                 .findFirst();
 
         if (optionalStatus.isPresent()){
-            return optionalStatus.get();
+            return releaseStatusResourceAssembler.toResource(optionalStatus.get());
         }
         else {
             throw new ResourceNotFoundException();
