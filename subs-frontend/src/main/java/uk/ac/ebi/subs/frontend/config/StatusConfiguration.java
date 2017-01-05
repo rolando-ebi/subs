@@ -21,23 +21,23 @@ public class StatusConfiguration {
     public List<Status> releaseStatuses() {
         List<Status> statuses = Arrays.asList(
                 Status.build(ReleaseStatus.Draft, "In preparation")
-                        .addTransition(ReleaseStatus.Private, true),
+                        .addUserTransition(ReleaseStatus.Private),
 
                 Status.build(ReleaseStatus.Private, "Stored in an archive but not released yet")
-                        .addTransition(ReleaseStatus.Cancelled, true)
-                        .addTransition(ReleaseStatus.Public, false),
+                        .addUserTransition(ReleaseStatus.Cancelled)
+                        .addSystemTransition(ReleaseStatus.Public),
 
                 Status.build(ReleaseStatus.Cancelled, "Exists in an archive but will not be released")
-                        .addTransition(ReleaseStatus.Private, true),
+                        .addUserTransition(ReleaseStatus.Private),
 
                 Status.build(ReleaseStatus.Public, "Available through an archive")
-                    .addTransition(ReleaseStatus.Suppressed,false)
-                    .addTransition(ReleaseStatus.Killed,false),
+                    .addSystemTransition(ReleaseStatus.Suppressed)
+                    .addSystemTransition(ReleaseStatus.Killed),
 
                 Status.build(ReleaseStatus.Suppressed, "Data available but not findable without the accession")
-                    .addTransition(ReleaseStatus.Public,false),
+                    .addSystemTransition(ReleaseStatus.Public),
 
-                Status.build(ReleaseStatus.Killed,"Data not available and not finable without the accession")
+                Status.build(ReleaseStatus.Killed,"Data not available and metadata not findable without the accession")
 
         );
 
@@ -49,30 +49,30 @@ public class StatusConfiguration {
         List<Status> statuses = Arrays.asList(
 
             Status.build(ProcessingStatus.Draft,"In preparation")
-                .addTransition(ProcessingStatus.Submitted,true),
+                .addUserTransition(ProcessingStatus.Submitted),
 
             Status.build(ProcessingStatus.Submitted,"User has submitted document for storage by archives")
-                .addTransition(ProcessingStatus.Dispatched),
+                .addSystemTransition(ProcessingStatus.Dispatched),
 
             Status.build(ProcessingStatus.Dispatched,"USI has dispatched document to an archive")
-                .addTransition(ProcessingStatus.Received),
+                .addSystemTransition(ProcessingStatus.Received),
 
             Status.build(ProcessingStatus.Received,"Archive has received document")
-                .addTransition(ProcessingStatus.Curation)
-                .addTransition(ProcessingStatus.Processing),
+                .addSystemTransition(ProcessingStatus.Curation)
+                .addSystemTransition(ProcessingStatus.Processing),
 
             Status.build(ProcessingStatus.Curation,"Curation team is reviewing document")
-                .addTransition(ProcessingStatus.Accepted)
-                .addTransition(ProcessingStatus.ActionRequired),
+                .addSystemTransition(ProcessingStatus.Accepted)
+                .addSystemTransition(ProcessingStatus.ActionRequired),
 
             Status.build(ProcessingStatus.Accepted,"Curation team has accepted document")
-                .addTransition(ProcessingStatus.Processing),
+                .addSystemTransition(ProcessingStatus.Processing),
 
             Status.build(ProcessingStatus.ActionRequired,"Curation team have requested changes or additional information")
-                .addTransition(ProcessingStatus.Submitted,true),
+                .addUserTransition(ProcessingStatus.Submitted),
 
             Status.build(ProcessingStatus.Processing,"Archive is processing document")
-                .addTransition(ProcessingStatus.Done),
+                .addSystemTransition(ProcessingStatus.Done),
 
             Status.build(ProcessingStatus.Done,"Archive has stored document")
         );
