@@ -3,9 +3,9 @@ package uk.ac.ebi.subs.frontend;
 
 import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.component.Domain;
+import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.processing.ProcessingStatus;
 
 import java.util.ArrayList;
 import java.util.List;

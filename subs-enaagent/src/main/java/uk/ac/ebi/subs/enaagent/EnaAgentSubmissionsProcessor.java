@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.enarepo.EnaSampleRepository;
 import uk.ac.ebi.subs.processing.*;
 import uk.ac.ebi.subs.data.component.Archive;
@@ -118,7 +119,7 @@ public class EnaAgentSubmissionsProcessor {
         enaStudyRepository.save(study);
         study.setStatus(processedStatusValue);
 
-        return new ProcessingCertificate(study,Archive.Ena, ProcessingStatus.Processed, study.getAccession());
+        return new ProcessingCertificate(study,Archive.Ena, ProcessingStatus.Done, study.getAccession());
     }
 
 
@@ -146,7 +147,7 @@ public class EnaAgentSubmissionsProcessor {
         enaAssayRepository.save(assay);
         assay.setStatus(processedStatusValue);
 
-        return new ProcessingCertificate(assay,Archive.Ena, ProcessingStatus.Processed, assay.getAccession());
+        return new ProcessingCertificate(assay,Archive.Ena, ProcessingStatus.Done, assay.getAccession());
     }
 
     private ProcessingCertificate processAssayData(AssayData assayData, SubmissionEnvelope submissionEnvelope) {
@@ -160,6 +161,6 @@ public class EnaAgentSubmissionsProcessor {
 
         assayData.setStatus(processedStatusValue);
 
-        return new ProcessingCertificate(assayData,Archive.Ena, ProcessingStatus.Processed, assayData.getAccession());
+        return new ProcessingCertificate(assayData,Archive.Ena, ProcessingStatus.Done, assayData.getAccession());
     }
 }
