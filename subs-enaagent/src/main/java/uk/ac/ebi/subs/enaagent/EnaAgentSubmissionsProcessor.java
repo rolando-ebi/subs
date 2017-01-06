@@ -128,9 +128,11 @@ public class EnaAgentSubmissionsProcessor {
 
         for (SampleUse su : assay.getSampleUses()){
             SampleRef sr = su.getSampleRef();
-            sr.fillIn(submission.getSamples(),submissionEnvelope.getSupportingSamples());
+            Sample sample = sr.fillIn(submission.getSamples(),submissionEnvelope.getSupportingSamples());
 
-            if (sr.getReferencedObject() != null) enaSampleRepository.save(sr.getReferencedObject());
+            if (sample != null) {
+                enaSampleRepository.save(sample);
+            }
         }
 
 
