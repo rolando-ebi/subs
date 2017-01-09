@@ -68,14 +68,9 @@ public class CoreSubmittableValidationHelper {
             }
         }
 
-        if (submittable.getId() != null) {
-
-            if (storedVersion == null) {
-                errors.rejectValue("id", "field.idUnknown", "ID does not match any record");
-            } else {
-                validateAgainstStoredVersion(errors, submittable, storedVersion);
-            }
-
+        //submittables have their IDs set on creation, so having an ID does not mean it is already stored
+        if (submittable.getId() != null && storedVersion != null) {
+             validateAgainstStoredVersion(errors, submittable, storedVersion);
         }
     }
 
