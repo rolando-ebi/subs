@@ -13,12 +13,9 @@ import uk.ac.ebi.subs.data.submittable.AssayData;
 import java.util.List;
 
 @RepositoryRestResource( path="/assayData",collectionResourceRel = "assayData")//the plural of assay data is assay data#
-public interface AssayDataRepository extends MongoRepository<AssayData, String> {
+public interface AssayDataRepository extends SubmittableRepository<AssayData, String> {
 
     @RestResource(rel= SubmissionLinks.ASSAY_DATA)
     Page<AssayData> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
-
-    @RestResource(exported = false)
-    List<AssayData> findBySubmissionId(String submissionId);
 }

@@ -11,12 +11,9 @@ import uk.ac.ebi.subs.data.submittable.EgaDacPolicy;
 
 import java.util.List;
 
-public interface EgaDacPolicyRepository extends MongoRepository<EgaDacPolicy, String> {
+public interface EgaDacPolicyRepository extends SubmittableRepository<EgaDacPolicy, String> {
 
     @RestResource(rel= SubmissionLinks.EGA_DAC_POLICY)
     Page<EgaDacPolicy> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
-
-    @RestResource(exported = false)
-    List<EgaDacPolicy> findBySubmissionId(String submissionId);
 }

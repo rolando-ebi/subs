@@ -11,15 +11,11 @@ import uk.ac.ebi.subs.data.submittable.Sample;
 
 import java.util.List;
 
-public interface SampleRepository extends MongoRepository<Sample, String> {
+public interface SampleRepository extends SubmittableRepository<Sample, String> {
 
     Sample findByAccession(String accession);
 
     @RestResource(rel= SubmissionLinks.SAMPLE)
     Page<Sample> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
-
-
-    @RestResource(exported = false)
-    List<Sample> findBySubmissionId(String submissionId);
 
 }

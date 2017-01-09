@@ -11,12 +11,9 @@ import uk.ac.ebi.subs.data.submittable.EgaDataset;
 
 import java.util.List;
 
-public interface EgaDatasetRepository extends MongoRepository<EgaDataset, String> {
+public interface EgaDatasetRepository extends SubmittableRepository<EgaDataset, String> {
 
     @RestResource(rel= SubmissionLinks.EGA_DATASET)
     Page<EgaDataset> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
-
-    @RestResource(exported = false)
-    List<EgaDataset> findBySubmissionId(String submissionId);
 }

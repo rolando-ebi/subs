@@ -11,12 +11,9 @@ import uk.ac.ebi.subs.data.submittable.EgaDac;
 
 import java.util.List;
 
-public interface EgaDacRepository extends MongoRepository<EgaDac, String> {
+public interface EgaDacRepository extends SubmittableRepository<EgaDac, String> {
 
     @RestResource(rel= SubmissionLinks.EGA_DAC)
     Page<EgaDac> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
-
-    @RestResource(exported = false)
-    List<EgaDac> findBySubmissionId(String submissionId);
 }

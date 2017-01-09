@@ -11,12 +11,9 @@ import uk.ac.ebi.subs.data.submittable.Project;
 
 import java.util.List;
 
-public interface ProjectRepository extends MongoRepository<Project, String> {
+public interface ProjectRepository extends SubmittableRepository<Project, String> {
     @RestResource(rel= SubmissionLinks.PROJECT)
     Page<Project> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
-
-    @RestResource(exported = false)
-    List<Project> findBySubmissionId(String submissionId);
 
 }

@@ -17,13 +17,9 @@ import uk.ac.ebi.subs.data.submittable.Study;
 import java.util.List;
 
 @RepositoryRestResource
-public interface StudyRepository extends MongoRepository<Study, String> {
+public interface StudyRepository extends SubmittableRepository<Study, String> {
 
     @RestResource(rel= SubmissionLinks.STUDY)
     Page<Study> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
-
-
-    @RestResource(exported = false)
-    List<Study> findBySubmissionId(String submissionId);
 
 }

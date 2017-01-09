@@ -11,10 +11,9 @@ import uk.ac.ebi.subs.data.submittable.Protocol;
 
 import java.util.List;
 
-public interface ProtocolRepository extends MongoRepository<Protocol, String>{
+public interface ProtocolRepository extends SubmittableRepository<Protocol, String>{
+
     @RestResource(rel= SubmissionLinks.PROTOCOL)
     Page<Protocol> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
-    @RestResource(exported = false)
-    List<Protocol> findBySubmissionId(String submissionId);
 }

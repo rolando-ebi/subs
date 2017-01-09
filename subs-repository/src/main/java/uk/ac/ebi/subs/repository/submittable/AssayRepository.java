@@ -11,12 +11,9 @@ import uk.ac.ebi.subs.data.submittable.Assay;
 
 import java.util.List;
 
-public interface AssayRepository extends MongoRepository<Assay, String> {
+public interface AssayRepository extends SubmittableRepository<Assay, String> {
 
     @RestResource(rel= SubmissionLinks.ASSAY)
     Page<Assay> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
-
-    @RestResource(exported = false)
-    List<Assay> findBySubmissionId(String submissionId);
 }

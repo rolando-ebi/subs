@@ -10,11 +10,8 @@ import uk.ac.ebi.subs.data.submittable.Analysis;
 
 import java.util.List;
 
-public interface AnalysisRepository extends MongoRepository<Analysis, String> {
+public interface AnalysisRepository extends SubmittableRepository<Analysis, String> {
 
     @RestResource(rel= SubmissionLinks.ANALYSIS)
     Page<Analysis> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
-
-    @RestResource(exported = false)
-    List<Analysis> findBySubmissionId(String submissionId);
 }
