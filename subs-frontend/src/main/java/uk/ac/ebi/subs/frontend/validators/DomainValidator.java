@@ -15,7 +15,7 @@ public class DomainValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        Domain domain = (Domain)target;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors,"name","field.required","domain name is required");
+        Domain domain = (Domain) target;
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "field.required", "domain name is required");
     }
 }

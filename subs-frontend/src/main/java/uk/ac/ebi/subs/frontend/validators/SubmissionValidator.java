@@ -11,7 +11,8 @@ import uk.ac.ebi.subs.data.Submission;
 @Component
 public class SubmissionValidator implements Validator {
 
-    @Autowired DomainValidator domainValidator;
+    @Autowired
+    DomainValidator domainValidator;
 
     @Override
     public void validate(Object target, Errors errors) {
