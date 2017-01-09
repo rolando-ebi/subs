@@ -4,7 +4,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
         classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3")
         classpath("net.saliman:gradle-cobertura-plugin:2.3.2")
     }
@@ -29,7 +29,7 @@ subprojects {
     apply plugin: 'idea'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
-    apply plugin: 'spring-boot'
+    apply plugin: 'org.springframework.boot'
 
     group = 'uk.ac.ebi.subs'
 
@@ -42,34 +42,13 @@ subprojects {
     }
 
     task wrapper(type: Wrapper) {
-        gradleVersion = '2.2'
+        gradleVersion = '3.3'
     }
 
     repositories {
         mavenLocal()
         mavenCentral()
     }
-
-    task copyConfiguration << {
-        println "Target environment: $environment"
-
-        copy {
-            from "src/main/environment/resources/${environment}"
-            into "src/main/resources"
-            include "**/*"
-        }
-    }
-
-    task copyTestResourcesConfiguration << {
-        println "Copying test resources for environment : ${environment}"
-
-        copy {
-            from "src/test/environment/resources/${environment}"
-            into "src/test/resources"
-            include "**/*"
-        }
-    }
-
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
