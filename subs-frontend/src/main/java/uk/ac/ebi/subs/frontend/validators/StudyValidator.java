@@ -19,7 +19,7 @@ public class StudyValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return Assay.class.isAssignableFrom(clazz);
+        return Study.class.isAssignableFrom(clazz);
     }
 
     @Override
