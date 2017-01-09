@@ -50,31 +50,6 @@ subprojects {
         mavenCentral()
     }
 
-    task copyConfiguration {
-        doLast {
-            println "Target environment: $environment"
-
-            copy {
-                from "src/main/environment/resources/${environment}"
-                into "src/main/resources"
-                include "**/*"
-            }
-        }
-    }
-
-    task copyTestResourcesConfiguration {
-        doLast {
-            println "Copying test resources for environment : ${environment}"
-
-            copy {
-                from "src/test/environment/resources/${environment}"
-                into "src/test/resources"
-                include "**/*"
-            }
-        }
-    }
-
-
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
