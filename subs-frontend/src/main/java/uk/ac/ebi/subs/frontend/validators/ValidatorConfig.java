@@ -1,13 +1,11 @@
 package uk.ac.ebi.subs.frontend.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.event.ValidatingRepositoryEventListener;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.validation.Validator;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 
@@ -28,6 +26,35 @@ public class ValidatorConfig extends RepositoryRestConfigurerAdapter {
     private static final String BEFORE_DELETE = "beforeDelete";
 
 
+    @Autowired
+    AnalysisValidator analysisValidator;
+
+    @Autowired
+    private AssayValidator assayValidator;
+
+    @Autowired
+    private AssayDataValidator assayDataValidator;
+
+    @Autowired
+    private EgaDacValidator egaDacValidator;
+
+    @Autowired
+    private EgaDacPolicyValidator egaDacPolicyValidator;
+
+    @Autowired
+    private EgaDatasetValidator egaDatasetValidator;
+
+    @Autowired
+    private ProjectValidator projectValidator;
+
+    @Autowired
+    private ProtocolValidator protocolValidator;
+
+    @Autowired
+    private SampleValidator sampleValidator;
+
+    @Autowired
+    private SampleGroupValidator sampleGroupValidator;
 
     @Autowired
     private StudyValidator studyValidator;
@@ -35,19 +62,26 @@ public class ValidatorConfig extends RepositoryRestConfigurerAdapter {
     @Autowired
     private SubmissionValidator submissionValidator;
 
-    @Autowired
-    private SampleValidator sampleValidator;
-
-    @Autowired
-    private ProjectValidator projectValidator;
-
-
-
 
     @Override
     public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener eventListener) {
 
-        Stream<Validator> stdValidators = Stream.of(submissionValidator,projectValidator,studyValidator,sampleValidator);
+        Stream<Validator> stdValidators = Stream.of(
+                analysisValidator,
+                assayValidator,
+                assayDataValidator,
+                egaDacValidator,
+                egaDacPolicyValidator,
+                egaDatasetValidator,
+                projectValidator,
+                protocolValidator,
+                sampleValidator,
+                sampleGroupValidator,
+                studyValidator,
+
+                submissionValidator
+
+        );
 
         stdValidators.forEach(validator -> {
             eventListener.addValidator(BEFORE_CREATE, validator);

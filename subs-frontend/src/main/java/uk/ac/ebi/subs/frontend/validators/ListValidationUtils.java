@@ -17,13 +17,13 @@ public class ListValidationUtils {
      * @param list
      * @param errors
      */
-    public static void invokeValidatorOnList(String path, Validator validator, List<?> list, Errors errors){
+    public static void invokeValidatorOnList(String path, Validator validator, List<?> list, Errors errors) {
 
         int i = 0;
 
-        for (Object target : list){
+        for (Object target : list) {
             try {
-                errors.pushNestedPath(path+"["+i+"]");
+                errors.pushNestedPath(path + "[" + i + "]");
                 ValidationUtils.invokeValidator(validator, target, errors);
             } finally {
                 errors.popNestedPath();
@@ -31,8 +31,6 @@ public class ListValidationUtils {
             }
         }
     }
-
-
 
 
 }

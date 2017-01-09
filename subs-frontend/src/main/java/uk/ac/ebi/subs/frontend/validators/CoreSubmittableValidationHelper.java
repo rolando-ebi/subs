@@ -3,13 +3,14 @@ package uk.ac.ebi.subs.frontend.validators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.status.Status;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.submittable.SubmittableRepository;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -22,18 +23,17 @@ import java.util.Optional;
  * Note that we must supply a default message. Not having a message causes the client to get a 500 (server error)
  * status code instead of a 400 (bad request)
  */
-public abstract class AbstractSubmittableValidator implements Validator {
+@Component
+public class CoreSubmittableValidationHelper {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    abstract Submittable getCurrentVersion(String id);
 
     final SubmissionRepository submissionRepository;
     final Collection<Status> processingStatuses;
     final Collection<Status> releaseStatuses;
 
     @Autowired
-    public AbstractSubmittableValidator(
+    public CoreSubmittableValidationHelper(
             SubmissionRepository submissionRepository,
             Collection<Status> processingStatuses,
             Collection<Status> releaseStatuses) {
@@ -42,11 +42,20 @@ public abstract class AbstractSubmittableValidator implements Validator {
         this.releaseStatuses = releaseStatuses;
     }
 
+    public void validate(Submittable target, SubmittableRepository repository, Errors errors) {
+        Submittable storedVersion = null;
+
+        if (target.getId() != null) {
+            storedVersion = (Submittable) repository.findOne(target.getId());
+        }
+
+        this.validate(target, storedVersion, errors);
+    }
+
 
     /*TODO review error codes, I just made some up for now */
-    @Override
-    public void validate(Object target, Errors errors) {
-        logger.warn("validate {}", target);
+    public void validate(Submittable target, Submittable storedVersion, Errors errors) {
+        logger.info("validate {}", target);
         Submittable submittable = (Submittable) target;
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "submissionId", "field.required", "submissionId is required");
@@ -60,13 +69,11 @@ public abstract class AbstractSubmittableValidator implements Validator {
         }
 
         if (submittable.getId() != null) {
-            Submittable storedVersion = getCurrentVersion(submittable.getId());
 
             if (storedVersion == null) {
                 errors.rejectValue("id", "field.idUnknown", "ID does not match any record");
             } else {
                 validateAgainstStoredVersion(errors, submittable, storedVersion);
-
             }
 
         }
@@ -99,8 +106,8 @@ public abstract class AbstractSubmittableValidator implements Validator {
 
         Status currentStatus = optionalCurrentStatus.get();
 
-        if (!currentStatus.isUserTransitionPermitted(submittable.getStatus())){
-            errors.rejectValue("status","field.illegalStateTransition","This status change is not permitted");
+        if (!currentStatus.isUserTransitionPermitted(submittable.getStatus())) {
+            errors.rejectValue("status", "field.illegalStateTransition", "This status change is not permitted");
         }
     }
 }
