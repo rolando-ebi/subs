@@ -4,25 +4,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.submittable.*;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
+@Service
 public class StressTestServiceImpl implements StressTestService {
 
-    private static final Logger logger = LoggerFactory.getLogger(StressTestServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${host:localhost}")
     String host;
@@ -30,8 +36,8 @@ public class StressTestServiceImpl implements StressTestService {
     @Value("${port:8080}")
     Integer port;
 
-    @Value("${urlPath:api/submit}")
-    String urlPath;
+    @Value("${basePath:api/}")
+    String basePath;
 
     @Value("${protocol:http}")
     String protocol;
@@ -39,7 +45,8 @@ public class StressTestServiceImpl implements StressTestService {
     @Value("${suffix:json}")
     String suffix;
 
-    RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    RestTemplate restTemplate;
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -48,11 +55,40 @@ public class StressTestServiceImpl implements StressTestService {
     @Override
     public void submitJsonInDir(Path path) {
         pathStream(path)
+                .parallel()
                 .map(loadSubmission)
                 .forEachOrdered(submitSubmission)
         ;
-        logger.info("Submission count: {}",submissionCounter);
+        logger.info("Submission count: {}", submissionCounter);
+    }
 
+    //TODO you should be getting this from the REST API itself
+    public Map<Class, String> itemSubmissionUri() {
+        Map<Class, String> itemClassToSubmissionUri = new HashMap<>();
+
+        Stream.of(
+                Pair.of(Submission.class, "submissions"),
+                Pair.of(Analysis.class, "analyses"),
+                Pair.of(Assay.class, "assays"),
+                Pair.of(AssayData.class, "assayData"),
+                Pair.of(EgaDac.class, "egaDacs"),
+                Pair.of(EgaDacPolicy.class, "egaDacPolicies"),
+                Pair.of(EgaDataset.class, "egaDatasets"),
+                Pair.of(Project.class, "projects"),
+                Pair.of(Protocol.class, "protocols"),
+                Pair.of(Sample.class, "samples"),
+                Pair.of(SampleGroup.class, "sampleGroups"),
+                Pair.of(Study.class, "studies")
+        ).forEach(
+                pair -> {
+                    String urlPath = pair.getSecond();
+                    Class domainType = pair.getFirst();
+
+                    itemClassToSubmissionUri.put(domainType, protocol + "://" + host + ":" + port + "/" + basePath + urlPath);
+                }
+        );
+
+        return itemClassToSubmissionUri;
     }
 
 
@@ -68,30 +104,68 @@ public class StressTestServiceImpl implements StressTestService {
                     })
                     .map(pathToPathTimeCode)
                     .sorted((p1, p2) -> Long.compare(p1.timecode, p2.timecode))
-                    .map(pathTimecodeToPath);
+                    .map(pathTimecodeToPath)
+                    .collect(Collectors.toList())
+                    .stream();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    Consumer<Submission> submitSubmission = new Consumer<Submission>() {
+    Consumer<FullSubmission> submitSubmission = new Consumer<FullSubmission>() {
         @Override
-        public void accept(Submission submission) {
+        public void accept(FullSubmission fullSubmission) {
+
             logger.info("Submitting for domain {} with {} submittables ",
-                    submission.getDomain().getName(),
-                    submission.allSubmissionItems().size()
+                    fullSubmission.getDomain().getName(),
+                    fullSubmission.allSubmissionItems().size()
             );
 
-            String uri = protocol + "://" + host + ":" + port + "/" + urlPath;
+            fullSubmission.setStatus("Draft");
 
-            Submission submissionReceived = restTemplate.postForObject(uri, submission, submission.getClass());
+            Map<Class, String> domainTypeToSubmissionPath = itemSubmissionUri();
+            Submission minimalSubmission = new Submission(fullSubmission);
+
+            minimalSubmission.setSubmissionDate(null);
+            String submissionUri = domainTypeToSubmissionPath.get(minimalSubmission.getClass());
+
+            URI submissionLocation = restTemplate.postForLocation(submissionUri, minimalSubmission);
+            String[] pathElements = submissionLocation.getPath().split("/");
+
+            final String submissionId = pathElements[pathElements.length - 1]; //TODO this is a cheap hack, fix it
+
+            fullSubmission.allSubmissionItemsStream().parallel().forEach(
+                    item -> {
+                        item.setSubmissionId(submissionId);
+                        item.setStatus("Draft");
+
+                        String itemUri = domainTypeToSubmissionPath.get(item.getClass());
+
+                        if (itemUri == null) {
+                            throw new NullPointerException("no submission URI for " + item);
+                        }
+                        logger.debug("posting to {}, {}", itemUri, item);
+                        URI location = restTemplate.postForLocation(itemUri, item);
+
+                        logger.debug("created {}", location);
+                    }
+            );
+
+            minimalSubmission.setId(submissionId);
+            minimalSubmission.setStatus("Submitted");
+
+            //TODO complete the users part of submission by changing the status
+            restTemplate.put(submissionLocation,minimalSubmission);
+
             submissionCounter++;
+
+
         }
     };
 
-    Function<Path, Submission> loadSubmission = new Function<Path, Submission>() {
-        public Submission apply(Path p) {
+    Function<Path, FullSubmission> loadSubmission = new Function<Path, FullSubmission>() {
+        public FullSubmission apply(Path p) {
             logger.info("Loading Submission JSON from {}", p);
 
             try {
@@ -100,7 +174,7 @@ public class StressTestServiceImpl implements StressTestService {
 
                 logger.debug("got string: {}", json);
 
-                return mapper.readValue(json, Submission.class);
+                return mapper.readValue(json, FullSubmission.class);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

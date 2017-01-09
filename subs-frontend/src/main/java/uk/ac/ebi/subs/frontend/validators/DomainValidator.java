@@ -1,4 +1,4 @@
-package uk.ac.ebi.subs.data.validation;
+package uk.ac.ebi.subs.frontend.validators;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -16,6 +16,6 @@ public class DomainValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         Domain domain = (Domain)target;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors,"name","field.required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors,"name","field.required","domain name is required");
     }
 }

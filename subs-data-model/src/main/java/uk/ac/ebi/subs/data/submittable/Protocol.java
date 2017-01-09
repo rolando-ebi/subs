@@ -6,21 +6,8 @@ import uk.ac.ebi.subs.data.component.ProtocolRef;
 
 public class Protocol extends AbstractSubsEntity<Protocol> {
 
-    @Id
-    String id;
-
     @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    protected AbstractSubsRef<Protocol> newRef() {
+    protected ProtocolRef newRef() {
         return new ProtocolRef();
     }
 

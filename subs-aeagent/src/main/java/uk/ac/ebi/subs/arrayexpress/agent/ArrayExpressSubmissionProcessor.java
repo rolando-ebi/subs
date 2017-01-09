@@ -12,6 +12,8 @@ import uk.ac.ebi.subs.arrayexpress.model.ArrayExpressStudy;
 import uk.ac.ebi.subs.arrayexpress.model.SampleDataRelationship;
 import uk.ac.ebi.subs.arrayexpress.repo.ArrayExpressStudyRepository;
 import uk.ac.ebi.subs.arrayexpress.repo.SampleDataRelatioshipRepository;
+
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.data.submittable.Sample;
@@ -113,7 +115,7 @@ public class ArrayExpressSubmissionProcessor {
 
     public List<ProcessingCertificate> processStudy(Study study, SubmissionEnvelope submissionEnvelope) {
         List<ProcessingCertificate> certs = new ArrayList<>();
-        Submission submission = submissionEnvelope.getSubmission();
+        FullSubmission submission = submissionEnvelope.getSubmission();
 
         if (!study.isAccessioned()) {
             study.setAccession("AE-MTAB-" + UUID.randomUUID());
@@ -154,7 +156,7 @@ public class ArrayExpressSubmissionProcessor {
     public List<ProcessingCertificate> processAssay(Assay assay, SubmissionEnvelope submissionEnvelope, ArrayExpressStudy arrayExpressStudy){
         List<ProcessingCertificate> certs = new ArrayList<>();
 
-        Submission submission = submissionEnvelope.getSubmission();
+        FullSubmission submission = submissionEnvelope.getSubmission();
 
         SampleDataRelationship sdr = new SampleDataRelationship();
         sdr.setId(UUID.randomUUID().toString());
