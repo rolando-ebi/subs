@@ -2,10 +2,10 @@ package uk.ac.ebi.subs.frontend;
 
 
 import uk.ac.ebi.subs.data.FullSubmission;
-import uk.ac.ebi.subs.data.component.Domain;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
-import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.component.Domain;
+import uk.ac.ebi.subs.data.status.SubmissionStatus;
+import uk.ac.ebi.subs.data.submittable.Sample;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +40,13 @@ public class Helpers {
         return sub;
     }
 
-    public static Submission generateTestSubmission(){
+    public static Submission generateTestSubmission() {
         Submission sub = new Submission();
         Domain d = new Domain();
         sub.setId(UUID.randomUUID().toString());
         d.setName("my-domain");
         sub.setDomain(d);
-        sub.setStatus(ProcessingStatus.Draft.name());
+        sub.setStatus(SubmissionStatus.Draft.name());
         return sub;
     }
 }
