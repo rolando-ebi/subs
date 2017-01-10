@@ -5,8 +5,10 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.hateoas.Identifiable;
+import org.springframework.util.Assert;
 import uk.ac.ebi.subs.data.annotation.CascadeSave;
 import uk.ac.ebi.subs.data.component.Domain;
+import uk.ac.ebi.subs.data.status.SubmissionStatus;
 import uk.ac.ebi.subs.data.submittable.Protocol;
 import uk.ac.ebi.subs.data.component.Submitter;
 import uk.ac.ebi.subs.data.submittable.*;
@@ -32,7 +34,8 @@ public class Submission implements Identifiable<String>{
     String id;
     Submitter submitter = new Submitter();
     Domain domain = new Domain();
-    Date submissionDate = new Date();
+    Date submissionDate;
+    Date createdDate;
     String status;
 
     public String getId() {
@@ -67,10 +70,22 @@ public class Submission implements Identifiable<String>{
         this.submissionDate = submissionDate;
     }
 
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
     public String getStatus() {
         return status;
     }
 
+    public void setStatus(SubmissionStatus status) {
+        Assert.notNull(status);
+        this.setStatus(status.name());
+    }
     public void setStatus(String status) {
         this.status = status;
     }
@@ -84,12 +99,13 @@ public class Submission implements Identifiable<String>{
                 Objects.equals(submitter, that.submitter) &&
                 Objects.equals(domain, that.domain) &&
                 Objects.equals(submissionDate, that.submissionDate) &&
+                Objects.equals(createdDate, that.createdDate) &&
                 Objects.equals(status, that.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, submitter, domain, submissionDate, status);
+        return Objects.hash(id, submitter, domain, submissionDate, createdDate, status);
     }
 
     @Override
@@ -99,6 +115,7 @@ public class Submission implements Identifiable<String>{
                 ", submitter=" + submitter +
                 ", domain=" + domain +
                 ", submissionDate=" + submissionDate +
+                ", createdDate=" + createdDate +
                 ", status='" + status + '\'' +
                 '}';
     }

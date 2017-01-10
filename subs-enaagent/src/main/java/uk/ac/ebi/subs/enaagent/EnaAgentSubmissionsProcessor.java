@@ -32,7 +32,7 @@ public class EnaAgentSubmissionsProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(EnaAgentSubmissionsProcessor.class);
 
-    String processedStatusValue = "processed";
+    ProcessingStatus processedStatusValue = ProcessingStatus.Done;
 
     @Autowired
     EnaStudyRepository enaStudyRepository;

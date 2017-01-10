@@ -29,6 +29,9 @@ public class StatusController {
     private List<Status> processingStatuses;
 
     @Autowired
+    private List<Status> submissionStatuses;
+
+    @Autowired
     private PagedResourcesAssembler pagedResourcesAssembler;
 
     @Autowired
@@ -37,6 +40,8 @@ public class StatusController {
     @Autowired
     private ResourceAssembler<Status,Resource<Status>> releaseStatusResourceAssembler;
 
+    @Autowired
+    private ResourceAssembler<Status,Resource<Status>> submissionStatusResourceAssembler;
 
     @RequestMapping("processingStatuses")
     public PagedResources<Resource<Status>> allProcessingStatus(Pageable pageable) {
@@ -78,4 +83,23 @@ public class StatusController {
         }
     }
 
+    @RequestMapping("submissionStatuses")
+    public PagedResources<Resource<Status>> allSubmissionStatus(Pageable pageable) {
+        Page<Status> page = new PageImpl<Status>(submissionStatuses, pageable, submissionStatuses.size());
+
+        return pagedResourcesAssembler.toResource(page,submissionStatusResourceAssembler);
+    }
+
+    @RequestMapping("submissionStatuses/{status}")
+    public Resource<Status> submissionStatus(@PathVariable String status){
+        Optional<Status> optionalStatus = submissionStatuses.stream().filter(s -> s.getStatusName().equals(status))
+                .findFirst();
+
+        if (optionalStatus.isPresent()){
+            return submissionStatusResourceAssembler.toResource(optionalStatus.get());
+        }
+        else {
+            throw new ResourceNotFoundException();
+        }
+    }
 }

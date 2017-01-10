@@ -43,7 +43,7 @@ public class EnaAgentSubsProcessorTest {
         ProcessingCertificateEnvelope processingCertificateEnvelope = processor.processSubmission(subEnv);
         List<ProcessingCertificate> certs = processingCertificateEnvelope.getProcessingCertificates();
 
-        String processedStatus = "processed";
+        String processedStatus = ProcessingStatus.Done.name();
 
         assertThat("study accessioned", st.getAccession(), startsWith("ENA-STU-"));
         assertThat("study status", st.getStatus(),equalTo(processedStatus));
