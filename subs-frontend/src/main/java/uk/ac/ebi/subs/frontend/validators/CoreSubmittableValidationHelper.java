@@ -12,8 +12,7 @@ import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 import uk.ac.ebi.subs.repository.submittable.SubmittableRepository;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Base validator for submitted items
@@ -29,14 +28,14 @@ public class CoreSubmittableValidationHelper {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     final SubmissionRepository submissionRepository;
-    final Collection<Status> processingStatuses;
-    final Collection<Status> releaseStatuses;
+    final List<Status> processingStatuses;
+    final List<Status> releaseStatuses;
 
     @Autowired
     public CoreSubmittableValidationHelper(
             SubmissionRepository submissionRepository,
-            Collection<Status> processingStatuses,
-            Collection<Status> releaseStatuses) {
+            List<Status> processingStatuses,
+            List<Status> releaseStatuses) {
         this.submissionRepository = submissionRepository;
         this.processingStatuses = processingStatuses;
         this.releaseStatuses = releaseStatuses;
@@ -58,51 +57,49 @@ public class CoreSubmittableValidationHelper {
         logger.info("validate {}", target);
         Submittable submittable = (Submittable) target;
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "submissionId", "field.required", "submissionId is required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "submissionId", "required", "submissionId is required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "status", "required", "status is required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "domain.name", "required", "domain name is required");
+
+
 
         if (submittable.getSubmissionId() != null) {
             Submission submission = submissionRepository.findOne(submittable.getSubmissionId());
 
             if (submission == null) {
-                errors.rejectValue("submissionId", "field.submissionNotFound", "submission not found for ID");
+                errors.rejectValue("submissionId", "submissionNotFound", "submission not found for ID");
             }
         }
 
         //submittables have their IDs set on creation, so having an ID does not mean it is already stored
         if (submittable.getId() != null && storedVersion != null) {
-             validateAgainstStoredVersion(errors, submittable, storedVersion);
+            validateAgainstStoredVersion(errors, submittable, storedVersion);
         }
     }
 
     private void validateAgainstStoredVersion(Errors errors, Submittable submittable, Submittable storedVersion) {
-        if (storedVersion.getSubmissionId() != submittable.getSubmissionId()) {
-            errors.rejectValue("submissionId", "field.submissionChanged", "Submission ID cannot be changed");
-        }
 
-        if (!storedVersion.getDomain().getName().equals(submittable.getDomain().getName())) {
-            errors.rejectValue("domain.name", "field.domainName.changed", "Domain name cannot be changed");
-        }
+        ValidationHelper.thingCannotChange(
+                submittable.getSubmissionId(),
+                storedVersion.getSubmissionId(),
+                "submissionId",
+                errors
+        );
 
-        if (!storedVersion.getStatus().equals(submittable.getStatus())) {
-            validateProcessingStatusTransition(errors, submittable, storedVersion);
-        }
+        ValidationHelper.thingCannotChange(
+                submittable.getDomain(),
+                storedVersion.getDomain(),
+                "domain",
+                errors
+        );
 
-    }
 
-    private void validateProcessingStatusTransition(Errors errors, Submittable submittable, Submittable storedVersion) {
+        ValidationHelper.validateStatusChange(
+                submittable.getStatus(),
+                storedVersion.getStatus(),
+                processingStatuses,
+                "status",
+                errors);
 
-        Optional<Status> optionalCurrentStatus = processingStatuses.stream().filter(s -> s.getStatusName().equals(storedVersion.getStatus())).findFirst();
-
-        if (!optionalCurrentStatus.isPresent()) {
-            throw new IllegalStateException(
-                    "Cannot validate status transition, stored status " + storedVersion.getStatus()
-                            + "is not in the processing status list " + processingStatuses);
-        }
-
-        Status currentStatus = optionalCurrentStatus.get();
-
-        if (!currentStatus.isUserTransitionPermitted(submittable.getStatus())) {
-            errors.rejectValue("status", "field.illegalStateTransition", "This status change is not permitted");
-        }
     }
 }
