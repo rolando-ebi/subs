@@ -1,7 +1,6 @@
 package uk.ac.ebi.subs.frontend.validators;
 
 
-import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -13,7 +12,6 @@ import uk.ac.ebi.subs.data.status.SubmissionStatus;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class SubmissionValidator implements Validator {
@@ -35,11 +33,11 @@ public class SubmissionValidator implements Validator {
 
         Submission submission = (Submission) target;
 
-        ValidationUtils.rejectIfEmpty(errors,"domain","required","domain is required");
-        ValidationUtils.rejectIfEmpty(errors,"submitter","required","submitter is required");
-        ValidationUtils.rejectIfEmpty(errors,"status","required","status is required");
-        ValidationUtils.rejectIfEmpty(errors,"domain","required","domain is required");
-        ValidationUtils.rejectIfEmpty(errors,"createdDate","required","createdDate is required");
+        ValidationUtils.rejectIfEmpty(errors, "domain", "required", "domain is required");
+        ValidationUtils.rejectIfEmpty(errors, "submitter", "required", "submitter is required");
+        ValidationUtils.rejectIfEmpty(errors, "status", "required", "status is required");
+        ValidationUtils.rejectIfEmpty(errors, "domain", "required", "domain is required");
+        ValidationUtils.rejectIfEmpty(errors, "createdDate", "required", "createdDate is required");
 
         try {
             errors.pushNestedPath("domain");
@@ -59,10 +57,9 @@ public class SubmissionValidator implements Validator {
             Submission storedVersion = submissionRepository.findOne(submission.getId());
 
             if (storedVersion != null) {
-                if (storedVersion.getStatus().equals(SubmissionStatus.Draft)){
-                    errors.reject("submissionLocked","Submission has been submitted, changes are not possible");
-                }
-                else {
+                if (storedVersion.getStatus().equals(SubmissionStatus.Draft)) {
+                    errors.reject("submissionLocked", "Submission has been submitted, changes are not possible");
+                } else {
                     validateAgainstStoredVersion(submission, storedVersion, errors);
                 }
             }
@@ -129,10 +126,6 @@ public class SubmissionValidator implements Validator {
                 errors
         );
     }
-
-
-
-
 
 
     @Override

@@ -7,11 +7,13 @@ import org.springframework.data.rest.core.annotation.*;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.SubmissionStatus;
 import uk.ac.ebi.subs.frontend.exceptions.ResourceLockedException;
 import uk.ac.ebi.subs.frontend.services.SubmissionProcessingService;
 import uk.ac.ebi.subs.frontend.updateability.OperationControlService;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -36,10 +38,15 @@ public class SubmissionEventHandler {
     @Autowired
     private SubmissionProcessingService submissionProcessingService;
 
+    /**
+     * Give submission an ID and draft status on creation
+     * @param submission
+     */
     @HandleBeforeCreate
     public void handleBeforeCreate(Submission submission) {
-        logger.warn("create");
         submission.setId(UUID.randomUUID().toString());
+        submission.setStatus(SubmissionStatus.Draft);
+        submission.setCreatedDate(new Date());
     }
 
     /**
@@ -51,7 +58,6 @@ public class SubmissionEventHandler {
      */
     @HandleBeforeSave
     public void handleBeforeSave(Submission submission) {
-        logger.warn("save");
 
         Submission storedSubmission = submissionRepository.findOne(submission.getId());
 
