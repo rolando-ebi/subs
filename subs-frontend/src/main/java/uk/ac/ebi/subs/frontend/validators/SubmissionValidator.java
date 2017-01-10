@@ -1,6 +1,8 @@
 package uk.ac.ebi.subs.frontend.validators;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Component
 public class SubmissionValidator implements Validator {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private SubmissionRepository submissionRepository;
@@ -65,6 +69,12 @@ public class SubmissionValidator implements Validator {
             }
         }
 
+        if (errors.hasErrors()){
+            logger.error("validation has errors {}",errors.getAllErrors());
+        }
+        else {
+            logger.error("no validation errors");
+        }
 
     }
 
