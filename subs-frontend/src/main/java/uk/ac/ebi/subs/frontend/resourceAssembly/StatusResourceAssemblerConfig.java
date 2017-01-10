@@ -14,6 +14,21 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class StatusResourceAssemblerConfig {
 
     @Bean
+    public ResourceAssembler<Status, Resource<Status>> submissionStatusResourceAssembler() {
+        return entity -> {
+            Resource<Status> res = new Resource<Status>(entity);
+
+            res.add(
+                    linkTo(
+                            methodOn(StatusController.class).submissionStatus(entity.getStatusName())
+                    ).withSelfRel()
+            );
+
+            return res;
+        };
+    }
+
+    @Bean
     public ResourceAssembler<Status, Resource<Status>> processingStatusResourceAssembler() {
         return entity -> {
             Resource<Status> res = new Resource<Status>(entity);
