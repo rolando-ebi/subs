@@ -8,5 +8,5 @@ import uk.ac.ebi.subs.data.Submission;
  */
 public interface SubmissionProcessingService {
 
-    void submitSubmissionForProcessing(String submissionId);
+    void submitSubmissionForProcessing(Submission submission);
 }

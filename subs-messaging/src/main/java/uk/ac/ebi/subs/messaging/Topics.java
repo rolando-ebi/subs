@@ -9,7 +9,7 @@ public class Topics {
     /**
      * The User has submitted a Submission
      */
-    public static final String EVENT_SUBMISSION_SUBMITTED = "usi.submissionenvelope.submitted";
+    public static final String EVENT_SUBMISSION_SUBMITTED = "usi.submission.submitted";
 
 
     /**
