@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.status.Status;
+import uk.ac.ebi.subs.data.status.SubmissionStatus;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 import uk.ac.ebi.subs.repository.submittable.SubmittableRepository;
@@ -69,6 +70,10 @@ public class CoreSubmittableValidationHelper {
             if (submission == null) {
                 errors.rejectValue("submissionId", "submissionNotFound", "submission not found for ID");
             }
+            else if (!submission.getStatus().equals(SubmissionStatus.Draft)) {
+                errors.reject("submissionLocked","Submission has been submitted, changes are not possible");
+            }
+
         }
 
         //submittables have their IDs set on creation, so having an ID does not mean it is already stored

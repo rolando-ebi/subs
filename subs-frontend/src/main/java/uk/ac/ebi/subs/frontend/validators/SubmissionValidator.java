@@ -1,6 +1,7 @@
 package uk.ac.ebi.subs.frontend.validators;
 
 
+import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -8,6 +9,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.status.Status;
+import uk.ac.ebi.subs.data.status.SubmissionStatus;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
 import java.util.List;
@@ -33,6 +35,12 @@ public class SubmissionValidator implements Validator {
 
         Submission submission = (Submission) target;
 
+        ValidationUtils.rejectIfEmpty(errors,"domain","required","domain is required");
+        ValidationUtils.rejectIfEmpty(errors,"submitter","required","submitter is required");
+        ValidationUtils.rejectIfEmpty(errors,"status","required","status is required");
+        ValidationUtils.rejectIfEmpty(errors,"domain","required","domain is required");
+        ValidationUtils.rejectIfEmpty(errors,"createdDate","required","createdDate is required");
+
         try {
             errors.pushNestedPath("domain");
             ValidationUtils.invokeValidator(this.domainValidator, submission.getDomain(), errors);
@@ -51,7 +59,12 @@ public class SubmissionValidator implements Validator {
             Submission storedVersion = submissionRepository.findOne(submission.getId());
 
             if (storedVersion != null) {
-                validateAgainstStoredVersion(submission, storedVersion, errors);
+                if (storedVersion.getStatus().equals(SubmissionStatus.Draft)){
+                    errors.reject("submissionLocked","Submission has been submitted, changes are not possible");
+                }
+                else {
+                    validateAgainstStoredVersion(submission, storedVersion, errors);
+                }
             }
         }
 
