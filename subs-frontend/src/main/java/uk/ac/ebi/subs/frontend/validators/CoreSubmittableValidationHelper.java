@@ -70,7 +70,7 @@ public class CoreSubmittableValidationHelper {
             if (submission == null) {
                 errors.rejectValue("submissionId", "submissionNotFound", "submission not found for ID");
             }
-            else if (!submission.getStatus().equals(SubmissionStatus.Draft)) {
+            else if (!submission.getStatus().equals(SubmissionStatus.Draft.name())) {
                 errors.reject("submissionLocked","Submission has been submitted, changes are not possible");
             }
 

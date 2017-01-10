@@ -57,7 +57,7 @@ public class SubmissionValidator implements Validator {
             Submission storedVersion = submissionRepository.findOne(submission.getId());
 
             if (storedVersion != null) {
-                if (storedVersion.getStatus().equals(SubmissionStatus.Draft)) {
+                if (!storedVersion.getStatus().equals(SubmissionStatus.Draft.name())) {
                     errors.reject("submissionLocked", "Submission has been submitted, changes are not possible");
                 } else {
                     validateAgainstStoredVersion(submission, storedVersion, errors);
