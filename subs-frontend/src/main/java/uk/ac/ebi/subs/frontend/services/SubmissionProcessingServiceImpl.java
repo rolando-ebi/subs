@@ -22,8 +22,6 @@ public class SubmissionProcessingServiceImpl implements SubmissionProcessingServ
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    FullSubmissionService fullSubmissionService;
 
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
@@ -34,17 +32,14 @@ public class SubmissionProcessingServiceImpl implements SubmissionProcessingServ
     }
 
     @Override
-    public void submitSubmissionForProcessing(String submissionId) {
-        FullSubmission fullSubmission = fullSubmissionService.fetchOne(submissionId);
-
-        SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(fullSubmission);
+    public void submitSubmissionForProcessing(Submission submission) {
 
         rabbitMessagingTemplate.convertAndSend(
                 Exchanges.SUBMISSIONS,
                 Topics.EVENT_SUBMISSION_SUBMITTED,
-                submissionEnvelope
+                submission
         );
 
-        logger.warn("sent submission {}", fullSubmission.getId());
+        logger.warn("sent submission {}", submission.getId());
     }
 }
