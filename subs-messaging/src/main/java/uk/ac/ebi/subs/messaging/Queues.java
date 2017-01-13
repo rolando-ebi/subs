@@ -8,6 +8,9 @@ public class Queues {
     public static final String SUBMISSION_SUBMITTED_MARK_SUBMITTABLES = "usi-submission-submitted-mark-submittables";
     public static final String SUBMISSION_SUBMITTED_DO_DISPATCH = "usi-submission-submitted-do-dispatch";
 
+    public static final String SUBMISSION_DELETED_CLEANUP_CONTENTS = "usi-submission-deleted-cleanup-contents";
+    public static final String SUBMISSION_DELETED_ROUTING_KEY = Topics.EVENT_SUBMISSION_DELETED;
+
 
     public static final String SUBMISSION_MONITOR = "usi-submission-monitor";
     public static final String SUBMISSION_MONITOR_ROUTING_KEY = Topics.EVENT_SUBMISSION_AGENT_RESULTS;

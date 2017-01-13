@@ -67,6 +67,10 @@ public class SubmissionEventHandler {
             }
         }
 
+        if (submission.getStatus() != null && submission.getStatus().equals(ProcessingStatus.Submitted.name())){
+            submission.setSubmissionDate(new Date());
+        }
+
     }
 
 
@@ -80,9 +84,13 @@ public class SubmissionEventHandler {
     public void handleAfterCreateOrSave(Submission submission) {
         logger.warn("after");
         if (submission.getStatus() != null && submission.getStatus().equals(ProcessingStatus.Submitted.name())) {
-            submission.setSubmissionDate(new Date());
             submissionProcessingService.submitSubmissionForProcessing(submission);
         }
+    }
+
+    @HandleAfterDelete
+    public void handleAfterDelete(Submission submission) {
+        submissionProcessingService.deleteSubmissionContents(submission);
     }
 
 

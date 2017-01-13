@@ -42,4 +42,15 @@ public class SubmissionProcessingServiceImpl implements SubmissionProcessingServ
 
         logger.warn("sent submission {}", submission.getId());
     }
+
+    @Override
+    public void deleteSubmissionContents(Submission submission) {
+        rabbitMessagingTemplate.convertAndSend(
+                Exchanges.SUBMISSIONS,
+                Topics.EVENT_SUBMISSION_DELETED,
+                submission
+        );
+
+        logger.warn("sent submission {}", submission.getId());
+    }
 }
