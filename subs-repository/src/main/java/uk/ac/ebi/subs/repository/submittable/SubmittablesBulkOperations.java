@@ -99,4 +99,17 @@ public class SubmittablesBulkOperations {
 
     }
 
+    public void deleteSubmissionContents(String submissionId, Class submittableClass){
+        Query query = query(where("submissionId").is(submissionId));
+
+        WriteResult writeResult = mongoTemplate.remove(query,submittableClass);
+
+        logger.info("Removing documents for {} in submission {}, removed {}",
+                submittableClass,
+                submissionId,
+                writeResult.getN()
+        );
+    }
+
+
 }
