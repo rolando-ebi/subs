@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.event.ValidatingRepositoryEventListener;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.validation.Validator;
+import uk.ac.ebi.subs.data.submittable.Submittable;
 
 import java.util.stream.Stream;
 
@@ -65,6 +66,9 @@ public class ValidatorConfig extends RepositoryRestConfigurerAdapter {
     @Autowired
     private SubmissionDeleteValidator submissionDeleteValidator;
 
+    @Autowired
+    private SubmittableDeleteValidator submittableDeleteValidator;
+
 
     @Override
     public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener eventListener) {
@@ -92,6 +96,8 @@ public class ValidatorConfig extends RepositoryRestConfigurerAdapter {
         });
 
         eventListener.addValidator(BEFORE_DELETE,submissionDeleteValidator);
+
+        eventListener.addValidator(BEFORE_DELETE,submittableDeleteValidator);
     }
 
 }
