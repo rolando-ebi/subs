@@ -80,7 +80,8 @@ public class SubmissionEventHandler {
     public void handleAfterCreateOrSave(Submission submission) {
         logger.warn("after");
         if (submission.getStatus() != null && submission.getStatus().equals(ProcessingStatus.Submitted.name())) {
-            submissionProcessingService.submitSubmissionForProcessing(submission.getId());
+            submission.setSubmissionDate(new Date());
+            submissionProcessingService.submitSubmissionForProcessing(submission);
         }
     }
 

@@ -3,13 +3,18 @@ package uk.ac.ebi.subs.messaging;
 public class Queues {
 
 
+    public static final String SUBMISSION_SUBMITTED_ROUTING_KEY = Topics.EVENT_SUBMISSION_SUBMITTED;
+    public static final String SUBMISSION_SUBMITTED_CHECK_SUPPORTING_INFO = "usi-submission-submitted-check-supp-info";
+    public static final String SUBMISSION_SUBMITTED_MARK_SUBMITTABLES = "usi-submission-submitted-mark-submittables";
+    public static final String SUBMISSION_SUBMITTED_DO_DISPATCH = "usi-submission-submitted-do-dispatch";
+
 
     public static final String SUBMISSION_MONITOR = "usi-submission-monitor";
     public static final String SUBMISSION_MONITOR_ROUTING_KEY = Topics.EVENT_SUBMISSION_AGENT_RESULTS;
 
     public static final String SUBMISSION_DISPATCHER = "usi-submission-dispatcher";
     //will match usi.submissionenvelope.updated and usi.submissionenvelope.submitted, but not usi.submissionenvelope.dispatched.biosamples etc
-    public static final String SUBMISSION_DISPATCHER_ROUTING_KEY = "usi.submissionenvelope.*";
+    public static final String SUBMISSION_DISPATCHER_ROUTING_KEY = Topics.EVENT_SUBMISSION_UPDATED;
 
     public static final String SUBMISSION_MONITOR_STATUS_UPDATE = "usi-submission-monitor-status";
     public static final String SUBMISSION_MONITOR_STATUS_UPDATE_ROUTING_KEY = Topics.EVENT_SUBMISSION_STATUS_CHANGE;
@@ -18,8 +23,6 @@ public class Queues {
     public static final String SUBMISSION_SUPPORTING_INFO_PROVIDED = "usi-submission-supp-inf-provided";
     public static final String SUBMISSION_SUPPORTING_INFO_PROVIDED_ROUTING_KEY = Topics.EVENT_SUBISSION_SUPPORTING_INFO_PROVIDED;
 
-    public static final String SUBMISSION_SUPPORTING_INFO = "usi-submission-supp-inf";
-    public static final String SUBMISSION_SUPPORTING_INFO_ROUTING_KEY = Topics.EVENT_SUBMISSION_SUBMITTED;
 
     public static final String SUBMISSION_NEEDS_SAMPLE_INFO = "usi-submission-support-biosamples";
     public static final String SUBMISSION_NEEDS_SAMPLE_INFO_ROUTING_KEY = Topics.EVENT_SUBMISSION_NEEDS_SAMPLES;
