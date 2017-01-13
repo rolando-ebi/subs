@@ -62,6 +62,9 @@ public class ValidatorConfig extends RepositoryRestConfigurerAdapter {
     @Autowired
     private SubmissionValidator submissionValidator;
 
+    @Autowired
+    private SubmissionDeleteValidator submissionDeleteValidator;
+
 
     @Override
     public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener eventListener) {
@@ -87,6 +90,8 @@ public class ValidatorConfig extends RepositoryRestConfigurerAdapter {
             eventListener.addValidator(BEFORE_CREATE, validator);
             eventListener.addValidator(BEFORE_SAVE, validator);
         });
+
+        eventListener.addValidator(BEFORE_DELETE,submissionDeleteValidator);
     }
 
 }
