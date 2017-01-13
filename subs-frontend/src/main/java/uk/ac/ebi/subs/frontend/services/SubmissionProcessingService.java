@@ -9,4 +9,6 @@ import uk.ac.ebi.subs.data.Submission;
 public interface SubmissionProcessingService {
 
     void submitSubmissionForProcessing(Submission submission);
+
+    void deleteSubmissionContents(Submission submission);
 }

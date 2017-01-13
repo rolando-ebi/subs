@@ -13,9 +13,17 @@ public class Topics {
 
 
     /**
+     * The User has deleted a Submission
+     */
+    public static final String EVENT_SUBMISSION_DELETED = "usi.submission.deleted";
+
+
+    /**
      * The monitor has updated a Submission
      */
     public static final String EVENT_SUBMISSION_UPDATED = "usi.submissionenvelope.updated";
+
+
 
     /**
      * The dispatcher thinks the submission status should change
