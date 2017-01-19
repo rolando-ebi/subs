@@ -7,19 +7,20 @@ jar {
 }
 
 dependencies {
+    compile project(':subs-data-model')
+
     compile("org.springframework.boot:spring-boot-starter")
-    compile("org.springframework:spring-web")
     compile("org.springframework.boot:spring-boot-starter-logging")
-    compile("org.springframework.boot:spring-boot-starter-cache")
     compile("com.fasterxml.jackson.core:jackson-databind")
 
+    compile 'com.mashape.unirest:unirest-java:1.4.9'
     compile(group: 'uk.ac.ebi.ena.taxonomy', name: 'ena-taxonomy-client', version: '2.1.2')
 
     compile fileTree(dir: 'libs', include: '*.jar')
 
     compile("org.apache.any23:apache-any23-encoding:1.1")
     compile("commons-io:commons-io:2.4")
-    compile project(':subs-data-model')
+
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
