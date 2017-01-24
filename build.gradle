@@ -7,17 +7,19 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
         classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3")
         classpath("net.saliman:gradle-cobertura-plugin:2.3.2")
+        classpath 'org.owasp:dependency-check-gradle:1.4.5'
     }
 }
 
 
 
 allprojects {
-    ext.version_base = '1.0.0'
+    ext.version_base = '1.0.0-SUBS-334-SNAPSHOT'
     version = version_base
 
     apply plugin: 'net.saliman.cobertura'
     apply plugin: "com.github.kt3k.coveralls"
+    apply plugin: 'org.owasp.dependencycheck'
 
     cobertura.coverageFormats = ['html', 'xml'] // coveralls plugin depends on xml format report
     cobertura.coverageIgnoreTrivial = true // do not worry about getters and setters
@@ -30,6 +32,7 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'eclipse'
     apply plugin: 'org.springframework.boot'
+    apply plugin: 'maven-publish'
 
     group = 'uk.ac.ebi.subs'
 
@@ -54,5 +57,27 @@ subprojects {
     targetCompatibility = 1.8
 
     task sourceJar(type: Jar) { from sourceSets.main.allJava }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourceJar { classifier "sources" }
+            }
+        }
+        repositories {
+            maven {
+                credentials {
+                    username artifactoryUsername
+                    password artifactoryPassword
+                }
+                if(project.version.endsWith('-SNAPSHOT')) {
+                    url "http://ena-dev:8081/artifactory/libs-snapshot-local"
+                } else {
+                    url "http://ena-dev:8081/artifactory/libs-release-local"
+                }
+            }
+        }
+    }
 
 }

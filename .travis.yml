@@ -19,3 +19,6 @@ script: ./gradlew check
 
 after_success:
 - ./gradlew cobertura coveralls
+
+deploy:
+- ./gradlew uploadArchives
