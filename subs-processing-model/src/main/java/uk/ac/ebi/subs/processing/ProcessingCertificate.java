@@ -1,12 +1,16 @@
 package uk.ac.ebi.subs.processing;
 
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
 import java.util.Objects;
 
+@ToString
+@EqualsAndHashCode
 public class ProcessingCertificate {
     private String submittableId;
     private Archive archive;
@@ -69,31 +73,4 @@ public class ProcessingCertificate {
         this.message = message;
     }
 
-    @Override
-    public String toString() {
-        return "ProcessingCertificate{" +
-                "submittableId='" + submittableId + '\'' +
-                ", archive=" + archive +
-                ", processingStatus=" + processingStatus +
-                ", accession='" + accession + '\'' +
-                ", message='" + message + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProcessingCertificate that = (ProcessingCertificate) o;
-        return Objects.equals(submittableId, that.submittableId) &&
-                archive == that.archive &&
-                processingStatus == that.processingStatus &&
-                Objects.equals(accession, that.accession) &&
-                Objects.equals(message, that.message);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(submittableId, archive, processingStatus, accession, message);
-    }
 }
