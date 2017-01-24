@@ -1,6 +1,8 @@
 package uk.ac.ebi.subs.processing;
 
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import uk.ac.ebi.subs.data.FullSubmission;
@@ -11,14 +13,16 @@ import uk.ac.ebi.subs.data.submittable.Sample;
 import java.util.*;
 
 
+@ToString
+@EqualsAndHashCode
 public class SubmissionEnvelope {
 
-    String id;
+    private String id;
 
-    FullSubmission submission;
+    private FullSubmission submission;
 
-    Set<SampleRef> supportingSamplesRequired = new HashSet<>();
-    List<Sample> supportingSamples = new ArrayList<>();
+    private Set<SampleRef> supportingSamplesRequired = new HashSet<>();
+    private List<Sample> supportingSamples = new ArrayList<>();
 
 
 
