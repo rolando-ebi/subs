@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BYTE_COUNT=10737418
+FILE_NAME=$DIR/testFile
+head -c $BYTE_COUNT < /dev/zero > $FILE_NAME
+
+time curl -F file=@$FILE_NAME localhost:8090/upload
+
+rm $FILE_NAME
