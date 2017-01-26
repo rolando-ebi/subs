@@ -76,6 +76,8 @@ public class FileUploadController {
             // Create a new file upload handler
             ServletFileUpload upload = new ServletFileUpload();
 
+            upload.setProgressListener(new SubsProgressListener(submission));
+
             // Parse the request
             FileItemIterator iter = upload.getItemIterator(request);
             while (iter.hasNext()) {
@@ -84,6 +86,8 @@ public class FileUploadController {
                 InputStream stream = item.openStream();
 
                 if (!item.isFormField()) {
+
+
                     String filename = item.getName();
                     // Process the input stream
 
@@ -93,7 +97,7 @@ public class FileUploadController {
 
                     Path targetPath = Paths.get(baseUploadPath, submissionId, filename);
 
-                    logger.info("copying uploaded stream to {}", targetPath);
+                    logger.info("writing upload stream to {}", targetPath);
 
                     Files.copy(stream, targetPath, StandardCopyOption.REPLACE_EXISTING);
                     stream.close();
