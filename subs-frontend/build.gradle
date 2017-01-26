@@ -47,3 +47,38 @@ jar {
         into 'static/docs'
     }
 }
+
+ssh.settings {
+    user = 'sub_adm'
+}
+
+if (project.hasProperty('sshKeyFile')) {
+    ssh.settings.identity = sshKeyFile
+}
+
+if (project.hasProperty('sshPassphrase')) {
+    ssh.settings.passphrase = sshPassphrase
+}
+
+remotes {
+    dev {
+        host = 'mac-subs-001.ebi.ac.uk'
+    }
+}
+
+task deployJar(type: SshTask, dependsOn: 'build') {
+    doLast {
+        File jarDeployDir = new File("/homes/sub_adm/jar")
+        ssh.run {
+            session(remotes.dev) {
+                println "Uploading jar $jar.archivePath.name to $jarDeployDir area on $remote"
+                put(jar.archivePath.absolutePath, jarDeployDir.absolutePath)
+
+            }
+        }
+    }
+    ssh.settings {
+        knownHosts = allowAnyHosts
+    }
+
+}
