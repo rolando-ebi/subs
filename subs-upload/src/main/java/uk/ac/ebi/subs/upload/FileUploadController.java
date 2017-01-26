@@ -8,6 +8,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,7 +36,11 @@ public class FileUploadController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    SubmissionRepository submissionRepository;
+    private SubmissionRepository submissionRepository;
+
+
+    @Value("${base-upload-path:.}")
+    private String baseUploadPath;
 
 
     @RequestMapping(value="/submissions/{submissionId}/upload", method= RequestMethod.POST)
@@ -72,7 +78,14 @@ public class FileUploadController {
                 if (!item.isFormField()) {
                     String filename = item.getName();
                     // Process the input stream
-                    Path targetPath = Paths.get(filename);
+
+                    Path targetDir = Paths.get(baseUploadPath,submissionId);
+
+                    targetDir.toFile().mkdirs();
+
+                    Path targetPath = Paths.get(baseUploadPath,submissionId,filename);
+
+
 
                     logger.info("copying upload stream to {}");
 
