@@ -7,12 +7,17 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.status.SubmissionStatus;
+import uk.ac.ebi.subs.repository.SubmissionRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.Response;
@@ -28,15 +33,30 @@ public class FileUploadController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @RequestMapping(value="/upload", method= RequestMethod.POST)
+    @Autowired
+    SubmissionRepository submissionRepository;
+
+
+    @RequestMapping(value="/submissions/{submissionId}/upload", method= RequestMethod.POST)
     public @ResponseBody
-    ResponseEntity<String> upload(HttpServletRequest request) {
+    ResponseEntity<String> upload(@PathVariable String submissionId, HttpServletRequest request) {
+
+        Submission submission = submissionRepository.findOne(submissionId);
+        if (submission == null) {
+            throw new ResourceNotFoundException();
+        }
+        if (!SubmissionStatus.Draft.name().equals(submission.getStatus())){
+            return ResponseEntity.badRequest().body("Submission is locked"); //TODO improve error messages
+        }
+        //TODO add check for ownership once we have AAP in place
+
+
         try {
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 
             if (!isMultipart) {
                 // Inform user about invalid request
-                return ResponseEntity.badRequest().body("Must be a multi-part request");
+                return ResponseEntity.badRequest().body("Must be a multi-part request"); //TODO improve error messages
             }
 
             // Create a new file upload handler
