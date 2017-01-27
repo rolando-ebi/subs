@@ -46,8 +46,9 @@ public class FileUploadController {
     @Autowired
     private FileRecordRepository fileRecordRepository;
 
-    @Value("${base-upload-path:.}")
-    private String baseUploadPath;
+    @Autowired
+    private UploadPathResolver uploadPathResolver;
+
 
 
     @RequestMapping(value = "/submissions/{submissionId}/upload", method = RequestMethod.POST)
@@ -82,32 +83,25 @@ public class FileUploadController {
             FileItemIterator iter = upload.getItemIterator(request);
             while (iter.hasNext()) {
                 FileItemStream item = iter.next();
-                String name = item.getFieldName();
                 InputStream stream = item.openStream();
 
                 if (!item.isFormField()) {
 
+                    Path targetPath = uploadPathResolver.uploadPath(submission,item.getName());
+                    targetPath.toFile().getParentFile().mkdirs();
 
-                    String filename = item.getName();
                     // Process the input stream
-
-                    Path targetDir = Paths.get(baseUploadPath, submissionId);
-
-                    targetDir.toFile().mkdirs();
-
-                    Path targetPath = Paths.get(baseUploadPath, submissionId, filename);
-
                     logger.info("writing upload stream to {}", targetPath);
 
                     Files.copy(stream, targetPath, StandardCopyOption.REPLACE_EXISTING);
                     stream.close();
 
-                    FileRecord fileRecord = fileRecordRepository.findBySubmissionIdAndFileName(submissionId, filename);
+                    FileRecord fileRecord = fileRecordRepository.findBySubmissionIdAndFileName(submissionId, item.getName());
 
                     if (fileRecord == null) {
                         fileRecord = new FileRecord();
                         fileRecord.setSubmission(submission);
-                        fileRecord.setFileName(filename);
+                        fileRecord.setFileName(item.getName());
                     }
 
                     fileRecord.setContentType(item.getContentType());
