@@ -120,12 +120,12 @@ public class FileUploadController {
             }
         } catch (FileUploadException e) {
             logger.error("FileUpload error: {}", e);
-            return ResponseEntity.badRequest().body("File upload error:" + e.toString()); //TODO this should be a 500 error
+            throw new RuntimeException(e);
         } catch (IOException e) {
             logger.error("IO error: {}", e);
-            return ResponseEntity.badRequest().body("Internal server IO error"); //TODO this should be a 500 error
+            throw new RuntimeException(e);
         }
 
-        return ResponseEntity.ok().body("Success");
+        return ResponseEntity.ok().body("Success\n");
     }
 }
