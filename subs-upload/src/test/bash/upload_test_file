@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BYTE_COUNT=10737418
+SUBMISSION_ID="REPLACE-ME-WITH-A-VALID-ID" #you should replace this with a valid ID
+FILE_NAME=/var/tmp/testFile
+
+head -c $BYTE_COUNT < /dev/zero > $FILE_NAME
+
+time curl -i -F file=@$FILE_NAME localhost:8090/submissions/$SUBMISSION_ID/upload
+
+rm $FILE_NAME
