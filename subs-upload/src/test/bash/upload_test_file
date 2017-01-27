@@ -2,7 +2,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BYTE_COUNT=10737418
 SUBMISSION_ID="REPLACE-ME-WITH-A-VALID-ID" #you should replace this with a valid ID
-FILE_NAME=$DIR/testFile
+FILE_NAME=/var/tmp/testFile
 
 head -c $BYTE_COUNT < /dev/zero > $FILE_NAME
 
