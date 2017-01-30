@@ -65,10 +65,10 @@ public class CoreSubmittableValidationHelper {
 
 
 
-        if (submittable.getSubmission() == null) {
+        if (submittable.getSubmission() != null) {
             Submission submission = submittable.getSubmission();
 
-            if (!submission.getStatus().equals(SubmissionStatus.Draft.name())) {
+            if (!SubmissionStatus.Draft.name().equals(submission.getStatus())) {
                 errors.reject("submissionLocked","Submission has been submitted, changes are not possible");
             }
 
