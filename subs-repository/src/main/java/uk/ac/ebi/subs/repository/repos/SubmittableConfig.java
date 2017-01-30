@@ -1,4 +1,4 @@
-package uk.ac.ebi.subs.repository.submittable;
+package uk.ac.ebi.subs.repository.repos;
 
 
 import org.springframework.context.annotation.Bean;

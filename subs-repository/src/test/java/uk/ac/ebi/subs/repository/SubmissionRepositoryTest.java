@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.*;
+import uk.ac.ebi.subs.data.core.Submittable;
 import uk.ac.ebi.subs.data.submittable.*;
 
 import java.util.Arrays;

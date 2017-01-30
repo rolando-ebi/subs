@@ -5,10 +5,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.submittable.EgaDataset;
-import uk.ac.ebi.subs.repository.submittable.*;
-
-import java.util.stream.Stream;
+import uk.ac.ebi.subs.repository.repos.*;
 
 @Service
 public class FullSubmissionServiceImpl implements FullSubmissionService {

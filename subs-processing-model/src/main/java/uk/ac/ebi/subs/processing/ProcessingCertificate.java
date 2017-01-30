@@ -5,9 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
-import uk.ac.ebi.subs.data.submittable.Submittable;
-
-import java.util.Objects;
+import uk.ac.ebi.subs.data.core.Submittable;
 
 @ToString
 @EqualsAndHashCode

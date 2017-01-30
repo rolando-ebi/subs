@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import uk.ac.ebi.subs.data.submittable.Analysis;
-import uk.ac.ebi.subs.repository.submittable.AnalysisRepository;
+import uk.ac.ebi.subs.repository.repos.AnalysisRepository;
 
 @Component
 public class AnalysisValidator implements Validator {

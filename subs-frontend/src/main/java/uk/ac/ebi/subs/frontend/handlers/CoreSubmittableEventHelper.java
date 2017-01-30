@@ -1,12 +1,10 @@
 package uk.ac.ebi.subs.frontend.handlers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
-import uk.ac.ebi.subs.data.submittable.Submittable;
+import uk.ac.ebi.subs.data.core.Submittable;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
 import java.util.UUID;

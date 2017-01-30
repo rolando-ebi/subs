@@ -25,7 +25,7 @@ import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.frontend.handlers.SubmissionEventHandler;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
-import uk.ac.ebi.subs.repository.submittable.*;
+import uk.ac.ebi.subs.repository.repos.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;

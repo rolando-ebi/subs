@@ -9,9 +9,9 @@ import org.springframework.validation.ValidationUtils;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.status.Status;
 import uk.ac.ebi.subs.data.status.SubmissionStatus;
-import uk.ac.ebi.subs.data.submittable.Submittable;
+import uk.ac.ebi.subs.data.core.Submittable;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
-import uk.ac.ebi.subs.repository.submittable.SubmittableRepository;
+import uk.ac.ebi.subs.repository.repos.SubmittableRepository;
 
 import java.util.List;
 
