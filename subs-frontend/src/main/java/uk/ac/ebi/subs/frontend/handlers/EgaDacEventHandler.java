@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.subs.data.submittable.EgaDac;
+import uk.ac.ebi.subs.repository.model.EgaDac;
 
 /**
  * Repo event handler for EGA DACs nested in a submission

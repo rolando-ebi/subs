@@ -34,6 +34,7 @@ public class FullSubmissionServiceImpl implements FullSubmissionService {
 
         FullSubmission submission = new FullSubmission(minimalSub);
 
+        /* TODO - FIX ME
         submission.setAnalyses(analysisRepository.findBySubmissionId(submissionId));
         submission.setAssayData(assayDataRepository.findBySubmissionId(submissionId));
         submission.setAssays(assayRepository.findBySubmissionId(submissionId));
@@ -45,30 +46,8 @@ public class FullSubmissionServiceImpl implements FullSubmissionService {
         submission.setSampleGroups(sampleGroupRepository.findBySubmissionId(submissionId));
         submission.setSamples(sampleRepository.findBySubmissionId(submissionId));
         submission.setStudies(studyRepository.findBySubmissionId(submissionId));
+        */
 
         return submission;
-    }
-
-    @Override
-    public void storeFullSubmission(FullSubmission fullSubmission) {
-        Submission minimalSub = new Submission(fullSubmission);
-
-        submissionRepository.insert(minimalSub);
-
-
-        fullSubmission.setId(minimalSub.getId());
-        fullSubmission.allSubmissionItemsStream().forEach(i -> i.setSubmissionId(minimalSub.getId()));
-
-        analysisRepository.insert(fullSubmission.getAnalyses());
-        assayDataRepository.insert(fullSubmission.getAssayData());
-        assayRepository.insert(fullSubmission.getAssays());
-        egaDacPolicyRepository.insert(fullSubmission.getEgaDacPolicies());
-        egaDacRepository.insert(fullSubmission.getEgaDacs());
-        egaDatasetRepository.insert(fullSubmission.getEgaDatasets());
-        projectRepository.insert(fullSubmission.getProjects());
-        protocolRepository.insert(fullSubmission.getProtocols());
-        sampleGroupRepository.insert(fullSubmission.getSampleGroups());
-        sampleRepository.insert(fullSubmission.getSamples());
-        studyRepository.insert(fullSubmission.getStudies());
     }
 }

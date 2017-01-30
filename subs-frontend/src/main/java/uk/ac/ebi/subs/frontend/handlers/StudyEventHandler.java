@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.*;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.subs.data.submittable.Study;
+import uk.ac.ebi.subs.repository.model.Study;
 
 
 /**

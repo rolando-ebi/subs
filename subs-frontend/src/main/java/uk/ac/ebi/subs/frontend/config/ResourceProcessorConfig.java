@@ -9,7 +9,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.SubmissionLinks;
-import uk.ac.ebi.subs.data.submittable.*;
+import uk.ac.ebi.subs.repository.model.*;
 
 import java.util.HashMap;
 import java.util.Map;

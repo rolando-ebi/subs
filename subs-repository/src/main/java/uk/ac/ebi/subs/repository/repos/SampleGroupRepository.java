@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.SubmissionLinks;
-import uk.ac.ebi.subs.data.submittable.SampleGroup;
+import uk.ac.ebi.subs.repository.model.SampleGroup;
 
 public interface SampleGroupRepository extends SubmittableRepository<SampleGroup, String> {
 

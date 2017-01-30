@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.SubmissionLinks;
-import uk.ac.ebi.subs.data.submittable.Assay;
+import uk.ac.ebi.subs.repository.model.Assay;
 
 public interface AssayRepository extends SubmittableRepository<Assay, String> {
 

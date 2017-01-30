@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
-import uk.ac.ebi.subs.data.core.Submittable;
+import uk.ac.ebi.subs.data.submittable.Submittable;
 
 @Component
 public class SubmittableDeleteValidator implements Validator {

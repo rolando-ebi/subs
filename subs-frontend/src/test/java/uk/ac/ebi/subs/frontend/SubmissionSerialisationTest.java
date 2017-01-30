@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.subs.FrontendApplication;
 import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.submittable.Sample;
+import uk.ac.ebi.subs.repository.model.Sample;
 
 import java.io.IOException;
 

@@ -1,15 +1,16 @@
 apply plugin: 'java'
 
 dependencies {
+    compileOnly("org.projectlombok:lombok:1.16.12")
     compile project(':subs-data-model')
     compile project(':subs-processing-model')
 
     compile ('org.atteo:evo-inflector:1.2.1') // better pluralisation
-
 
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-starter-data-rest")
 
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
+
 }
