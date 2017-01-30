@@ -58,15 +58,13 @@ subprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
+    processResources {
+        filesMatching('application.properties') {
+            expand(project.properties)
+        }
+    }
+
     task sourceJar(type: Jar) { from sourceSets.main.allJava }
-
-    if (project.hasProperty('artifactoryUsername')) {
-        publishing.repositories.maven.credentials.username = artifactoryUsername
-    }
-
-    if (project.hasProperty('artifactoryPassword')) {
-        publishing.repositories.maven.credentials.password = artifactoryUsername
-    }
 
     publishing {
         publications {
@@ -81,6 +79,12 @@ subprojects {
                     url "http://ena-dev:8081/artifactory/libs-snapshot-local"
                 } else {
                     url "http://ena-dev:8081/artifactory/libs-release-local"
+                }
+                if (project.hasProperty('artifactoryUsername') && project.hasProperty('artifactoryPassword')) {
+                    credentials {
+                        username artifactoryUsername
+                        password artifactoryPassword
+                    }
                 }
             }
         }

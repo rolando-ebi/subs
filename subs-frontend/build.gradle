@@ -7,6 +7,8 @@ apply plugin: 'org.asciidoctor.convert'
 apply plugin: 'application'
 mainClassName = "uk.ac.ebi.subs.FrontendApplication"
 
+def deployPath = "/homes/sub_adm/jar"
+
 dependencies {
     compile project(':subs-repository')
     compile project(':subs-data-model')
@@ -17,6 +19,7 @@ dependencies {
     compile 'org.springframework.data:spring-data-rest-hal-browser'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("de.codecentric:spring-boot-admin-starter-client:1.4.3")
 
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
@@ -53,7 +56,7 @@ ssh.settings {
 }
 
 if (project.hasProperty('sshKeyFile')) {
-    ssh.settings.identity = sshKeyFile
+    ssh.settings.identity = new File(sshKeyFile)
 }
 
 if (project.hasProperty('sshPassphrase')) {
@@ -68,7 +71,8 @@ remotes {
 
 task deployJar(type: SshTask, dependsOn: 'build') {
     doLast {
-        File jarDeployDir = new File("/homes/sub_adm/jar")
+        String deployDir = new String(deployPath);
+        File jarDeployDir = new File(deployDir)
         ssh.run {
             session(remotes.dev) {
                 println "Uploading jar $jar.archivePath.name to $jarDeployDir area on $remote"
