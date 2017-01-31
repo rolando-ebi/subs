@@ -41,7 +41,7 @@ public class SubmittablesBulkOperations {
         Assert.notNull(currentStatus);
         Assert.notNull(submittableClass);
 
-        Query query = query(where("submissionId").is(submissionId).and("status").is(currentStatus.name()));
+        Query query = query(where("submission.$id").is(submissionId).and("status").is(currentStatus.name()));
         Update update = update("status", newStatus.name());
 
         WriteResult writeResult = mongoTemplate.updateMulti(query, update, submittableClass);
@@ -65,7 +65,7 @@ public class SubmittablesBulkOperations {
         for (ProcessingCertificate certificate : envelope.getProcessingCertificates()) {
             Query query = query(
                     where("_id").is(certificate.getSubmittableId())
-                            .and("submissionId").is(envelope.getSubmissionId())
+                            .and("submission.$id").is(envelope.getSubmissionId())
             );
 
             Update update = new Update();
@@ -100,7 +100,7 @@ public class SubmittablesBulkOperations {
     }
 
     public void deleteSubmissionContents(String submissionId, Class submittableClass){
-        Query query = query(where("submissionId").is(submissionId));
+        Query query = query(where("submission.$id").is(submissionId));
 
         WriteResult writeResult = mongoTemplate.remove(query,submittableClass);
 
