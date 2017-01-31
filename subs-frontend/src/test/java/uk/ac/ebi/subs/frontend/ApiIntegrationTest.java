@@ -153,7 +153,7 @@ public class ApiIntegrationTest {
                 .asJson();
 
 
-        assertThat(submissionPatchResponse.getStatus(),is(equalTo(HttpStatus.NO_CONTENT.value())));
+        assertThat(submissionPatchResponse.getStatus(), is(equalTo(HttpStatus.OK.value())));
     }
 
 
