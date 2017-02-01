@@ -34,6 +34,7 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'maven-publish'
+    apply plugin: 'maven'
     apply plugin: 'org.hidetake.ssh'
 
     group = 'uk.ac.ebi.subs'
@@ -84,6 +85,46 @@ subprojects {
                     credentials {
                         username artifactoryUsername
                         password artifactoryPassword
+                    }
+                }
+            }
+        }
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    packaging 'jar'
+                    // optionally artifactId can be defined here
+                    url 'https://github.com/EMBL-EBI-SUBS'
+
+                    scm {
+                        url 'https://github.com/EMBL-EBI-SUBS'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'neilg'
+                            name 'Neil Goodgame'
+                            email 'neilg@ebi.ac.uk'
+                        }
                     }
                 }
             }

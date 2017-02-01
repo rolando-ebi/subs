@@ -7,7 +7,7 @@ apply plugin: 'org.asciidoctor.convert'
 apply plugin: 'application'
 mainClassName = "uk.ac.ebi.subs.FrontendApplication"
 
-def deployPath = "/homes/sub_adm/jar"
+def deployPath = "/data/subs-frontend/jar"
 
 dependencies {
     compile project(':subs-repository')
@@ -69,7 +69,7 @@ remotes {
     }
 }
 
-task deployJar(type: SshTask, dependsOn: 'build') {
+task deployJar(type: SshTask, dependsOn: 'jar') {
     doLast {
         String deployDir = new String(deployPath);
         File jarDeployDir = new File(deployDir)
