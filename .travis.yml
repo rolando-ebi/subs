@@ -19,3 +19,8 @@ script: ./gradlew check
 
 after_success:
 - ./gradlew cobertura coveralls
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_d65fefe7827f_key -iv $encrypted_d65fefe7827f_iv
+  -in gradle_props.tar.enc -out gradle_props.tar -d
+- tar xvf gradle_props.tar

@@ -13,7 +13,7 @@ buildscript {
 
 
 allprojects {
-    ext.version_base = '1.0.0'
+    ext.version_base = '1.0.0-SUBS-334-v2-SNAPSHOT'
     version = version_base
 
     apply plugin: 'net.saliman.cobertura'
@@ -30,6 +30,7 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'eclipse'
     apply plugin: 'org.springframework.boot'
+    apply plugin: 'maven-publish'
 
     group = 'uk.ac.ebi.subs'
 
@@ -54,5 +55,81 @@ subprojects {
     targetCompatibility = 1.8
 
     task sourceJar(type: Jar) { from sourceSets.main.allJava }
+
+    artifacts {
+        archives jar
+        archives sourceJar
+    }
+
+    processResources {
+        filesMatching('application.properties') {
+            expand(project.properties)
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourceJar { classifier "sources" }
+            }
+        }
+        repositories {
+            maven {
+                if(project.version.endsWith('-SNAPSHOT')) {
+                    url "http://ena-dev:8081/artifactory/libs-snapshot-local"
+                } else {
+                    url "http://ena-dev:8081/artifactory/libs-release-local"
+                }
+                if (project.hasProperty('artifactoryUsername') && project.hasProperty('artifactoryPassword')) {
+                    credentials {
+                        username artifactoryUsername
+                        password artifactoryPassword
+                    }
+                }
+            }
+        }
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    packaging 'jar'
+                    // optionally artifactId can be defined here
+                    url 'https://github.com/EMBL-EBI-SUBS'
+
+                    scm {
+                        url 'https://github.com/EMBL-EBI-SUBS'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'neilg'
+                            name 'Neil Goodgame'
+                            email 'neilg@ebi.ac.uk'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 }
