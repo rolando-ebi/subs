@@ -1,21 +1,18 @@
 services:
-  - mongodb
-  - rabbitmq
-
+- mongodb
+- rabbitmq
 sudo: required
-
 language: java
-
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 install: true
-
 before_script:
-  - sleep 15
-  - mongo mydb_test --eval 'db.addUser("travis", "test");'
-
+- sleep 15
+- mongo mydb_test --eval 'db.addUser("travis", "test");'
 script: ./gradlew check
-
 after_success:
 - ./gradlew cobertura coveralls
+before_install:
+- openssl aes-256-cbc -K $encrypted_d65fefe7827f_key -iv $encrypted_d65fefe7827f_iv
+  -in gradle.properties.enc -out gradle.properties -d
+- tar xvf gradle_props.tar
