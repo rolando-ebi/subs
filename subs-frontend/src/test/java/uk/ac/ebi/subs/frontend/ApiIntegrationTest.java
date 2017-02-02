@@ -115,7 +115,7 @@ public class ApiIntegrationTest {
 
         Map<String, String> submissionRels = relsFromPayload(submissionResponse.getBody().getObject());
 
-        assertThat(submissionRels.get("submissionSamples"), notNullValue());
+        assertThat(submissionRels.get("samples"), notNullValue());
 
         List<Sample> testSamples = Helpers.generateTestSamples();
         //add samples to the submission
@@ -132,7 +132,7 @@ public class ApiIntegrationTest {
         }
 
         //retrieve the samples
-        String submissionSamplesUrl = submissionRels.get("submissionSamples");
+        String submissionSamplesUrl = submissionRels.get("samples");
 
         HttpResponse<JsonNode> samplesQueryResponse = Unirest.get(submissionSamplesUrl)
                 .headers(standardGetHeaders())
