@@ -9,9 +9,7 @@ import uk.ac.ebi.subs.data.SubmissionLinks;
 import uk.ac.ebi.subs.repository.model.AssayData;
 
 @RepositoryRestResource( path="/assayData",collectionResourceRel = "assayData")//the plural of assay data is assay data#
-public interface AssayDataRepository extends SubmittableRepository<AssayData, String> {
+public interface AssayDataRepository extends SubmittableRepository<AssayData> {
 
-    @RestResource(rel= SubmissionLinks.ASSAY_DATA)
-    Page<AssayData> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
 }

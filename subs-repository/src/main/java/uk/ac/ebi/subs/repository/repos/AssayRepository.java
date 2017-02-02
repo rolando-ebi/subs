@@ -7,9 +7,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.SubmissionLinks;
 import uk.ac.ebi.subs.repository.model.Assay;
 
-public interface AssayRepository extends SubmittableRepository<Assay, String> {
+public interface AssayRepository extends SubmittableRepository<Assay> {
 
-    @RestResource(rel= SubmissionLinks.ASSAY)
-    Page<Assay> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
 }

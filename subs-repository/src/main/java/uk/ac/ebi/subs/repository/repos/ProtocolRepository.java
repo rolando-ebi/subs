@@ -7,9 +7,6 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.SubmissionLinks;
 import uk.ac.ebi.subs.repository.model.Protocol;
 
-public interface ProtocolRepository extends SubmittableRepository<Protocol, String>{
-
-    @RestResource(rel= SubmissionLinks.PROTOCOL)
-    Page<Protocol> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
+public interface ProtocolRepository extends SubmittableRepository<Protocol>{
 
 }

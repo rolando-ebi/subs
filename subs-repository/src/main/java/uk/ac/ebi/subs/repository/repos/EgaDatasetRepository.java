@@ -7,9 +7,6 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.SubmissionLinks;
 import uk.ac.ebi.subs.repository.model.EgaDataset;
 
-public interface EgaDatasetRepository extends SubmittableRepository<EgaDataset, String> {
+public interface EgaDatasetRepository extends SubmittableRepository<EgaDataset> {
 
-    @RestResource(rel= SubmissionLinks.EGA_DATASET)
-    Page<EgaDataset> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
-
-}
+   }

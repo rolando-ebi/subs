@@ -7,11 +7,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.SubmissionLinks;
 import uk.ac.ebi.subs.repository.model.Sample;
 
-public interface SampleRepository extends SubmittableRepository<Sample, String> {
+public interface SampleRepository extends SubmittableRepository<Sample> {
 
     Sample findByAccession(String accession);
-
-    @RestResource(rel= SubmissionLinks.SAMPLE)
-    Page<Sample> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
-
 }

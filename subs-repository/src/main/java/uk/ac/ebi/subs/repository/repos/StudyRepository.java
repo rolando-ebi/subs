@@ -9,9 +9,6 @@ import uk.ac.ebi.subs.data.SubmissionLinks;
 import uk.ac.ebi.subs.repository.model.Study;
 
 @RepositoryRestResource
-public interface StudyRepository extends SubmittableRepository<Study, String> {
-
-    @RestResource(rel= SubmissionLinks.STUDY)
-    Page<Study> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
+public interface StudyRepository extends SubmittableRepository<Study> {
 
 }

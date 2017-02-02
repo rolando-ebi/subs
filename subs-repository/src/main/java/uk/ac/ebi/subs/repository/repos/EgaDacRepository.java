@@ -7,9 +7,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.SubmissionLinks;
 import uk.ac.ebi.subs.repository.model.EgaDac;
 
-public interface EgaDacRepository extends SubmittableRepository<EgaDac, String> {
+public interface EgaDacRepository extends SubmittableRepository<EgaDac> {
 
-    @RestResource(rel= SubmissionLinks.EGA_DAC)
-    Page<EgaDac> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
 }
