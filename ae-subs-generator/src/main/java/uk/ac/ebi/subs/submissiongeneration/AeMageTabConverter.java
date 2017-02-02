@@ -16,9 +16,10 @@ import uk.ac.ebi.arrayexpress2.magetab.exception.ParseException;
 import uk.ac.ebi.arrayexpress2.magetab.parser.MAGETABParser;
 import uk.ac.ebi.ena.taxonomy.client.TaxonomyClient;
 import uk.ac.ebi.ena.taxonomy.client.model.Taxon;
-import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
+import uk.ac.ebi.subs.submissiongeneration.olsSearch.OlsSearchService;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,9 @@ import java.util.*;
 public class AeMageTabConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(ArrayExpressSubmissionGenerationService.class);
+
+    @Autowired
+    OlsSearchService olsSearchService;
 
     @Autowired
     TaxonomyClient taxonomyClient;
@@ -42,22 +46,22 @@ public class AeMageTabConverter {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat alternateSdf = new SimpleDateFormat("dd/MM/yyyy");
 
-    public Submission mageTabToSubmission(URL mageTabUrl) throws ParseException {
+    public FullSubmission mageTabToSubmission(URL mageTabUrl) throws ParseException {
         MAGETABParser parser = new MAGETABParser();
 
         MAGETABInvestigation investigation = parser.parse(mageTabUrl);
 
-        Submission submission = mageTabToSubmission(investigation);
+        FullSubmission submission = mageTabToSubmission(investigation);
 
         return submission;
     }
 
-    public Submission mageTabToSubmission(MAGETABInvestigation investigation) {
+    public FullSubmission mageTabToSubmission(MAGETABInvestigation investigation) {
         return createSubmission(investigation);
     }
 
-    Submission createSubmission(MAGETABInvestigation investigation) {
-        Submission submission = new Submission();
+    FullSubmission createSubmission(MAGETABInvestigation investigation) {
+        FullSubmission submission = new FullSubmission();
 
         List<Protocol> protocols = buildProtocols(investigation.IDF);
         submission.getProtocols().addAll(protocols);
@@ -79,8 +83,8 @@ public class AeMageTabConverter {
         for (Protocol p : protocols){
             p.setDomain(submission.getDomain());
             ProtocolRef pr = (ProtocolRef)p.asRef();
-            pr.setReferencedObject(p);
             study.getProtocolRefs().add(pr);
+            submission.getProtocols().add(p);
         }
 
 
@@ -91,7 +95,7 @@ public class AeMageTabConverter {
         return submission;
     }
 
-    void convertSdrf(SDRF sdrf, Submission submission, StudyRef studyRef, Map<String, String> protocolTypes) {
+    void convertSdrf(SDRF sdrf, FullSubmission submission, StudyRef studyRef, Map<String, String> protocolTypes) {
 
         Collection<SourceNode> rootNodes = (Collection<SourceNode>) sdrf.getRootNodes();
 
@@ -291,10 +295,13 @@ public class AeMageTabConverter {
             a.setValue(sourceNode.materialType.getAttributeValue());
 
             if (sourceNode.materialType.termAccessionNumber != null) {
+                //TODO
                 Term t = new Term();
+                /*
                 t.setTermID(sourceNode.materialType.termAccessionNumber);
                 t.setSourceName(sourceNode.materialType.termSourceREF);
                 a.setTerm(t);
+                */
             }
 
             sample.getAttributes().add(a);
@@ -313,11 +320,15 @@ public class AeMageTabConverter {
             a.setUnits(characteristic.unit.getAttributeValue());
         }
 
-        if (characteristic.termAccessionNumber != null) {
-            Term t = new Term();
-            t.setTermID(characteristic.termAccessionNumber);
-            t.setSourceName(characteristic.termSourceREF);
-            a.setTerm(t);
+        if (characteristic.termAccessionNumber != null && !characteristic.termAccessionNumber.isEmpty()) {
+
+
+            String termUri = olsSearchService.fetchUriForQuery(characteristic.termAccessionNumber);
+            if (termUri != null) {
+                Term t = new Term();
+                t.setUrl(termUri);
+                a.getTerms().add(t);
+            }
         }
 
         attributes.getAttributes().add(a);
@@ -329,15 +340,20 @@ public class AeMageTabConverter {
             a.setName(attributeName);
             a.setValue(values.get(i));
 
-            Term t = new Term();
+            String termId = stringPresent(termIds, i);
 
-            t.setSourceName(stringPresent(termRefs, i));
-            t.setTermID(stringPresent(termIds, i));
+            if (termId != null && !termId.isEmpty()){
+                String termUri = olsSearchService.fetchUriForQuery(termId);
 
 
-            if (t.getSourceName() != null || t.getTermID() != null) {
-                a.setTerm(t);
+                if (termUri != null) {
+                    Term t = new Term();
+                    t.setUrl(termUri);
+                    a.getTerms().add(t);
+                }
             }
+
+
 
             submittable.getAttributes().add(a);
         }

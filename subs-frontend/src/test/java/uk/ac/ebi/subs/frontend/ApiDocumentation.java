@@ -30,11 +30,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Use this class to create document snippets. Ascii docotor will weave them into html documents,
  * using the files in src/resources/docs/ascidocs
  *
- * https://github.com/EBISPOT/OLS/blob/master/ols-web/src/test/java/uk/ac/ebi/spot/ols/api/ApiDocumentation.java
+ * @see <a href="https://github.com/EBISPOT/OLS/blob/master/ols-web/src/test/java/uk/ac/ebi/spot/ols/api/ApiDocumentation.java">OLS ApiDocumentation.java</a>
  *
  * gives this
  *
- * http://www.ebi.ac.uk/ols/docs/api
+ * @see <a href="http://www.ebi.ac.uk/ols/docs/api">OLS API Docs<</a>
+ *
+ * API documentation should learn from the excellent example at @see <a href="https://developer.github.com/v3/">GitHub</a>
+ *
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = FrontendApplication.class)
@@ -48,9 +51,6 @@ public class ApiDocumentation {
 
     @Autowired
     SubmissionRepository submissionRepository;
-
-    @Autowired
-    SubmissionController submissionController;
 
     @Autowired
     private WebApplicationContext context;
@@ -79,7 +79,7 @@ public class ApiDocumentation {
 
         this.submissionRepository.save(sub);
 
-        this.mockMvc.perform(get("/api/submissions/search/domain?domainName={domainName}",sub.getDomain().getName())
+        this.mockMvc.perform(get("/api/submissions/search/findByDomainName?domainName={domainName}",sub.getDomain().getName())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(
@@ -104,7 +104,7 @@ public class ApiDocumentation {
     public void submissionById() throws Exception {
         this.submissionRepository.deleteAll();
 
-        Submission sub = Helpers.generateTestSubmission();
+        Submission sub = Helpers.generateTestFullSubmission();
 
         this.submissionRepository.save(sub);
 

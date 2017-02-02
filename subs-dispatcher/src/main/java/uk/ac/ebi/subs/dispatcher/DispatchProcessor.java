@@ -7,19 +7,23 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.component.SampleUse;
-import uk.ac.ebi.subs.data.submittable.Assay;
-import uk.ac.ebi.subs.data.submittable.Sample;
-import uk.ac.ebi.subs.data.submittable.Submittable;
+import uk.ac.ebi.subs.data.status.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.SubmissionStatus;
+import uk.ac.ebi.subs.data.submittable.*;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.processing.ProcessingCertificate;
-import uk.ac.ebi.subs.processing.ProcessingStatus;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
+import uk.ac.ebi.subs.repository.FullSubmissionService;
+import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.submittable.SampleRepository;
+import uk.ac.ebi.subs.repository.submittable.SubmittablesBulkOperations;
 
 import java.util.*;
 
@@ -31,17 +35,64 @@ public class DispatchProcessor {
     RabbitMessagingTemplate rabbitMessagingTemplate;
 
     @Autowired
-    public DispatchProcessor(RabbitMessagingTemplate rabbitMessagingTemplate, MessageConverter messageConverter) {
+    List<Class> submittablesClassList;
+
+    @Autowired
+    FullSubmissionService fullSubmissionService;
+
+    @Autowired
+    SubmissionRepository submissionRepository;
+
+    @Autowired
+    SubmittablesBulkOperations submittablesBulkOperations;
+
+    @Autowired
+    public DispatchProcessor(
+            RabbitMessagingTemplate rabbitMessagingTemplate,
+            MessageConverter messageConverter
+    ) {
         this.rabbitMessagingTemplate = rabbitMessagingTemplate;
         this.rabbitMessagingTemplate.setMessageConverter(messageConverter);
     }
 
-    @RabbitListener(queues = Queues.SUBMISSION_SUPPORTING_INFO)
-    public void checkSupportingInformationRequirements(SubmissionEnvelope submissionEnvelope) {
+    /**
+     * Submissions being submitted by a user causes a Submission message to be sent,
+     * but downstream work needs a FullSubmission in a SubmissionEnvelope, so transform and resend
+     *
+     * @param submission
+     */
+    @RabbitListener(queues = Queues.SUBMISSION_SUBMITTED_DO_DISPATCH)
+    public void onSubmissionDoDispatch(Submission submission) {
+        logger.info("onSubmissionDoDispatch {}", submission);
+        FullSubmission fullSubmission = fullSubmissionService.fetchOne(submission.getId());
+
+        SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(fullSubmission);
+
+        Submission refreshedSubmission = new Submission(fullSubmission);
+        refreshedSubmission.setStatus(SubmissionStatus.Processing);
+        refreshedSubmission.setSubmissionDate(submission.getSubmissionDate());
+        submissionRepository.save(refreshedSubmission);
+
+
+        rabbitMessagingTemplate.convertAndSend(
+                Exchanges.SUBMISSIONS,
+                Topics.EVENT_SUBMISSION_UPDATED,
+                submissionEnvelope
+        );
+
+    }
+
+    @RabbitListener(queues = Queues.SUBMISSION_SUBMITTED_CHECK_SUPPORTING_INFO)
+    public void onSubmissionCheckSupportingInfoRequirement(Submission submission) {
+        logger.info("onSubmissionCheckSupportingInfoRequirement {}", submission);
+        FullSubmission fullSubmission = fullSubmissionService.fetchOne(submission.getId());
+
+        SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(fullSubmission);
+
         determineSupportingInformationRequired(submissionEnvelope);
 
         if (!submissionEnvelope.getSupportingSamplesRequired().isEmpty()) {
-            //TODO refactor this to use a smaller object
+            //TODO refactor this to use a smaller object?
             rabbitMessagingTemplate.convertAndSend(
                     Exchanges.SUBMISSIONS,
                     Topics.EVENT_SUBMISSION_NEEDS_SAMPLES,
@@ -50,9 +101,36 @@ public class DispatchProcessor {
         }
     }
 
+    @RabbitListener(queues = Queues.SUBMISSION_SUBMITTED_MARK_SUBMITTABLES)
+    public void onSubmissionMarkSubmittablesSubmitted(Submission submission) {
+
+        for(Class submittableClass : submittablesClassList){
+            submittablesBulkOperations.updateProcessingStatusBySubmissionId(
+                    submission.getId(),
+                    ProcessingStatus.Submitted,
+                    ProcessingStatus.Draft,
+                    submittableClass
+            );
+        }
+
+    }
+
+    @RabbitListener(queues = Queues.SUBMISSION_DELETED_CLEANUP_CONTENTS)
+    public void onDeletionCleanupContents(Submission submission) {
+
+        for(Class submittableClass : submittablesClassList){
+            submittablesBulkOperations.deleteSubmissionContents(
+                    submission.getId(),
+                    submittableClass
+            );
+        }
+
+    }
+
     @RabbitListener(queues = Queues.SUBMISSION_DISPATCHER)
     public void handleSubmissionEvent(SubmissionEnvelope submissionEnvelope) {
-        Submission submission = submissionEnvelope.getSubmission();
+        logger.info("handleSubmissionEvent {}", submissionEnvelope);
+        FullSubmission submission = submissionEnvelope.getSubmission();
 
         logger.info("received submission {}",
                 submissionEnvelope.getSubmission().getId());
@@ -73,12 +151,12 @@ public class DispatchProcessor {
         boolean allSubmittablesProcessed = true;
 
         for (Submittable submittable : submission.allSubmissionItems()) {
-            if (submittable.getStatus() == null || !submittable.getStatus().equals(ProcessingStatus.Processed.name())) {
+            if (submittable.getStatus() == null || !submittable.getStatus().equals(ProcessingStatus.Done.name())) {
                 allSubmittablesProcessed = false;
             }
 
             if (
-                    (submittable.getStatus() != null && submittable.getStatus().equalsIgnoreCase(ProcessingStatus.Processed.name())) ||
+                    (submittable.getStatus() != null && submittable.getStatus().equalsIgnoreCase(ProcessingStatus.Done.name())) ||
                             (submittable.getStatus() != null && submittable.getStatus().equals(ProcessingStatus.Curation.name()))
                     ) {
                 continue;
@@ -109,7 +187,7 @@ public class DispatchProcessor {
         if (allSubmittablesProcessed) {
             ProcessingCertificate cert = new ProcessingCertificate();
             cert.setSubmittableId(submission.getId());
-            cert.setProcessingStatus(ProcessingStatus.Processed);
+            cert.setProcessingStatus(ProcessingStatus.Done);
 
             rabbitMessagingTemplate.convertAndSend(
                     Exchanges.SUBMISSIONS,

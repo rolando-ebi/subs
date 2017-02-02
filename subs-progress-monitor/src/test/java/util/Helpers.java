@@ -1,5 +1,7 @@
 package util;
 
+
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.component.Domain;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.data.Submission;
@@ -33,7 +35,6 @@ public class Helpers {
         Domain d = new Domain();
         d.setName("subs-test");
         sub.setDomain(d);
-        sub.setSamples(generateTestSamples());
         return sub;
     }
 }

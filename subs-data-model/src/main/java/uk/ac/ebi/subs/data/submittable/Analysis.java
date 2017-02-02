@@ -1,15 +1,31 @@
 package uk.ac.ebi.subs.data.submittable;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
 import uk.ac.ebi.subs.data.component.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Analysis extends AbstractSubsEntity<Analysis> implements Files {
+/*
+    Caution - Spring data does not apply indexes from parent classes
+     the index definition has to be in the child classes
 
-    @Id
-    String id;
+    The compound indexes block below should in sync with the reference copy in AbstractSubsEntity
+ */
+@CompoundIndexes({
+        @CompoundIndex(name = "domain_alias", def = "{ 'domain.name': 1, 'alias': 1 }"),
+        @CompoundIndex(name = "accession", def = "{ 'accession': 1}"),
+        @CompoundIndex(name = "submissionId_status", def= "{ 'submissionId': 1, 'status': 1}")
+})
+@ToString
+@EqualsAndHashCode
+//@Document TODO - there is a potential cyclic reference that is flagged up when you have @Document - reconsider design
+public class Analysis extends AbstractSubsEntity<Analysis> implements Files {
 
     List<AnalysisRef> analysisRefs = new ArrayList<>();
     List<AssayDataRef> assayDataRefs = new ArrayList<>();
@@ -17,15 +33,6 @@ public class Analysis extends AbstractSubsEntity<Analysis> implements Files {
     List<SampleRef> sampleRefs = new ArrayList<>();
     List<AssayRef> assayRefs = new ArrayList<>();
 
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public List<StudyRef> getStudyRefs() {
         return studyRefs;

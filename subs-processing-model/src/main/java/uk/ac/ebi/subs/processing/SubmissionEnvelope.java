@@ -1,7 +1,11 @@
 package uk.ac.ebi.subs.processing;
 
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.submittable.Sample;
@@ -9,29 +13,31 @@ import uk.ac.ebi.subs.data.submittable.Sample;
 import java.util.*;
 
 
+@ToString
+@EqualsAndHashCode
 public class SubmissionEnvelope {
 
-    String id;
+    private String id;
 
-    Submission submission;
+    private FullSubmission submission;
 
-    Set<SampleRef> supportingSamplesRequired = new HashSet<>();
-    List<Sample> supportingSamples = new ArrayList<>();
+    private Set<SampleRef> supportingSamplesRequired = new HashSet<>();
+    private List<Sample> supportingSamples = new ArrayList<>();
 
 
 
     public SubmissionEnvelope() {};
 
-    public  SubmissionEnvelope(Submission submission){
+    public  SubmissionEnvelope(FullSubmission submission){
         this.submission = submission;
     }
 
 
-    public Submission getSubmission() {
+    public FullSubmission getSubmission() {
         return submission;
     }
 
-    public void setSubmission(Submission submission) {
+    public void setSubmission(FullSubmission submission) {
         this.submission = submission;
     }
 

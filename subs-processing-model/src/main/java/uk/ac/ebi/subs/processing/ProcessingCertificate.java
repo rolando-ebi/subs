@@ -1,25 +1,31 @@
 package uk.ac.ebi.subs.processing;
 
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import uk.ac.ebi.subs.data.component.Archive;
+import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
 import java.util.Objects;
 
+@ToString
+@EqualsAndHashCode
 public class ProcessingCertificate {
-    String submittableId;
-    Archive archive;
-    ProcessingStatus processingStatus;
-    String accession;
+    private String submittableId;
+    private Archive archive;
+    private ProcessingStatus processingStatus;
+    private String accession;
+    private String message;
 
-    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatus processingStatus){
+    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatus processingStatus) {
         this.submittableId = submittable.getId();
         this.archive = archive;
         this.processingStatus = processingStatus;
     }
 
-    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatus processingStatus, String accession){
-        this(submittable,archive,processingStatus);
+    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatus processingStatus, String accession) {
+        this(submittable, archive, processingStatus);
         this.accession = accession;
     }
 
@@ -27,20 +33,12 @@ public class ProcessingCertificate {
     public ProcessingCertificate() {
     }
 
-    public String getAccession() {
-        return accession;
-    }
-
-    public void setAccession(String accession) {
-        this.accession = accession;
-    }
-
     public String getSubmittableId() {
         return submittableId;
     }
 
-    public void setSubmittableId(String UUID) {
-        this.submittableId = UUID;
+    public void setSubmittableId(String submittableId) {
+        this.submittableId = submittableId;
     }
 
     public Archive getArchive() {
@@ -59,29 +57,20 @@ public class ProcessingCertificate {
         this.processingStatus = processingStatus;
     }
 
-    @Override
-    public String toString() {
-        return "ProcessingCertificate{" +
-                "submittableId='" + submittableId + '\'' +
-                ", archive=" + archive +
-                ", processingStatus=" + processingStatus +
-                ", accession='" + accession + '\'' +
-                '}';
+    public String getAccession() {
+        return accession;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProcessingCertificate that = (ProcessingCertificate) o;
-        return Objects.equals(submittableId, that.submittableId) &&
-                archive == that.archive &&
-                processingStatus == that.processingStatus &&
-                Objects.equals(accession, that.accession);
+    public void setAccession(String accession) {
+        this.accession = accession;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(submittableId, archive, processingStatus, accession);
+    public String getMessage() {
+        return message;
     }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
 }

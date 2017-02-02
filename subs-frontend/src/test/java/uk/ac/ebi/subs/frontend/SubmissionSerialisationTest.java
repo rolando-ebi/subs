@@ -10,12 +10,13 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.ObjectContent;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.subs.FrontendApplication;
-import uk.ac.ebi.subs.data.submittable.Sample;
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.submittable.Sample;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = FrontendApplication.class)
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 public class SubmissionSerialisationTest {
 
     @Autowired
-    private JacksonTester<Submission> json;
+    private JacksonTester<FullSubmission> json;
 
     @Test
     public void testSerialize() throws Exception {
@@ -31,11 +32,11 @@ public class SubmissionSerialisationTest {
     }
 
     String exampleJson;
-    Submission sub;
+    FullSubmission sub;
 
     @Before
     public void setUp() throws IOException {
-        sub = new Submission();
+        sub = new FullSubmission();
         sub.getDomain().setName("exampleDomain");
         sub.getSubmitter().setEmail("test@example.ac.uk");
         sub.getSamples().add(new Sample());
@@ -46,7 +47,7 @@ public class SubmissionSerialisationTest {
     @Test
     public void testDeserialize() throws Exception {
 
-        ObjectContent<Submission> deserializedSub = this.json.parse(exampleJson);
+        ObjectContent<FullSubmission> deserializedSub = this.json.parse(exampleJson);
         Submission actualSub = sub;
 
         assertThat(actualSub.getDomain())

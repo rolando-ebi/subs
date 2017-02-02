@@ -10,8 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.subs.DispatcherApplication;
+
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.processing.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.SampleRef;
@@ -39,7 +41,7 @@ public class DispatchProcessorTest {
 
 
     SubmissionEnvelope subEnv;
-    Submission sub;
+    FullSubmission sub;
     Sample sample;
     Study enaStudy;
     Study aeStudy;
@@ -62,7 +64,7 @@ public class DispatchProcessorTest {
         this.messagesToBioSamples = 0;
         this.messagesToAe = 0;
 
-        sub = new Submission();
+        sub = new FullSubmission();
         sub.setId("DispatchTestSub");
         sub.getSubmitter().setEmail("test@ebi.ac.uk");
         sub.getDomain().setName("testDomain");
@@ -93,23 +95,23 @@ public class DispatchProcessorTest {
     @Test
     public void testTheLoop() throws InterruptedException {
         //TODO these messages are received with a null submission in the envelope
-        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_SUBMITTED, subEnv);
+        rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_SUBMITTED, subEnv.getSubmission());
 
 
 
         sample.setAccession("SAMPLE1");
-        sample.setStatus(ProcessingStatus.Processed.name());
+        sample.setStatus(ProcessingStatus.Done);
 
         rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_UPDATED, subEnv);
 
 
         enaStudy.setAccession("ENA1");
-        enaStudy.setStatus(ProcessingStatus.Processed.name());
+        enaStudy.setStatus(ProcessingStatus.Done);
 
         rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_UPDATED, subEnv);
 
         aeStudy.setAccession("AE1");
-        aeStudy.setStatus(ProcessingStatus.Processed.name());
+        aeStudy.setStatus(ProcessingStatus.Done);
 
         rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, Topics.EVENT_SUBMISSION_UPDATED, subEnv);
 
@@ -125,7 +127,7 @@ public class DispatchProcessorTest {
     @Test
     public void testSupportingSamples() {
 
-        Submission submission = new Submission();
+        FullSubmission submission = new FullSubmission();
         SubmissionEnvelope envelope = new SubmissionEnvelope(submission);
 
         Assay a = new Assay();

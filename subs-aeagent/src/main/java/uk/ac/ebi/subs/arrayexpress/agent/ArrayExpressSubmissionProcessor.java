@@ -12,7 +12,10 @@ import uk.ac.ebi.subs.arrayexpress.model.ArrayExpressStudy;
 import uk.ac.ebi.subs.arrayexpress.model.SampleDataRelationship;
 import uk.ac.ebi.subs.arrayexpress.repo.ArrayExpressStudyRepository;
 import uk.ac.ebi.subs.arrayexpress.repo.SampleDataRelatioshipRepository;
+
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.processing.*;
 import uk.ac.ebi.subs.data.component.Archive;
@@ -32,7 +35,7 @@ import java.util.stream.Collectors;
 public class ArrayExpressSubmissionProcessor {
     private static final Logger logger = LoggerFactory.getLogger(ArrayExpressSubmissionProcessor.class);
 
-    String processedStatusValue = "processed";
+    ProcessingStatus processedStatusValue = ProcessingStatus.Done;
 
     @Autowired
     ArrayExpressStudyRepository aeStudyRepository;
@@ -52,8 +55,6 @@ public class ArrayExpressSubmissionProcessor {
         logger.info("received updated samples for submission {}",updatedSamplesEnvelope.getSubmissionId());
 
         Map<String,Sample> samplesByAccession = new HashMap<>();
-
-
         updatedSamplesEnvelope.getUpdatedSamples().forEach(s -> samplesByAccession.put(s.getAccession(),s));
 
         String[] updatedSampleAccessions = new String[0];
@@ -64,16 +65,18 @@ public class ArrayExpressSubmissionProcessor {
         logger.debug("found {} sdrs for sample update for submission {}",sdrs.size(),updatedSamplesEnvelope.getSubmissionId());
 
         for(SampleDataRelationship sdr : sdrs){
-            for (SampleUse sampleUse : sdr.getSampleUses()){
-                if (sampleUse.getSampleRef() == null || sampleUse.getSampleRef().getAccession() == null) continue;
+            ListIterator<Sample> sampleListIterator = sdr.getSamples().listIterator();
 
-                String sampleAccession = sampleUse.getSampleRef().getAccession();
+            while (sampleListIterator.hasNext()){
+                Sample s = sampleListIterator.next();
 
-                if (samplesByAccession.containsKey(sampleAccession)){
-                    sampleUse.getSampleRef().setReferencedObject(samplesByAccession.get(sampleAccession));
-                    logger.debug("update sample {} in sdr {} ",sampleAccession,sdr.getId());
+                if (samplesByAccession.containsKey(s.getAccession())){
+                    sampleListIterator.remove();
+                    sampleListIterator.add(samplesByAccession.get(s.getAccession()));
+                    logger.debug("update sample {} in sdr {} ",s.getAccession(),sdr.getId());
                 }
             }
+
         }
 
         sampleDataRelatioshipRepository.save(sdrs);
@@ -112,7 +115,7 @@ public class ArrayExpressSubmissionProcessor {
 
     public List<ProcessingCertificate> processStudy(Study study, SubmissionEnvelope submissionEnvelope) {
         List<ProcessingCertificate> certs = new ArrayList<>();
-        Submission submission = submissionEnvelope.getSubmission();
+        FullSubmission submission = submissionEnvelope.getSubmission();
 
         if (!study.isAccessioned()) {
             study.setAccession("AE-MTAB-" + UUID.randomUUID());
@@ -153,7 +156,7 @@ public class ArrayExpressSubmissionProcessor {
     public List<ProcessingCertificate> processAssay(Assay assay, SubmissionEnvelope submissionEnvelope, ArrayExpressStudy arrayExpressStudy){
         List<ProcessingCertificate> certs = new ArrayList<>();
 
-        Submission submission = submissionEnvelope.getSubmission();
+        FullSubmission submission = submissionEnvelope.getSubmission();
 
         SampleDataRelationship sdr = new SampleDataRelationship();
         sdr.setId(UUID.randomUUID().toString());
@@ -163,11 +166,12 @@ public class ArrayExpressSubmissionProcessor {
 
         //find sample
         for (SampleUse su : assay.getSampleUses()){
-            su.getSampleRef().fillIn(submission.getSamples(),submissionEnvelope.getSupportingSamples());
+            Sample s = su.getSampleRef().fillIn(submission.getSamples(),submissionEnvelope.getSupportingSamples());
 
-            if (su.getSampleRef().getReferencedObject() == null){
+            if (s == null){
                 throw new RuntimeException("No sample found for "+su.getSampleRef());
             }
+            sdr.getSamples().add(s);
         }
         //TODO change sdr to take a list?
 

@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.ArrayExpressAgentApplication;
+
+import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.processing.ProcessingCertificate;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
-import uk.ac.ebi.subs.processing.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatus;
 
 import java.util.List;
 
@@ -24,7 +26,7 @@ import static org.junit.Assert.assertThat;
 public class AeAgentSubsProcessorTest {
 
     SubmissionEnvelope subEnv;
-    Submission sub;
+    FullSubmission sub;
     Sample sa;
     Study st;
     Assay as;
@@ -39,7 +41,7 @@ public class AeAgentSubsProcessorTest {
     public void test(){
         List<ProcessingCertificate> certs = processor.processSubmission(subEnv);
 
-        String processedStatus = "processed";
+        String processedStatus = ProcessingStatus.Done.name();
 
         assertThat("study accessioned", st.getAccession(), startsWith("AE-MTAB-"));
         assertThat("study status", st.getStatus(),equalTo(processedStatus));
@@ -100,7 +102,7 @@ public class AeAgentSubsProcessorTest {
         enaStudy.setAlias("not to be accessioned here");
         enaStudy.setDomain(domain);
 
-        sub = new Submission();
+        sub = new FullSubmission();
         sub.setDomain(domain);
         sub.getSamples().add(sa);
         sub.getStudies().add(st);
