@@ -87,7 +87,7 @@ public class ApiIntegrationTest {
     public void tearDown() throws IOException {
         Unirest.shutdown();
         submissionRepository.deleteAll();
-        submissionRepository.deleteAll();
+        sampleRepository.deleteAll();
     }
 
     @Test
@@ -101,18 +101,9 @@ public class ApiIntegrationTest {
     public void simpleSubmissionWorkflow() throws IOException, UnirestException {
         Map<String, String> rootRels = rootRels();
 
-
-        //create a new submission
-        HttpResponse<JsonNode> submissionResponse = Unirest.post(rootRels.get("submissions"))
-                .headers(standardPostHeaders())
-                .body(Helpers.generateSubmission())
-                .asJson();
-
-        assertThat(submissionResponse.getStatus(), is(equalTo(HttpStatus.CREATED.value())));
-        assertThat(submissionResponse.getHeaders().get("Location"), notNullValue());
+        HttpResponse<JsonNode> submissionResponse = postSubmission(rootRels);
 
         String submissionLocation = submissionResponse.getHeaders().get("Location").get(0).toString();
-
         Map<String, String> submissionRels = relsFromPayload(submissionResponse.getBody().getObject());
 
         assertThat(submissionRels.get("samples"), notNullValue());
@@ -154,6 +145,59 @@ public class ApiIntegrationTest {
 
 
         assertThat(submissionPatchResponse.getStatus(), is(equalTo(HttpStatus.OK.value())));
+    }
+
+    private HttpResponse<JsonNode> postSubmission(Map<String, String> rootRels) throws UnirestException {
+        //create a new submission
+        HttpResponse<JsonNode> submissionResponse = Unirest.post(rootRels.get("submissions"))
+                .headers(standardPostHeaders())
+                .body(Helpers.generateSubmission())
+                .asJson();
+
+        assertThat(submissionResponse.getStatus(), is(equalTo(HttpStatus.CREATED.value())));
+        assertThat(submissionResponse.getHeaders().get("Location"), notNullValue());
+        return submissionResponse;
+    }
+
+    @Test
+    public void testPut() throws IOException, UnirestException {
+        Map<String, String> rootRels = rootRels();
+
+        HttpResponse<JsonNode> submissionResponse = postSubmission(rootRels);
+
+        String submissionLocation = submissionResponse.getHeaders().getFirst("Location");
+        Map<String, String> submissionRels = relsFromPayload(submissionResponse.getBody().getObject());
+
+        assertThat(submissionRels.get("samples"), notNullValue());
+
+        Sample sample = Helpers.generateTestSamples().get(0);
+        //add samples to the submission
+
+        sample.setSubmission(submissionLocation);
+
+        HttpResponse<JsonNode> sampleResponse = Unirest.post(rootRels.get("samples"))
+                .headers(standardPostHeaders())
+                .body(sample)
+                .asJson();
+
+        assertThat(sampleResponse.getStatus(), is(equalTo(HttpStatus.CREATED.value())));
+        assertThat(sampleResponse.getHeaders().getFirst("Location"), notNullValue());
+
+        String sampleLocation = sampleResponse.getHeaders().getFirst("Location");
+
+        sample.setAlias("bob"); //modify the sample
+        sample.setStatus("Draft"); // TODO move status out of the submittable so this is not necessary
+
+
+        HttpResponse<JsonNode> samplePutResponse = Unirest.put(sampleLocation)
+                .headers(standardPostHeaders())
+                .body(sample)
+                .asJson();
+
+        logger.info("samplePutResponse: {}",samplePutResponse.getBody());
+        assertThat(samplePutResponse.getStatus(), is(equalTo(HttpStatus.OK.value())));
+
+
     }
 
 

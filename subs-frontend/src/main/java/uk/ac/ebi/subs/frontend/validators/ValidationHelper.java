@@ -28,9 +28,12 @@ public class ValidationHelper {
             String fieldName,
             Errors errors) {
 
-
         if (targetStatusName == null || currentStatusName == null) {
             return; //TODO out of scope for this method
+        }
+
+        if (currentStatusName.equals(targetStatusName)){
+            return; //no change, no need to validate
         }
 
         Optional<Status> optionalCurrentStatus = statuses

@@ -2,6 +2,7 @@ package uk.ac.ebi.subs.frontend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -9,6 +10,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapt
 import uk.ac.ebi.subs.data.Submission;
 
 @Configuration
+@EnableMongoAuditing()
 public class RestRepositoryConfig {
 
 
