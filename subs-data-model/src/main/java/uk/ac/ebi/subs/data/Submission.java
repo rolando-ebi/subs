@@ -5,27 +5,25 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.hateoas.Identifiable;
 import org.springframework.util.Assert;
-import uk.ac.ebi.subs.data.annotation.CascadeSave;
 import uk.ac.ebi.subs.data.component.Domain;
-import uk.ac.ebi.subs.data.status.SubmissionStatus;
-import uk.ac.ebi.subs.data.submittable.Protocol;
 import uk.ac.ebi.subs.data.component.Submitter;
-import uk.ac.ebi.subs.data.submittable.*;
+import uk.ac.ebi.subs.data.status.SubmissionStatus;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.Date;
+import java.util.Objects;
 
 @CompoundIndexes({
         @CompoundIndex(name = "domain_rev_submission_date", def = "{ 'domain.name': 1, 'submissionDate': -1 }")
 })
 @ToString
 @EqualsAndHashCode
-public class Submission implements Identifiable<String>{
+public class Submission implements Identifiable<String> {
 
-    public Submission(){}
+    public Submission() {
+    }
+
     public Submission(Submission s) {
         this.id = s.id;
         this.submitter = s.submitter;
@@ -91,37 +89,8 @@ public class Submission implements Identifiable<String>{
         Assert.notNull(status);
         this.setStatus(status.name());
     }
+
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Submission that = (Submission) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(submitter, that.submitter) &&
-                Objects.equals(domain, that.domain) &&
-                Objects.equals(submissionDate, that.submissionDate) &&
-                Objects.equals(createdDate, that.createdDate) &&
-                Objects.equals(status, that.status);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, submitter, domain, submissionDate, createdDate, status);
-    }
-
-    @Override
-    public String toString() {
-        return "Submission{" +
-                "id='" + id + '\'' +
-                ", submitter=" + submitter +
-                ", domain=" + domain +
-                ", submissionDate=" + submissionDate +
-                ", createdDate=" + createdDate +
-                ", status='" + status + '\'' +
-                '}';
     }
 }

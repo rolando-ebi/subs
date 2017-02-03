@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.*;
@@ -16,7 +15,7 @@ import uk.ac.ebi.subs.data.submittable.*;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,7 +40,7 @@ public class SubmissionRepositoryTest {
         Assay a = new Assay();
         AssayData ad = new AssayData();
 
-        for (Submittable sub : Arrays.asList(p,st,sa,a,ad)){
+        for (Submittable sub : Arrays.asList(p, st, sa, a, ad)) {
             sub.setDomain(testSub.getDomain());
         }
 
@@ -63,7 +62,7 @@ public class SubmissionRepositoryTest {
 
         a.setTitle("Test assay");
         a.setArchive(Archive.Ena);
-        a.getSampleUses().add(new SampleUse( (SampleRef) sa.asRef() ));
+        a.getSampleUses().add(new SampleUse((SampleRef) sa.asRef()));
         a.setStudyRef((StudyRef) st.asRef());
         a.setId(UUID.randomUUID().toString());
 

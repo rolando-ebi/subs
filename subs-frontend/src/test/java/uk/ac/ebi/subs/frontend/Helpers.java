@@ -4,14 +4,29 @@ package uk.ac.ebi.subs.frontend;
 import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.Domain;
+import uk.ac.ebi.subs.data.component.Submitter;
 import uk.ac.ebi.subs.data.status.SubmissionStatus;
-import uk.ac.ebi.subs.data.submittable.Sample;
+import uk.ac.ebi.subs.data.client.Sample;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Helpers {
+
+    public static Submission generateSubmission() {
+        Submission s = new Submission();
+
+        Domain d = new Domain();
+        d.setName("test domain");
+        s.setDomain(d);
+
+        Submitter u = new Submitter();
+        u.setEmail("test@test.org");
+        s.setSubmitter(u);
+
+        return s;
+    }
 
     public static List<Sample> generateTestSamples() {
         List<Sample> samples = new ArrayList<>();
@@ -32,13 +47,7 @@ public class Helpers {
         return samples;
     }
 
-    public static FullSubmission generateTestFullSubmission() {
-        FullSubmission sub = new FullSubmission(generateTestSubmission());
 
-        sub.setSamples(generateTestSamples());
-
-        return sub;
-    }
 
     public static Submission generateTestSubmission() {
         Submission sub = new Submission();

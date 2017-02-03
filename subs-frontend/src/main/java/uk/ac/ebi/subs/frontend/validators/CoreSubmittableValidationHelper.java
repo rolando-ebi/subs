@@ -11,7 +11,8 @@ import uk.ac.ebi.subs.data.status.Status;
 import uk.ac.ebi.subs.data.status.SubmissionStatus;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
-import uk.ac.ebi.subs.repository.submittable.SubmittableRepository;
+import uk.ac.ebi.subs.repository.model.StoredSubmittable;
+import uk.ac.ebi.subs.repository.repos.SubmittableRepository;
 
 import java.util.List;
 
@@ -42,11 +43,11 @@ public class CoreSubmittableValidationHelper {
         this.releaseStatuses = releaseStatuses;
     }
 
-    public void validate(Submittable target, SubmittableRepository repository, Errors errors) {
-        Submittable storedVersion = null;
+    public void validate(StoredSubmittable target, SubmittableRepository repository, Errors errors) {
+        StoredSubmittable storedVersion = null;
 
         if (target.getId() != null) {
-            storedVersion = (Submittable) repository.findOne(target.getId());
+            storedVersion = (StoredSubmittable) repository.findOne(target.getId());
         }
 
         this.validate(target, storedVersion, errors);
@@ -54,23 +55,20 @@ public class CoreSubmittableValidationHelper {
 
 
     /*TODO review error codes, I just made some up for now */
-    public void validate(Submittable target, Submittable storedVersion, Errors errors) {
+    public void validate(StoredSubmittable target, StoredSubmittable storedVersion, Errors errors) {
         logger.info("validate {}", target);
-        Submittable submittable = (Submittable) target;
+        StoredSubmittable submittable = (StoredSubmittable) target;
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "submissionId", "required", "submissionId is required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "submission", "required", "submission is required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "status", "required", "status is required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "domain.name", "required", "domain name is required");
 
 
 
-        if (submittable.getSubmissionId() != null) {
-            Submission submission = submissionRepository.findOne(submittable.getSubmissionId());
+        if (submittable.getSubmission() != null) {
+            Submission submission = submittable.getSubmission();
 
-            if (submission == null) {
-                errors.rejectValue("submissionId", "submissionNotFound", "submission not found for ID");
-            }
-            else if (!submission.getStatus().equals(SubmissionStatus.Draft.name())) {
+            if (!SubmissionStatus.Draft.name().equals(submission.getStatus())) {
                 errors.reject("submissionLocked","Submission has been submitted, changes are not possible");
             }
 
@@ -82,12 +80,12 @@ public class CoreSubmittableValidationHelper {
         }
     }
 
-    private void validateAgainstStoredVersion(Errors errors, Submittable submittable, Submittable storedVersion) {
+    private void validateAgainstStoredVersion(Errors errors, StoredSubmittable submittable, StoredSubmittable storedVersion) {
 
         ValidationHelper.thingCannotChange(
-                submittable.getSubmissionId(),
-                storedVersion.getSubmissionId(),
-                "submissionId",
+                submittable.getSubmission(),
+                storedVersion.getSubmission(),
+                "submission",
                 errors
         );
 

@@ -2,36 +2,27 @@ package uk.ac.ebi.subs.data.submittable;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.ac.ebi.subs.data.component.*;
+import uk.ac.ebi.subs.data.component.AssayRef;
+import uk.ac.ebi.subs.data.component.ProtocolUse;
+import uk.ac.ebi.subs.data.component.SampleUse;
+import uk.ac.ebi.subs.data.component.StudyRef;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-/*
-    Caution - Spring data does not apply indexes from parent classes
-     the index definition has to be in the child classes
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 
-    The compound indexes block below should in sync with the reference copy in AbstractSubsEntity
- */
-@CompoundIndexes({
-        @CompoundIndex(name = "domain_alias", def = "{ 'domain.name': 1, 'alias': 1 }"),
-        @CompoundIndex(name = "accession", def = "{ 'accession': 1}"),
-        @CompoundIndex(name = "submissionId_status", def= "{ 'submissionId': 1, 'status': 1}")
-})
-@Document
-@ToString
-@EqualsAndHashCode
-public class Assay extends AbstractSubsEntity<Assay> {
+public class Assay extends BaseSubmittable<Assay> {
 
+    private StudyRef studyRef = new StudyRef();
+    private List<SampleUse> sampleUses = new ArrayList<>();
+    private List<ProtocolUse> protocolUses = new ArrayList<>();
 
-    StudyRef studyRef = new StudyRef();
-    List<SampleUse> sampleUses = new ArrayList<>();
-    List<ProtocolUse> protocolUses = new ArrayList<>();
+    @Override
+    protected AssayRef newRef() {
+        return new AssayRef();
+    }
 
     public StudyRef getStudyRef() {
         return studyRef;
@@ -56,10 +47,4 @@ public class Assay extends AbstractSubsEntity<Assay> {
     public void setProtocolUses(List<ProtocolUse> protocolUses) {
         this.protocolUses = protocolUses;
     }
-
-    @Override
-    protected AssayRef newRef() {
-        return new AssayRef();
-    }
-
 }

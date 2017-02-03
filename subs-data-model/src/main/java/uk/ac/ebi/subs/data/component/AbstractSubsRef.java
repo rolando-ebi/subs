@@ -6,7 +6,6 @@ import lombok.ToString;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -18,10 +17,10 @@ import java.util.Optional;
  */
 @ToString @EqualsAndHashCode
 public abstract  class AbstractSubsRef<T extends Submittable> {
-    String alias;
-    String accession;
-    String archive;
-    String domain;
+    private String alias;
+    private String accession;
+    private String archive;
+    private String domain;
 
     public String getArchive() {
         return archive;

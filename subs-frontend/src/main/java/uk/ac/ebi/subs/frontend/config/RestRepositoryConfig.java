@@ -19,7 +19,6 @@ public class RestRepositoryConfig {
 
             @Override
             public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-                config.exposeIdsFor(Submission.class);
                 config.setRepositoryDetectionStrategy(
                         RepositoryDetectionStrategy.RepositoryDetectionStrategies.ANNOTATED
                 );
