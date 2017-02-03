@@ -14,7 +14,7 @@ buildscript {
 
 
 allprojects {
-    ext.version_base = '1.0.0-SUBS-334-v2-SNAPSHOT'
+    ext.version_base = '1.0.0-SNAPSHOT'
     version = version_base
 
     apply plugin: 'net.saliman.cobertura'
@@ -51,6 +51,7 @@ subprojects {
 
     repositories {
         mavenLocal()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         mavenCentral()
     }
 
@@ -73,6 +74,7 @@ subprojects {
         }
     }
 
+    /*
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -90,6 +92,31 @@ subprojects {
                     credentials {
                         username artifactoryUsername
                         password artifactoryPassword
+                    }
+                }
+            }
+        }
+    }
+    */
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourceJar { classifier "sources" }
+            }
+        }
+        repositories {
+            maven {
+                if (project.version.endsWith('-SNAPSHOT')) {
+                    url "https://oss.sonatype.org/content/repositories/snapshots"
+                } else {
+                    url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                }
+                if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+                    credentials {
+                        username ossrhUsername
+                        password ossrhPassword
                     }
                 }
             }
@@ -165,6 +192,39 @@ subprojects {
         doLast {
             println "$jar.archivePath.absolutePath"
         }
+    }
+
+    remotes {
+        staging {
+            role('staging')
+            host = 'mac-subs-001'
+        }
+    }
+
+    task deployJar(type: SshTask, dependsOn: 'build') {
+        doLast {
+            def deployHome = "/data/" + project.name;
+            File jarDeployDir = new File(deployHome,"jar")
+
+            ssh.run {
+                session(remotes.staging) {
+                    println "Uploading jar $jar.archivePath.name to $jarDeployDir area on $remote"
+                    put(jar.archivePath.absolutePath, jarDeployDir.absolutePath)
+                    println "createing symbolic link to $jar.archiveName"
+                    def result = execute "ln -s -f $jarDeployDir/$jar.archiveName $jarDeployDir/$jar.baseName" + ".jar", ignoreError: true
+                    println result
+                    result = execute "$deployHome/subs_frontend.sh stop" , ignoreError: true
+                    println result
+                    result = execute "$deployHome/subs_frontend.sh start" , ignoreError: true
+                    println result
+                }
+            }
+        }
+        ssh.settings {
+            knownHosts = allowAnyHosts
+        }
+
+
 
     }
 
