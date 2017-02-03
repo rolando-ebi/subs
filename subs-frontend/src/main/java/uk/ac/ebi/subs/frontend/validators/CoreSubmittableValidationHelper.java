@@ -81,8 +81,8 @@ public class CoreSubmittableValidationHelper {
     private void validateAgainstStoredVersion(Errors errors, StoredSubmittable submittable, StoredSubmittable storedVersion) {
 
         ValidationHelper.thingCannotChange(
-                submittable.getSubmission(),
-                storedVersion.getSubmission(),
+                (submittable.getSubmission() == null) ? null : submittable.getSubmission().getId(),
+                (storedVersion.getSubmission() == null) ? null : storedVersion.getSubmission().getId(),
                 "submission",
                 errors
         );
