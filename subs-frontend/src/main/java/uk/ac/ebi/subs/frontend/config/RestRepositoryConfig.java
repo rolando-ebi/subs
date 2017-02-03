@@ -2,6 +2,7 @@ package uk.ac.ebi.subs.frontend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy;
@@ -10,7 +11,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapt
 import uk.ac.ebi.subs.data.Submission;
 
 @Configuration
-@EnableMongoAuditing()
+@EnableMongoAuditing(auditorAwareRef="auditorProvider")
 public class RestRepositoryConfig {
 
 
@@ -27,6 +28,17 @@ public class RestRepositoryConfig {
             }
         };
     }
+
+    @Bean
+    public AuditorAware<String> auditorProvider(){
+        return new AuditorAware<String>() {
+            @Override
+            public String getCurrentAuditor() {
+                return "nemo"; //TODO once authentication is working, make this return the real user
+            }
+        };
+    }
+
 
 
 }
