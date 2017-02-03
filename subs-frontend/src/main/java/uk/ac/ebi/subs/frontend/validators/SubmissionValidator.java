@@ -37,11 +37,9 @@ public class SubmissionValidator implements Validator {
 
         Submission submission = (Submission) target;
 
-        ValidationUtils.rejectIfEmpty(errors, "domain", "required", "domain is required");
         ValidationUtils.rejectIfEmpty(errors, "submitter", "required", "submitter is required");
         ValidationUtils.rejectIfEmpty(errors, "status", "required", "status is required");
         ValidationUtils.rejectIfEmpty(errors, "domain", "required", "domain is required");
-        ValidationUtils.rejectIfEmpty(errors, "createdDate", "required", "createdDate is required");
 
         try {
             errors.pushNestedPath("domain");
@@ -120,12 +118,11 @@ public class SubmissionValidator implements Validator {
     }
 
     private void createdDateCannotChange(Submission target, Submission storedVersion, Errors errors) {
-        ValidationHelper.thingCannotChange(
-                target.getCreatedDate(),
-                storedVersion.getCreatedDate(),
-                "createdDate",
-                errors
-        );
+        /*Yes, this is stupid
+         * Spring Data Auditing is set for this object, but it doesn't maintain the createdDate on save
+         */
+
+        target.setCreatedDate(storedVersion.getCreatedDate());
     }
 
     private void submittedDateCannotChange(Submission target, Submission storedVersion, Errors errors) {
