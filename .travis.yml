@@ -19,6 +19,9 @@ script: ./gradlew check
 
 after_success:
 - ./gradlew cobertura coveralls
+- ./gradlew subs-data-model:uploadArchives
+- ./gradlew subs-messaging:uploadArchives
+- ./gradlew subs-processing-model:uploadArchives
 
 before_install:
 - openssl aes-256-cbc -K $encrypted_d65fefe7827f_key -iv $encrypted_d65fefe7827f_iv
