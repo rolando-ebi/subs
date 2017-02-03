@@ -187,7 +187,7 @@ public class ApiIntegrationTest {
 
         sample.setAlias("bob"); //modify the sample
         sample.setStatus("Draft"); // TODO move status out of the submittable so this is not necessary
-
+        sample.setSubmission(submissionLocation);
 
         HttpResponse<JsonNode> samplePutResponse = Unirest.put(sampleLocation)
                 .headers(standardPostHeaders())
