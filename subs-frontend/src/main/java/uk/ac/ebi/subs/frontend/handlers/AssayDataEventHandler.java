@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.subs.data.submittable.AssayData;
+import uk.ac.ebi.subs.repository.model.AssayData;
 
 /**
  * Repo event handler for assay data nested in a submission

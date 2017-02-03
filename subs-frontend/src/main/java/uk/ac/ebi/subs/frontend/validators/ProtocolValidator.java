@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import uk.ac.ebi.subs.data.submittable.Protocol;
-import uk.ac.ebi.subs.repository.submittable.ProtocolRepository;
+import uk.ac.ebi.subs.repository.model.Protocol;
+import uk.ac.ebi.subs.repository.repos.ProtocolRepository;
 
 @Component
 public class ProtocolValidator implements Validator {

@@ -2,6 +2,7 @@ package uk.ac.ebi.subs.stresstest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.http.client.methods.HttpRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +10,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.*;
+import org.springframework.hateoas.ResourceSupport;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
-import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.data.client.*;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.data.status.SubmissionStatus;
-import uk.ac.ebi.subs.data.submittable.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -56,7 +62,8 @@ public class StressTestServiceImpl implements StressTestService {
     ObjectMapper mapper = new ObjectMapper();
 
     ParameterizedTypeReference<Resource<Submission>> submissionResourceTypeRef =
-            new ParameterizedTypeReference<Resource<Submission>>() {};
+            new ParameterizedTypeReference<Resource<Submission>>() {
+            };
 
     int submissionCounter = 0;
 
@@ -121,23 +128,25 @@ public class StressTestServiceImpl implements StressTestService {
     }
 
 
-    Consumer<FullSubmission> submitSubmission = new Consumer<FullSubmission>() {
+
+
+    Consumer<ClientCompleteSubmission> submitSubmission = new Consumer<ClientCompleteSubmission>() {
         @Override
-        public void accept(FullSubmission fullSubmission) {
+        public void accept(ClientCompleteSubmission submission) {
 
             logger.info("Submitting for domain {} with {} submittables ",
-                    fullSubmission.getDomain().getName(),
-                    fullSubmission.allSubmissionItems().size()
+                    submission.getDomain().getName(),
+                    submission.allSubmissionItems().size()
             );
 
-            fullSubmission.setStatus(SubmissionStatus.Draft);
+            submission.setStatus(SubmissionStatus.Draft);
 
             Map<Class, String> domainTypeToSubmissionPath = itemSubmissionUri();
-            Submission minimalSubmission = new Submission(fullSubmission);
+            Submission minimalSubmission = new Submission(submission);
 
-            String submissionUri = domainTypeToSubmissionPath.get(minimalSubmission.getClass());
+            String submissionsUri = domainTypeToSubmissionPath.get(minimalSubmission.getClass());
 
-            URI submissionLocation = restTemplate.postForLocation(submissionUri, minimalSubmission);
+            URI submissionLocation = restTemplate.postForLocation(submissionsUri, minimalSubmission);
             String[] pathElements = submissionLocation.getPath().split("/");
 
             ResponseEntity<Resource<Submission>> submissionResource = restTemplate.exchange(
@@ -147,18 +156,10 @@ public class StressTestServiceImpl implements StressTestService {
                     submissionResourceTypeRef
             );
 
-            minimalSubmission = submissionResource.getBody().getContent();
-            if (minimalSubmission.getId() == null) {
-                //TODO not clear why ID is null, use a hideous hack for now
-                minimalSubmission.setId(pathElements[pathElements.length - 1]);
 
-            }
-            final String submissionId = minimalSubmission.getId();
-
-
-            fullSubmission.allSubmissionItemsStream().parallel().forEach(
+            submission.allSubmissionItemsStream().parallel().forEach(
                     item -> {
-                        item.setSubmissionId(submissionId);
+                        ((PartOfSubmission) item).setSubmission(submissionLocation.toASCIIString());
                         item.setStatus(ProcessingStatus.Draft.name());
 
                         String itemUri = domainTypeToSubmissionPath.get(item.getClass());
@@ -167,15 +168,16 @@ public class StressTestServiceImpl implements StressTestService {
                             throw new NullPointerException("no submission URI for " + item);
                         }
                         logger.debug("posting to {}, {}", itemUri, item);
-                        ResponseEntity<Resource> responseEntity = restTemplate.postForEntity(itemUri, item,Resource.class );
-                        if (responseEntity.getStatusCodeValue() != 201){
+                        ResponseEntity<Resource> responseEntity = restTemplate.postForEntity(itemUri, item, Resource.class);
+
+                        if (responseEntity.getStatusCodeValue() != 201) {
                             logger.error("Unexpected status code {} when posting {} to {}; response body is",
                                     responseEntity.getStatusCodeValue(),
                                     item,
                                     itemUri,
                                     responseEntity.getBody().toString()
                             );
-                            throw new RuntimeException("Server error "+responseEntity.toString());
+                            throw new RuntimeException("Server error " + responseEntity.toString());
                         }
                         URI location = responseEntity.getHeaders().getLocation();
                         logger.debug("created {}", location);
@@ -183,20 +185,31 @@ public class StressTestServiceImpl implements StressTestService {
             );
 
 
-
-            minimalSubmission.setStatus(SubmissionStatus.Submitted);
-
-            restTemplate.put(
+            ResponseEntity<Resource<Submission>> subGetResponse = restTemplate.exchange(
                     submissionLocation,
-                    minimalSubmission
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Resource<Submission>>() {}
             );
+
+            Submission sub = subGetResponse.getBody().getContent();
+            sub.setStatus(SubmissionStatus.Submitted);
+            HttpEntity<Submission> putEntity = new HttpEntity<>(sub);
+
+            ResponseEntity<Resource<Submission>> subPutResponse = restTemplate.exchange(
+                    submissionLocation,
+                    HttpMethod.PUT,
+                    putEntity,
+                    new ParameterizedTypeReference<Resource<Submission>>() {}
+            );
+
 
             submissionCounter++;
         }
     };
 
-    Function<Path, FullSubmission> loadSubmission = new Function<Path, FullSubmission>() {
-        public FullSubmission apply(Path p) {
+    Function<Path, ClientCompleteSubmission> loadSubmission = new Function<Path, ClientCompleteSubmission>() {
+        public ClientCompleteSubmission apply(Path p) {
             logger.info("Loading Submission JSON from {}", p);
 
             try {
@@ -205,17 +218,12 @@ public class StressTestServiceImpl implements StressTestService {
 
                 logger.debug("got string: {}", json);
 
-                return mapper.readValue(json, FullSubmission.class);
+                return mapper.readValue(json, ClientCompleteSubmission.class);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     };
-
-
-    void submit(String submission) {
-
-    }
 
 
     private class PathTimecode {

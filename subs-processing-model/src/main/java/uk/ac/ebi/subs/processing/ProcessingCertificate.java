@@ -7,8 +7,6 @@ import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
-import java.util.Objects;
-
 @ToString
 @EqualsAndHashCode
 public class ProcessingCertificate {

@@ -5,10 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import uk.ac.ebi.subs.data.submittable.Sample;
 
-@ToString
-@EqualsAndHashCode
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class SampleRelationship extends SampleRef {
-    String relationshipNature; // e.g. Child of
+    private String relationshipNature; // e.g. Child of
 
     public String getRelationshipNature() {
         return relationshipNature;

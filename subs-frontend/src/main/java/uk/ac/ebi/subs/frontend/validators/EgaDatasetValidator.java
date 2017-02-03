@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import uk.ac.ebi.subs.data.submittable.EgaDataset;
-import uk.ac.ebi.subs.repository.submittable.EgaDatasetRepository;
+import uk.ac.ebi.subs.repository.model.EgaDataset;
+import uk.ac.ebi.subs.repository.repos.EgaDatasetRepository;
 
 @Component
 public class EgaDatasetValidator implements Validator {

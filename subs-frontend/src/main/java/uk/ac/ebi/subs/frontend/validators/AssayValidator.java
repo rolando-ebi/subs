@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import uk.ac.ebi.subs.data.submittable.Assay;
-import uk.ac.ebi.subs.repository.submittable.AssayRepository;
+import uk.ac.ebi.subs.repository.model.Assay;
+import uk.ac.ebi.subs.repository.repos.AssayRepository;
 
 @Component
 public class AssayValidator implements Validator {
