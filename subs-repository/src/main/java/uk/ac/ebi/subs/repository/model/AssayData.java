@@ -1,8 +1,6 @@
 package uk.ac.ebi.subs.repository.model;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Version;
+import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -25,8 +23,8 @@ public class AssayData extends uk.ac.ebi.subs.data.submittable.AssayData impleme
     private Date createdDate;
     @LastModifiedDate
     private Date lastModifiedDate;
-    //TODO once we have authenticiation integrated @CreatedBy private String createdBy;
-    //TODO once we have authenticiation integrated @LastModifiedBy private String lastModifiedBy;
+    @CreatedBy private String createdBy;
+    @LastModifiedBy private String lastModifiedBy;
 
     @DBRef
     private Submission submission;
@@ -61,5 +59,21 @@ public class AssayData extends uk.ac.ebi.subs.data.submittable.AssayData impleme
 
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
     }
 }

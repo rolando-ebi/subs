@@ -1,12 +1,9 @@
 package uk.ac.ebi.subs.frontend.handlers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.subs.data.status.ProcessingStatus;
-import uk.ac.ebi.subs.repository.SubmissionRepository;
-import uk.ac.ebi.subs.repository.model.Sample;
 import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 
 import java.util.UUID;
@@ -35,7 +32,7 @@ public class CoreSubmittableEventHelper {
     }
 
     @HandleBeforeCreate
-    public void beforeSave(StoredSubmittable storedSubmittable){
+    public void beforeSave(StoredSubmittable storedSubmittable) {
         setDomainFromSubmission(storedSubmittable);
     }
 }
