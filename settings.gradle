@@ -2,7 +2,7 @@ rootProject.name = 'subs'
 
 include "subs-data-model"
 include "subs-repository"
-include "subs-frontend"
+include "subs-api"
 include "subs-validation"
 include 'subs-samples-agent'
 include "subs-messaging"
