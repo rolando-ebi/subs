@@ -1,5 +1,8 @@
 package uk.ac.ebi.subs.messaging;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +21,14 @@ public class MappingConfig {
 
     @Bean
     public MappingJackson2MessageConverter jackson2Converter() {
-        return new MappingJackson2MessageConverter();
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+
+        ObjectMapper objectMapper = converter.getObjectMapper();
+
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        objectMapper.registerModule(new AfterburnerModule()); //MOAR SPEED
+
+        return converter;
     }
 
     @Bean
