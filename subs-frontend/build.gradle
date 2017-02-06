@@ -49,3 +49,16 @@ jar {
         into 'static/docs'
     }
 }
+
+publish {
+    dependsOn assemble
+}
+
+springBoot {
+    executable = true
+}
+
+
+
+
+
