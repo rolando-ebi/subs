@@ -5,3 +5,5 @@ build
 .gradle/*
 .DS_Store
 classes
+gradle.properties
+*/application.pid

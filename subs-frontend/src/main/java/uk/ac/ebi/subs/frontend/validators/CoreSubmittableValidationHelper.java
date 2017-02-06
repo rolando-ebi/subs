@@ -61,8 +61,6 @@ public class CoreSubmittableValidationHelper {
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "submission", "required", "submission is required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "status", "required", "status is required");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "domain.name", "required", "domain name is required");
-
 
 
         if (submittable.getSubmission() != null) {
@@ -83,16 +81,9 @@ public class CoreSubmittableValidationHelper {
     private void validateAgainstStoredVersion(Errors errors, StoredSubmittable submittable, StoredSubmittable storedVersion) {
 
         ValidationHelper.thingCannotChange(
-                submittable.getSubmission(),
-                storedVersion.getSubmission(),
+                (submittable.getSubmission() == null) ? null : submittable.getSubmission().getId(),
+                (storedVersion.getSubmission() == null) ? null : storedVersion.getSubmission().getId(),
                 "submission",
-                errors
-        );
-
-        ValidationHelper.thingCannotChange(
-                submittable.getDomain(),
-                storedVersion.getDomain(),
-                "domain",
                 errors
         );
 
@@ -104,5 +95,11 @@ public class CoreSubmittableValidationHelper {
                 "status",
                 errors);
 
+
+        /*Yes, this is stupid
+         * Spring Data Auditing is set for this object, but it doesn't maintain the createdDate on save
+         */
+
+        submittable.setCreatedDate(storedVersion.getCreatedDate());
     }
 }
