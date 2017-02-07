@@ -24,4 +24,7 @@ public interface SubmittableRepository<T extends Submittable> extends MongoRepos
     @RestResource(exported = false)
     Page<T> findBySubmissionId(String submissionId, Pageable pageable);
 
+    @RestResource(exported = false)
+    Page<T> findByDomainNameAndAliasOrderByCreatedDateDesc(String domainName, String alias, Pageable pageable);
+
 }
