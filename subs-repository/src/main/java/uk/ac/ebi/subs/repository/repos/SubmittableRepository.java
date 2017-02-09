@@ -10,13 +10,14 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.SubmissionLinks;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 import uk.ac.ebi.subs.repository.model.Sample;
+import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 
 import java.io.Serializable;
 import java.util.List;
 
 @NoRepositoryBean
 @RepositoryRestResource
-public interface SubmittableRepository<T extends Submittable> extends MongoRepository<T, String> {
+public interface SubmittableRepository<T extends StoredSubmittable> extends MongoRepository<T, String> {
 
     @RestResource(exported = false)
     List<T> findBySubmissionId(String submissionId);
