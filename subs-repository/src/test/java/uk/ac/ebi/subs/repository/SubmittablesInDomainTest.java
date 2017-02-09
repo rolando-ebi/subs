@@ -28,9 +28,6 @@ public class SubmittablesInDomainTest {
     @Autowired
     private SampleRepository sampleRepository;
 
-    @Autowired
-    private SubmittablesBulkOperations submittablesBulkOperations;
-
     private final String domainName = "testDomain";
     private Domain domain;
 
@@ -50,7 +47,7 @@ public class SubmittablesInDomainTest {
         sampleRepository.save(sample("charlotte", "1st"));
 
 
-        Page<Sample> samples = submittablesBulkOperations.itemsByDomain(domainName, new PageRequest(0, 2), Sample.class);
+        Page<Sample> samples = sampleRepository.itemsByDomain(domainName, new PageRequest(0, 2));
 
         assertThat(samples,notNullValue());
         assertThat(samples.getTotalElements(),is(equalTo(3L)));
@@ -59,7 +56,7 @@ public class SubmittablesInDomainTest {
         assertThat(samples.getContent().get(1).getTitle(),equalTo("3rd"));//got most recent version of bob
         assertThat(samples.getTotalPages(),is(equalTo(2)));
 
-        samples = submittablesBulkOperations.itemsByDomain(domainName, new PageRequest(1, 2), Sample.class);
+        samples = sampleRepository.itemsByDomain(domainName, new PageRequest(1, 2));
         assertThat(samples,notNullValue());
         assertThat(samples.getTotalElements(),is(equalTo(3L)));
         assertThat(samples.getContent().get(0).getAlias(),equalTo("charlotte"));

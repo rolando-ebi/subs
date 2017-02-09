@@ -36,30 +36,7 @@ public class SubmittablesBulkOperations {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    MongoTemplate mongoTemplate;
-
-
-    public Page itemsByDomain(String domainName, Pageable pageable, Class clazz) {
-        List resultsList = getLimitedItemListByDomain(domainName, pageable, clazz);
-        long totalItemsCount = getTotalItemCountByDomain(domainName,clazz);
-        return new PageImpl(resultsList,pageable,totalItemsCount);
-    }
-
-    private long getTotalItemCountByDomain(String domainName, Class clazz) {
-        AggregationResults aggregationResults = mongoTemplate.aggregate(Aggregation.newAggregation(
-                domainMatchOperation(domainName),
-                groupByAlias(),
-                count().as("count")
-        ), clazz, clazz);
-
-        Object results = aggregationResults.getRawResults().get("result");
-
-        if (results != null && results instanceof BasicDBList) {
-            BasicDBList resultsList = (BasicDBList) results;
-            return ((BasicDBObject)resultsList.get(0)).getLong("count");
-        }
-        return -1;
-    }
+    private MongoTemplate mongoTemplate;
 
     private List getLimitedItemListByDomain(String domainName, Pageable pageable, Class clazz) {
         final List resultsList = new ArrayList();
@@ -68,9 +45,9 @@ public class SubmittablesBulkOperations {
                 domainMatchOperation(domainName),
                 sortAliasCreatedDate(),
                 groupByAliasWithFirstItem(),
-                skip((long)pageable.getOffset()),
-                limit((long)pageable.getPageSize())
-        ), clazz,clazz);
+                skip((long) pageable.getOffset()),
+                limit((long) pageable.getPageSize())
+        ), clazz, clazz);
 
         /*
             TODO with a once we have mongo 3.4 db we can use ReplaceRootOperation replaceRootOp = replaceRoot("first");
@@ -79,7 +56,7 @@ public class SubmittablesBulkOperations {
          */
         Object results = aggregationResults.getRawResults().get("result");
 
-        if (results != null &&  results instanceof BasicDBList) {
+        if (results != null && results instanceof BasicDBList) {
             BasicDBList resultSet = (BasicDBList) results;
             resultSet.stream()
                     .map(o -> (DBObject) ((DBObject) o).get("first"))
@@ -92,12 +69,13 @@ public class SubmittablesBulkOperations {
     private GroupOperation groupByAliasWithFirstItem() {
         return group("alias").first("$$ROOT").as("first");
     }
+
     private GroupOperation groupByAlias() {
         return group("alias");
     }
 
     private SortOperation sortAliasCreatedDate() {
-        return sort(Sort.Direction.DESC,"alias").and(Sort.Direction.DESC,"createdDate");
+        return sort(Sort.Direction.DESC, "alias").and(Sort.Direction.DESC, "createdDate");
     }
 
     private MatchOperation domainMatchOperation(String domainName) {
@@ -173,10 +151,10 @@ public class SubmittablesBulkOperations {
 
     }
 
-    public void deleteSubmissionContents(String submissionId, Class submittableClass){
+    public void deleteSubmissionContents(String submissionId, Class submittableClass) {
         Query query = query(where("submission.$id").is(submissionId));
 
-        WriteResult writeResult = mongoTemplate.remove(query,submittableClass);
+        WriteResult writeResult = mongoTemplate.remove(query, submittableClass);
 
         logger.info("Removing documents for {} in submission {}, removed {}",
                 submittableClass,
