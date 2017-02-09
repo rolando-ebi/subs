@@ -128,11 +128,16 @@ subprojects {
             mavenDeployer {
 
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                    if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
                 }
 
                 snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                    if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
+
                 }
 
                 pom.project {
@@ -210,13 +215,10 @@ subprojects {
                 session(remotes.staging) {
                     println "Uploading jar $jar.archivePath.name to $jarDeployDir area on $remote"
                     put(jar.archivePath.absolutePath, jarDeployDir.absolutePath)
-                    println "createing symbolic link to $jar.archiveName"
+                    println "creating symbolic link to $jar.archiveName"
                     def result = execute "ln -s -f $jarDeployDir/$jar.archiveName $jarDeployDir/$jar.baseName" + ".jar", ignoreError: true
                     println result
-                    result = execute "$deployHome/subs_frontend.sh stop" , ignoreError: true
-                    println result
-                    result = execute "$deployHome/subs_frontend.sh start" , ignoreError: true
-                    println result
+
                 }
             }
         }
