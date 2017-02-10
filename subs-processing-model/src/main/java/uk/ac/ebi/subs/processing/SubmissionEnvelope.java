@@ -29,6 +29,7 @@ public class SubmissionEnvelope {
     public SubmissionEnvelope() {};
 
     public  SubmissionEnvelope(FullSubmission submission){
+        this.id = submission.getId();
         this.submission = submission;
     }
 
