@@ -15,9 +15,7 @@ import uk.ac.ebi.subs.repository.repos.SampleRepository;
 
 import java.util.Date;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,20 +43,24 @@ public class SubmittablesInDomainTest {
         sampleRepository.save(sample("alice", "1st"));
         sampleRepository.save(sample("charlotte", "1st"));
 
+        try {
+            Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 2));
 
-        Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 2));
+            assertThat(samples, notNullValue());
+            assertThat(samples.getTotalElements(), is(equalTo(3L)));
+            assertThat(samples.getContent().get(0).getAlias(), equalTo("alice"));// alphabetical ordering works
+            assertThat(samples.getContent().get(1).getAlias(), equalTo("bob"));//got bob
+            assertThat(samples.getContent().get(1).getTitle(), equalTo("3rd"));//got most recent version of bob
+            assertThat(samples.getTotalPages(), is(equalTo(2)));
 
-        assertThat(samples,notNullValue());
-        assertThat(samples.getTotalElements(),is(equalTo(3L)));
-        assertThat(samples.getContent().get(0).getAlias(),equalTo("alice"));// alphabetical ordering works
-        assertThat(samples.getContent().get(1).getAlias(),equalTo("bob"));//got bob
-        assertThat(samples.getContent().get(1).getTitle(),equalTo("3rd"));//got most recent version of bob
-        assertThat(samples.getTotalPages(),is(equalTo(2)));
-
-        samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(1, 2));
-        assertThat(samples,notNullValue());
-        assertThat(samples.getTotalElements(),is(equalTo(3L)));
-        assertThat(samples.getContent().get(0).getAlias(),equalTo("charlotte"));
+            samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(1, 2));
+            assertThat(samples, notNullValue());
+            assertThat(samples.getTotalElements(), is(equalTo(3L)));
+            assertThat(samples.getContent().get(0).getAlias(), equalTo("charlotte"));
+        }
+        catch (RuntimeException e) {
+            e.getCause().printStackTrace();
+        }
     }
 
 
