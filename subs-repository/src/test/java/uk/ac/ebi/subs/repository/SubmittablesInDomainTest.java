@@ -60,6 +60,7 @@ public class SubmittablesInDomainTest {
         }
         catch (RuntimeException e) {
             e.getCause().printStackTrace();
+            throw e;
         }
     }
 
