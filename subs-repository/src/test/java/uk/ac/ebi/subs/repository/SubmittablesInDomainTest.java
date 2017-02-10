@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.data.component.Domain;
 import uk.ac.ebi.subs.repository.model.Sample;
 import uk.ac.ebi.subs.repository.repos.SampleRepository;
-import uk.ac.ebi.subs.repository.repos.SubmittablesBulkOperations;
 
 import java.util.Date;
 
@@ -47,7 +46,7 @@ public class SubmittablesInDomainTest {
         sampleRepository.save(sample("charlotte", "1st"));
 
 
-        Page<Sample> samples = sampleRepository.itemsByDomain(domainName, new PageRequest(0, 2));
+        Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 2));
 
         assertThat(samples,notNullValue());
         assertThat(samples.getTotalElements(),is(equalTo(3L)));
@@ -56,7 +55,7 @@ public class SubmittablesInDomainTest {
         assertThat(samples.getContent().get(1).getTitle(),equalTo("3rd"));//got most recent version of bob
         assertThat(samples.getTotalPages(),is(equalTo(2)));
 
-        samples = sampleRepository.itemsByDomain(domainName, new PageRequest(1, 2));
+        samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(1, 2));
         assertThat(samples,notNullValue());
         assertThat(samples.getTotalElements(),is(equalTo(3L)));
         assertThat(samples.getContent().get(0).getAlias(),equalTo("charlotte"));

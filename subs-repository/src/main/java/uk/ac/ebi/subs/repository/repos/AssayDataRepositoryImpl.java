@@ -18,7 +18,7 @@ public class AssayDataRepositoryImpl implements SubmittableRepositoryCustom<Assa
     }
 
     @Override
-    public Page<AssayData> itemsByDomain(String domainName, Pageable pageable) {
+    public Page<AssayData> submittablesInDomain(String domainName, Pageable pageable) {
         return aggregateSupport.itemsByDomain(domainName, pageable);
     }
 

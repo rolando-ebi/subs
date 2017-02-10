@@ -18,7 +18,7 @@ public class StudyRepositoryImpl implements SubmittableRepositoryCustom<Study> {
     }
 
     @Override
-    public Page<Study> itemsByDomain(String domainName, Pageable pageable) {
+    public Page<Study> submittablesInDomain(String domainName, Pageable pageable) {
         return aggregateSupport.itemsByDomain(domainName, pageable);
     }
 

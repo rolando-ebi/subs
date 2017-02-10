@@ -8,5 +8,5 @@ import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 
 public interface SubmittableRepositoryCustom<T extends StoredSubmittable> {
 
-    Page<T> itemsByDomain(String domainName, Pageable pageable);
+    Page<T> submittablesInDomain(String domainName, Pageable pageable);
 }

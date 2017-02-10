@@ -18,7 +18,7 @@ public class ProtocolRepositoryImpl implements SubmittableRepositoryCustom<Proto
     }
 
     @Override
-    public Page<Protocol> itemsByDomain(String domainName, Pageable pageable) {
+    public Page<Protocol> submittablesInDomain(String domainName, Pageable pageable) {
         return aggregateSupport.itemsByDomain(domainName, pageable);
     }
 
