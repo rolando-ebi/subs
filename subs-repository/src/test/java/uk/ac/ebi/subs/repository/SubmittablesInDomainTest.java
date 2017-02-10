@@ -4,6 +4,8 @@ package uk.ac.ebi.subs.repository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,9 @@ public class SubmittablesInDomainTest {
 
     private final String domainName = "testDomain";
     private Domain domain;
+
+    private final Logger logger = LoggerFactory.getLogger(SubmittablesInDomainTest.class);
+
 
     @Before
     public void buildUp() {
@@ -57,11 +62,13 @@ public class SubmittablesInDomainTest {
             assertThat(samples, notNullValue());
             assertThat(samples.getTotalElements(), is(equalTo(3L)));
             assertThat(samples.getContent().get(0).getAlias(), equalTo("charlotte"));
-        }
-        catch (RuntimeException e) {
+        } catch (org.springframework.dao.InvalidDataAccessApiUsageException e) {
             e.getCause().printStackTrace();
+            logger.error("Mongo goofed",e.getCause() );
+            e.getCause().printStackTrace(System.err);
             throw e;
         }
+        logger.error("Mongo was fine" );
     }
 
 
