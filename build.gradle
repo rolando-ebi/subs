@@ -22,6 +22,7 @@ allprojects {
 
     cobertura.coverageFormats = ['html', 'xml'] // coveralls plugin depends on xml format report
     cobertura.coverageIgnoreTrivial = true // do not worry about getters and setters
+
 }
 
 subprojects {
@@ -71,6 +72,12 @@ subprojects {
     processResources {
         filesMatching('application.properties') {
             expand(project.properties)
+        }
+    }
+
+    test {
+        testLogging {
+            exceptionFormat = 'full'
         }
     }
 
