@@ -32,17 +32,20 @@ public class SubmittablesAggregateSupport<T extends StoredSubmittable> {
 
 
     public Page<T> itemsByDomain(String domainName, Pageable pageable) {
-        List resultsList = getLimitedItemListByDomain(domainName, pageable);
+        List<T> resultsList = getLimitedItemListByDomain(domainName, pageable);
         long totalItemsCount = getTotalItemCountByDomain(domainName);
-        return new PageImpl(resultsList, pageable, totalItemsCount);
+        return new PageImpl<T>(resultsList, pageable, totalItemsCount);
     }
 
     public long getTotalItemCountByDomain(String domainName) {
-        AggregationResults aggregationResults = mongoTemplate.aggregate(Aggregation.newAggregation(
-                domainMatchOperation(domainName),
-                groupByAlias(),
-                count().as("count")
-        ), clazz, clazz);
+        AggregationResults aggregationResults = mongoTemplate.aggregate(
+                Aggregation.newAggregation(
+                    domainMatchOperation(domainName),
+                    groupByAlias(),
+                    group().count().as("count")
+                ),
+                clazz, clazz
+        );
 
         Object results = aggregationResults.getRawResults().get("result");
 
@@ -54,8 +57,8 @@ public class SubmittablesAggregateSupport<T extends StoredSubmittable> {
         return -1;
     }
 
-    private List getLimitedItemListByDomain(String domainName, Pageable pageable) {
-        final List resultsList = new ArrayList();
+    private List<T> getLimitedItemListByDomain(String domainName, Pageable pageable) {
+        final List<T> resultsList = new ArrayList<>();
 
         AggregationResults aggregationResults = mongoTemplate.aggregate(Aggregation.newAggregation(
                 domainMatchOperation(domainName),
