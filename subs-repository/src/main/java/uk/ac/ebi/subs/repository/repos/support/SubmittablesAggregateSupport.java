@@ -51,7 +51,19 @@ public class SubmittablesAggregateSupport<T extends StoredSubmittable> {
 
         if (results != null && results instanceof BasicDBList) {
             BasicDBList resultsList = (BasicDBList) results;
-            return ((BasicDBObject) resultsList.get(0)).getLong("count");
+
+            if (resultsList.isEmpty()){
+                return 0;
+            }
+            BasicDBObject countResult = (BasicDBObject) resultsList.get(0);
+
+            if (countResult.containsField("count")){
+                return countResult.getLong("count");
+            }
+
+            return 0;
+
+
         }
 
         return -1;
