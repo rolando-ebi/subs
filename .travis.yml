@@ -12,6 +12,7 @@ addons:
       - mongodb-upstart
       - mongodb-3.0-precise
     packages:
+      - oracle-java8-installer
       - mongodb-org-server
       - mongodb-org-shell
 
