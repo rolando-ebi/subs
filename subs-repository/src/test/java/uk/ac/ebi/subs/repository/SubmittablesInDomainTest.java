@@ -41,6 +41,14 @@ public class SubmittablesInDomainTest {
     }
 
     @Test
+    public void testAggregationWithNoData() {
+        Page<Sample> samples = sampleRepository.submittablesInDomain(domainName,new PageRequest(0,100));
+        assertThat(samples, notNullValue());
+        assertThat(samples, emptyIterable());
+        assertThat(samples.getTotalElements(),is(equalTo(0L)));
+    }
+
+    @Test
     public void testAggregation() {
         sampleRepository.save(sample("bob", "1st"));
         sampleRepository.save(sample("bob", "2nd"));
@@ -48,27 +56,21 @@ public class SubmittablesInDomainTest {
         sampleRepository.save(sample("alice", "1st"));
         sampleRepository.save(sample("charlotte", "1st"));
 
-        try {
-            Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 2));
 
-            assertThat(samples, notNullValue());
-            assertThat(samples.getTotalElements(), is(equalTo(3L)));
-            assertThat(samples.getContent().get(0).getAlias(), equalTo("alice"));// alphabetical ordering works
-            assertThat(samples.getContent().get(1).getAlias(), equalTo("bob"));//got bob
-            assertThat(samples.getContent().get(1).getTitle(), equalTo("3rd"));//got most recent version of bob
-            assertThat(samples.getTotalPages(), is(equalTo(2)));
+        Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 2));
 
-            samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(1, 2));
-            assertThat(samples, notNullValue());
-            assertThat(samples.getTotalElements(), is(equalTo(3L)));
-            assertThat(samples.getContent().get(0).getAlias(), equalTo("charlotte"));
-        } catch (org.springframework.dao.InvalidDataAccessApiUsageException e) {
-            e.getCause().printStackTrace();
-            logger.error("Mongo goofed",e.getCause() );
-            e.getCause().printStackTrace(System.err);
-            throw e;
-        }
-        logger.error("Mongo was fine" );
+        assertThat(samples, notNullValue());
+        assertThat(samples.getTotalElements(), is(equalTo(3L)));
+        assertThat(samples.getContent().get(0).getAlias(), equalTo("alice"));// alphabetical ordering works
+        assertThat(samples.getContent().get(1).getAlias(), equalTo("bob"));//got bob
+        assertThat(samples.getContent().get(1).getTitle(), equalTo("3rd"));//got most recent version of bob
+        assertThat(samples.getTotalPages(), is(equalTo(2)));
+
+        samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(1, 2));
+        assertThat(samples, notNullValue());
+        assertThat(samples.getTotalElements(), is(equalTo(3L)));
+        assertThat(samples.getContent().get(0).getAlias(), equalTo("charlotte"));
+
     }
 
 
