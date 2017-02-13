@@ -18,7 +18,7 @@ addons:
 before_script:
   - sleep 15
 
-script: ./gradlew check
+script: ./gradlew externalCiTest
 
 after_success:
 - ./gradlew cobertura coveralls

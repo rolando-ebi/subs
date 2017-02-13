@@ -12,7 +12,6 @@ buildscript {
 }
 
 
-
 allprojects {
     ext.version_base = '1.0.0-SNAPSHOT'
     version = version_base
@@ -23,6 +22,21 @@ allprojects {
     cobertura.coverageFormats = ['html', 'xml'] // coveralls plugin depends on xml format report
     cobertura.coverageIgnoreTrivial = true // do not worry about getters and setters
 
+    task('externalCiTest', type: org.gradle.api.tasks.testing.Test) {
+        doLast {
+            useJUnit {
+                excludeCategories 'uk.ac.subs.RabbitMQDependentTest'
+            }
+            testLogging {
+                exceptionFormat = 'full'
+            }
+        }
+    }
+
+    configure(externalCiTest) {
+        group = "verification"
+        description = 'Run tests appropriate for our external CI environment'
+    }
 }
 
 subprojects {
@@ -234,5 +248,6 @@ subprojects {
 
 
     }
+
 
 }
