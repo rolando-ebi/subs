@@ -1,24 +1,22 @@
-services:
-  - rabbitmq
+sudo: false
+
+language: java
+
+
+jdk:
+  - oraclejdk8
 
 addons:
   apt:
     sources:
       - mongodb-upstart
+      - mongodb-3.0-precise
     packages:
       - mongodb-org-server
-
-sudo: required
-
-language: java
-
-jdk:
-  - oraclejdk8
-
-install: true
+      - mongodb-org-shell
 
 before_script:
-  - mongo --vesion
+  - sleep 15
 
 script: ./gradlew check
 
