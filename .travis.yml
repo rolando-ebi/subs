@@ -16,6 +16,8 @@ addons:
       - mongodb-org-server
       - mongodb-org-shell
 
+install: true
+
 before_script:
   - sleep 15
 
