@@ -10,12 +10,33 @@ import org.springframework.data.rest.core.annotation.Description;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.repository.model.SubmissionStatus;
 
 @RepositoryRestResource
 public interface SubmissionRepository extends MongoRepository<Submission,String>{
 
+    // exported as GET /things/:id
+    @Override
+    @RestResource(exported = true)
+    public Submission findOne(String id);
+
+    // exported as GET /things
+    @Override
+    @RestResource(exported = false)
+    public Page<Submission> findAll(Pageable pageable);
+
+    // Prevents POST /things and PATCH /things/:id
+    @Override
+    @RestResource(exported = true)
+    public <S extends Submission> S save(S s);
+
+    // exported as DELETE /things/:id
+    @Override
+    @RestResource(exported = true)
+    public void delete(Submission t);
+    
     @Query(value="{ 'domain.name' : ?0 }")
-    @RestResource(rel="byDomain")
+    @RestResource(exported = false)
     Page<Submission> findByDomainName(@Param(value="domainName") String domainName, Pageable pageable);
 
 

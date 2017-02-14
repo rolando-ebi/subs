@@ -14,6 +14,27 @@ import java.util.List;
 @RepositoryRestResource
 public interface SubmittableRepository<T extends StoredSubmittable> extends MongoRepository<T, String>, SubmittableRepositoryCustom<T> {
 
+    // exported as GET /things/:id
+    @Override
+    @RestResource(exported = false)
+    public T findOne(String id);
+
+    // exported as GET /things
+    @Override
+    @RestResource(exported = false)
+    public Page<T> findAll(Pageable pageable);
+
+    // Prevents POST /things and PATCH /things/:id
+    @Override
+    @RestResource(exported = true)
+    public <S extends T> S save(S s);
+
+    // exported as DELETE /things/:id
+    @Override
+    @RestResource(exported = true)
+    public void delete(T t);
+
+
     @RestResource(exported = false)
     List<T> findBySubmissionId(String submissionId);
 
