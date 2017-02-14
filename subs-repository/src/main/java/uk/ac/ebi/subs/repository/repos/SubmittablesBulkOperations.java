@@ -4,8 +4,6 @@ import com.mongodb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.BulkOperations;
@@ -15,7 +13,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 import uk.ac.ebi.subs.processing.ProcessingCertificate;
 import uk.ac.ebi.subs.processing.ProcessingCertificateEnvelope;
 
@@ -84,8 +82,8 @@ public class SubmittablesBulkOperations {
 
     public void updateProcessingStatusBySubmissionId(
             String submissionId,
-            ProcessingStatus newStatus,
-            ProcessingStatus currentStatus,
+            ProcessingStatusEnum newStatus,
+            ProcessingStatusEnum currentStatus,
             Class submittableClass
     ) {
         Assert.notNull(submissionId);

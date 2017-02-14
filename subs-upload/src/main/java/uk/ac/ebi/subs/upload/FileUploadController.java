@@ -7,7 +7,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.files.FileRecord;
-import uk.ac.ebi.subs.data.status.SubmissionStatus;
+import uk.ac.ebi.subs.data.status.SubmissionStatusEnum;
 import uk.ac.ebi.subs.repository.FileRecordRepository;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
 
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 
@@ -60,9 +58,12 @@ public class FileUploadController {
         if (submission == null) {
             throw new ResourceNotFoundException();
         }
-        if (!SubmissionStatus.Draft.name().equals(submission.getStatus())) {
+
+/* TODO fix in SUBS-333
+        if (!SubmissionStatusEnum.Draft.name().equals(submission.getStatus())) {
             return ResponseEntity.badRequest().body("Submission is locked"); //TODO improve error messages
         }
+        */
         //TODO add check for ownership once we have AAP in place
 
 
