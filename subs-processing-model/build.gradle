@@ -6,3 +6,5 @@ dependencies {
         testCompile("junit:junit")
         testCompile project(':subs-test-categories')
 }
+
+bootRepackage.enabled = false
