@@ -6,14 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.Description;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.repository.model.SubmissionStatus;
 
 @RepositoryRestResource
-public interface SubmissionRepository extends MongoRepository<Submission,String>{
+public interface SubmissionRepository extends MongoRepository<Submission, String> {
 
     // exported as GET /things/:id
     @Override
@@ -35,9 +33,9 @@ public interface SubmissionRepository extends MongoRepository<Submission,String>
     @RestResource(exported = true)
     public void delete(Submission t);
 
-    @Query(value="{ 'domain.name' : ?0 }")
+    @Query(value = "{ 'domain.name' : ?0 }")
     @RestResource(exported = false)
-    Page<Submission> findByDomainName(@Param(value="domainName") String domainName, Pageable pageable);
+    Page<Submission> findByDomainName(@Param(value = "domainName") String domainName, Pageable pageable);
 
 
 }
