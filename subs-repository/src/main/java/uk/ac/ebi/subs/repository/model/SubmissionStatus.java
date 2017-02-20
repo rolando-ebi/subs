@@ -4,25 +4,19 @@ package uk.ac.ebi.subs.repository.model;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.annotation.*;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.hateoas.Identifiable;
-
 import uk.ac.ebi.subs.data.status.SubmissionStatusEnum;
 
-import java.time.Instant;
+import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-@CompoundIndexes(
-    @CompoundIndex(name = "unq_submission", def = "{'submission.$id' : 1}", unique = true)
-)
 public class SubmissionStatus extends uk.ac.ebi.subs.data.status.SubmissionStatus implements Identifiable<String> {
 
-    public SubmissionStatus(){}
+    public SubmissionStatus() {
+    }
 
-    public SubmissionStatus(SubmissionStatusEnum submissionStatusEnum){
+    public SubmissionStatus(SubmissionStatusEnum submissionStatusEnum) {
         super(submissionStatusEnum);
     }
 
@@ -32,9 +26,9 @@ public class SubmissionStatus extends uk.ac.ebi.subs.data.status.SubmissionStatu
     @Version
     private Long version;
     @CreatedDate
-    private Instant createdDate;
+    private Date createdDate;
     @LastModifiedDate
-    private Instant lastModifiedDate;
+    private Date lastModifiedDate;
 
     @CreatedBy
     private String createdBy;
@@ -50,7 +44,6 @@ public class SubmissionStatus extends uk.ac.ebi.subs.data.status.SubmissionStatu
         this.id = id;
     }
 
-
     public Long getVersion() {
         return version;
     }
@@ -59,19 +52,19 @@ public class SubmissionStatus extends uk.ac.ebi.subs.data.status.SubmissionStatu
         this.version = version;
     }
 
-    public Instant getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Instant createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
-    public Instant getLastModifiedDate() {
+    public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Instant lastModifiedDate) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 

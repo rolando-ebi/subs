@@ -9,8 +9,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.repository.model.Submission;
+import uk.ac.ebi.subs.repository.projections.SubmissionWithStatus;
 
-@RepositoryRestResource
+@RepositoryRestResource(excerptProjection = SubmissionWithStatus.class)
 public interface SubmissionRepository extends MongoRepository<Submission, String> {
 
     // exported as GET /things/:id
