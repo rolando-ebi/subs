@@ -16,3 +16,5 @@ dependencies {
     testCompile project(':subs-test-categories')
 
 }
+
+bootRepackage.enabled = false

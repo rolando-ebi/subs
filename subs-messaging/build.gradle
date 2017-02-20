@@ -8,3 +8,5 @@ dependencies {
     testCompile("com.google.code.gson:gson:2.7") //bug in spring boot, see https://github.com/spring-projects/spring-boot/issues/6502
     testCompile project(':subs-test-categories')
 }
+
+bootRepackage.enabled = false
