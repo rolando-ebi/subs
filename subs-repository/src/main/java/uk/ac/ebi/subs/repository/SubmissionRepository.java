@@ -37,5 +37,9 @@ public interface SubmissionRepository extends MongoRepository<Submission, String
     @RestResource(exported = false)
     Page<Submission> findByDomainName(@Param(value = "domainName") String domainName, Pageable pageable);
 
+    @RestResource(exported = false)
+    Submission findBySubmissionStatusId(String submissionStatusId);
+
+
 
 }

@@ -4,7 +4,6 @@ import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
-import uk.ac.ebi.subs.data.Submission;
 
 import java.util.Date;
 

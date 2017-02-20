@@ -21,27 +21,17 @@ public interface SubmissionStatusRepository extends MongoRepository<SubmissionSt
     // exported as GET /things
     @Override
     @RestResource(exported = false)
-    public Page<SubmissionStatus> findAll(Pageable pageable);
+    Page<SubmissionStatus> findAll(Pageable pageable);
 
     // Prevents POST /things and PATCH /things/:id
     @Override
     @RestResource(exported = true)
-    public <S extends SubmissionStatus> S save(S s);
+    <S extends SubmissionStatus> S save(S s);
 
     // exported as DELETE /things/:id
     @Override
     @RestResource(exported = false)
-    public void delete(SubmissionStatus t);
+    void delete(SubmissionStatus t);
 
-    @RestResource(exported = false)
-    SubmissionStatus findBySubmissionId(String submissionId);
-
-    @RestResource(exported = false)
-    default SubmissionStatus findBySubmission(Submission submission) {
-        return this.findBySubmissionId(submission.getId());
-    }
-
-    @RestResource(exported = false)
-    void deleteBySubmissionId(String submissionId);
 
 }

@@ -1,7 +1,6 @@
 package uk.ac.ebi.subs.repository.model;
 
-import org.springframework.data.domain.Auditable;
-import uk.ac.ebi.subs.data.Submission;
+
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
 import java.util.Date;

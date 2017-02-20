@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.hateoas.Identifiable;
-import uk.ac.ebi.subs.data.Submission;
+
 import uk.ac.ebi.subs.data.status.SubmissionStatusEnum;
 
 import java.time.Instant;
@@ -22,16 +22,12 @@ public class SubmissionStatus extends uk.ac.ebi.subs.data.status.SubmissionStatu
 
     public SubmissionStatus(){}
 
-    public SubmissionStatus(Submission submission, SubmissionStatusEnum submissionStatusEnum){
+    public SubmissionStatus(SubmissionStatusEnum submissionStatusEnum){
         super(submissionStatusEnum);
-        this.submission = submission;
     }
 
     @Id
     private String id;
-
-    @DBRef
-    private Submission submission;
 
     @Version
     private Long version;
@@ -54,13 +50,6 @@ public class SubmissionStatus extends uk.ac.ebi.subs.data.status.SubmissionStatu
         this.id = id;
     }
 
-    public Submission getSubmission() {
-        return submission;
-    }
-
-    public void setSubmission(Submission submission) {
-        this.submission = submission;
-    }
 
     public Long getVersion() {
         return version;
