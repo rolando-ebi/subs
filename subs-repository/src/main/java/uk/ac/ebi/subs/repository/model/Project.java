@@ -17,6 +17,19 @@ import java.util.Date;
 @Document
 public class Project extends uk.ac.ebi.subs.data.submittable.Project implements StoredSubmittable {
 
+    @DBRef
+    private ProcessingStatus processingStatus;
+
+    @Override
+    public ProcessingStatus getProcessingStatus() {
+        return processingStatus;
+    }
+
+    @Override
+    public void setProcessingStatus(ProcessingStatus processingStatus) {
+        this.processingStatus = processingStatus;
+    }
+
     @Version
     private Long version;
     @CreatedDate
