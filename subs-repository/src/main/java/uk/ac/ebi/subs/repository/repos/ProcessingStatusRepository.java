@@ -35,4 +35,10 @@ public interface ProcessingStatusRepository extends MongoRepository<ProcessingSt
 
     @RestResource(exported = false)
     List<ProcessingStatus> findBySubmissionId(String submissionId);
+
+    @RestResource(exported = false)
+    ProcessingStatus findBySubmittableId(String submittableId);
+
+    @RestResource(exported = false)
+    void deleteBySubmissionId(String submissionId);
 }

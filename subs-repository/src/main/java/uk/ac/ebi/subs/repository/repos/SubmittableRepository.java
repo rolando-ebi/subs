@@ -44,4 +44,7 @@ public interface SubmittableRepository<T extends StoredSubmittable> extends Mong
     @RestResource(exported = false)
     Page<T> findByDomainNameAndAliasOrderByCreatedDateDesc(String domainName, String alias, Pageable pageable);
 
+    @RestResource(exported = false)
+    void deleteBySubmissionId(String submissionId);
+
 }

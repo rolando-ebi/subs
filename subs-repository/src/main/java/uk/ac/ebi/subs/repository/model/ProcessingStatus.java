@@ -19,7 +19,7 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
         ProcessingStatus processingStatus = new ProcessingStatus(ProcessingStatusEnum.Draft);
 
         processingStatus.setSubmissionId(storedSubmittable.getSubmission().getId());
-
+        processingStatus.setSubmittableId(storedSubmittable.getId());
         storedSubmittable.setProcessingStatus(processingStatus);
 
         return processingStatus;
@@ -48,6 +48,7 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
     private String lastModifiedBy;
 
     private String submissionId;
+    private String submittableId;
 
     @Override
     public String getId() {
@@ -104,5 +105,13 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
 
     public void setSubmissionId(String submissionId) {
         this.submissionId = submissionId;
+    }
+
+    public String getSubmittableId() {
+        return submittableId;
+    }
+
+    public void setSubmittableId(String submittableId) {
+        this.submittableId = submittableId;
     }
 }

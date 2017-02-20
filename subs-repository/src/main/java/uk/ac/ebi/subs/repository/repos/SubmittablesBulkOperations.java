@@ -36,73 +36,6 @@ public class SubmittablesBulkOperations {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private List getLimitedItemListByDomain(String domainName, Pageable pageable, Class clazz) {
-        final List resultsList = new ArrayList();
-
-        AggregationResults aggregationResults = mongoTemplate.aggregate(Aggregation.newAggregation(
-                domainMatchOperation(domainName),
-                sortAliasCreatedDate(),
-                groupByAliasWithFirstItem(),
-                skip((long) pageable.getOffset()),
-                limit((long) pageable.getPageSize())
-        ), clazz, clazz);
-
-        /*
-            TODO with a once we have mongo 3.4 db we can use ReplaceRootOperation replaceRootOp = replaceRoot("first");
-            after limit to skip the awkward extraction step below
-
-         */
-        Object results = aggregationResults.getRawResults().get("result");
-
-        if (results != null && results instanceof BasicDBList) {
-            BasicDBList resultSet = (BasicDBList) results;
-            resultSet.stream()
-                    .map(o -> (DBObject) ((DBObject) o).get("first"))
-                    .map(first -> mongoTemplate.getConverter().read(clazz, first))
-                    .forEachOrdered(o -> resultsList.add(o));
-        }
-        return resultsList;
-    }
-
-    private GroupOperation groupByAliasWithFirstItem() {
-        return group("alias").first("$$ROOT").as("first");
-    }
-
-    private GroupOperation groupByAlias() {
-        return group("alias");
-    }
-
-    private SortOperation sortAliasCreatedDate() {
-        return sort(Sort.Direction.DESC, "alias").and(Sort.Direction.DESC, "createdDate");
-    }
-
-    private MatchOperation domainMatchOperation(String domainName) {
-        return match(where("domain.name").is(domainName));
-    }
-
-    public void updateProcessingStatusBySubmissionId(
-            String submissionId,
-            ProcessingStatusEnum newStatus,
-            ProcessingStatusEnum currentStatus,
-            Class submittableClass
-    ) {
-        Assert.notNull(submissionId);
-        Assert.notNull(newStatus);
-        Assert.notNull(currentStatus);
-        Assert.notNull(submittableClass);
-
-        Query query = query(where("submission.$id").is(submissionId).and("status").is(currentStatus.name()));
-        Update update = update("status", newStatus.name());
-
-        WriteResult writeResult = mongoTemplate.updateMulti(query, update, submittableClass);
-
-        logger.info("Set status for {} in submission {}, changing statuses from {} to {}, changed {}",
-                submittableClass,
-                submissionId,
-                currentStatus, newStatus,
-                writeResult.getN());
-
-    }
 
     public void applyProcessingCertificates(ProcessingCertificateEnvelope envelope, Class submittableClass) {
         Assert.notNull(envelope);
@@ -125,10 +58,6 @@ public class SubmittablesBulkOperations {
                 update.set("accession", certificate.getAccession());
                 haveUpdates = true;
             }
-            if (certificate.getProcessingStatus() != null) {
-                update.set("status", certificate.getProcessingStatus().name());
-                haveUpdates = true;
-            }
 
             if (haveUpdates) {
                 ops.updateOne(query, update);
@@ -147,18 +76,6 @@ public class SubmittablesBulkOperations {
                 writeResult.getModifiedCount()
         );
 
-    }
-
-    public void deleteSubmissionContents(String submissionId, Class submittableClass) {
-        Query query = query(where("submission.$id").is(submissionId));
-
-        WriteResult writeResult = mongoTemplate.remove(query, submittableClass);
-
-        logger.info("Removing documents for {} in submission {}, removed {}",
-                submittableClass,
-                submissionId,
-                writeResult.getN()
-        );
     }
 
 
