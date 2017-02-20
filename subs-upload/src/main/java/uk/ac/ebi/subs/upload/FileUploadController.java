@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.files.FileRecord;
 import uk.ac.ebi.subs.data.status.SubmissionStatusEnum;
 import uk.ac.ebi.subs.repository.FileRecordRepository;
 import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.model.Submission;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -39,14 +39,19 @@ public class FileUploadController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    public FileUploadController(SubmissionRepository submissionRepository, FileRecordRepository fileRecordRepository, UploadPathResolver uploadPathResolver) {
+        this.submissionRepository = submissionRepository;
+        this.fileRecordRepository = fileRecordRepository;
+        this.uploadPathResolver = uploadPathResolver;
+    }
+
     private SubmissionRepository submissionRepository;
 
-    @Autowired
+
     private FileRecordRepository fileRecordRepository;
 
-    @Autowired
-    private UploadPathResolver uploadPathResolver;
 
+    private UploadPathResolver uploadPathResolver;
 
 
     @RequestMapping(value = "/submissions/{submissionId}/upload", method = RequestMethod.POST)
@@ -59,11 +64,11 @@ public class FileUploadController {
             throw new ResourceNotFoundException();
         }
 
-/* TODO fix in SUBS-333
-        if (!SubmissionStatusEnum.Draft.name().equals(submission.getStatus())) {
+
+        if (!SubmissionStatusEnum.Draft.name().equals(submission.getSubmissionStatus().getStatus())) {
             return ResponseEntity.badRequest().body("Submission is locked"); //TODO improve error messages
         }
-        */
+
         //TODO add check for ownership once we have AAP in place
 
 
@@ -88,7 +93,7 @@ public class FileUploadController {
 
                 if (!item.isFormField()) {
 
-                    Path targetPath = uploadPathResolver.uploadPath(submission,item.getName());
+                    Path targetPath = uploadPathResolver.uploadPath(submission, item.getName());
                     targetPath.toFile().getParentFile().mkdirs();
 
                     // Process the input stream
