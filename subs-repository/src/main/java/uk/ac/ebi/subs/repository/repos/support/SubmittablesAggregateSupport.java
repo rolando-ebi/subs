@@ -40,9 +40,9 @@ public class SubmittablesAggregateSupport<T extends StoredSubmittable> {
     public long getTotalItemCountByDomain(String domainName) {
         AggregationResults aggregationResults = mongoTemplate.aggregate(
                 Aggregation.newAggregation(
-                    domainMatchOperation(domainName),
-                    groupByAlias(),
-                    group().count().as("count")
+                        domainMatchOperation(domainName),
+                        groupByAlias(),
+                        group().count().as("count")
                 ),
                 clazz, clazz
         );
@@ -52,12 +52,12 @@ public class SubmittablesAggregateSupport<T extends StoredSubmittable> {
         if (results != null && results instanceof BasicDBList) {
             BasicDBList resultsList = (BasicDBList) results;
 
-            if (resultsList.isEmpty()){
+            if (resultsList.isEmpty()) {
                 return 0;
             }
             BasicDBObject countResult = (BasicDBObject) resultsList.get(0);
 
-            if (countResult.containsField("count")){
+            if (countResult.containsField("count")) {
                 return countResult.getLong("count");
             }
 

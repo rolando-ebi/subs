@@ -34,8 +34,8 @@ public interface SubmissionRepository extends MongoRepository<Submission, String
     @RestResource(exported = true)
     public void delete(Submission t);
 
-    @Query(value = "{ 'domain.name' : ?0 }")
-    @RestResource(exported = false)
+//    @Query(value = "{ 'domain.name' : ?0 }")
+    @RestResource(exported = true,rel="submissions", path="by-domain")
     Page<Submission> findByDomainName(@Param(value = "domainName") String domainName, Pageable pageable);
 
     @RestResource(exported = false)

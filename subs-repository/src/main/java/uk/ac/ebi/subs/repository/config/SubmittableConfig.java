@@ -1,9 +1,10 @@
-package uk.ac.ebi.subs.repository.repos;
+package uk.ac.ebi.subs.repository.config;
 
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.subs.data.submittable.*;
+import uk.ac.ebi.subs.repository.model.*;
+import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,7 +14,7 @@ import java.util.List;
 public class SubmittableConfig {
 
     @Bean
-    public List<Class> submittablesClassList() {
+    public List<Class<? extends StoredSubmittable>> submittablesClassList() {
         return Collections.unmodifiableList(Arrays.asList(
                 Analysis.class,
                 Assay.class,
