@@ -3,6 +3,8 @@ package uk.ac.ebi.subs.repository.model;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.annotation.*;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.hateoas.Identifiable;
 import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 
@@ -10,6 +12,7 @@ import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@Document
 public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatus implements Identifiable<String> {
 
     public ProcessingStatus() {
@@ -47,7 +50,10 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
     @LastModifiedBy
     private String lastModifiedBy;
 
+    @Indexed
     private String submissionId;
+
+    @Indexed
     private String submittableId;
 
     @Override
