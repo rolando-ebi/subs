@@ -1,12 +1,10 @@
 package uk.ac.ebi.subs.repository.repos;
 
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
-import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.repository.model.SubmissionStatus;
 
 
