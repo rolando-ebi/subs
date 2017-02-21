@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ebi.subs.data.files.FileRecord;
 import uk.ac.ebi.subs.data.status.SubmissionStatusEnum;
-import uk.ac.ebi.subs.repository.FileRecordRepository;
-import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.repos.FileRecordRepository;
+import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
 import uk.ac.ebi.subs.repository.model.Submission;
 
 import javax.servlet.http.HttpServletRequest;

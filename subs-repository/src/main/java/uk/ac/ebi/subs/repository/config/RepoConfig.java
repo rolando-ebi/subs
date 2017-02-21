@@ -2,9 +2,7 @@ package uk.ac.ebi.subs.repository.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.repository.Repository;
-import uk.ac.ebi.subs.repository.model.StoredSubmittable;
-import uk.ac.ebi.subs.repository.repos.*;
+import uk.ac.ebi.subs.repository.repos.submittables.*;
 
 import java.util.Arrays;
 import java.util.List;

@@ -13,7 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.data.component.Domain;
 import uk.ac.ebi.subs.repository.model.Sample;
-import uk.ac.ebi.subs.repository.repos.SampleRepository;
+import uk.ac.ebi.subs.repository.repos.submittables.SampleRepository;
 
 import java.util.Date;
 
