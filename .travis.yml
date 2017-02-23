@@ -21,7 +21,7 @@ install: true
 before_script:
   - sleep 15
 
-script: ./gradlew externalCiTest
+script: ./gradlew externalCiTest coberturaCheck
 
 after_success:
   - ./gradlew cobertura coveralls
