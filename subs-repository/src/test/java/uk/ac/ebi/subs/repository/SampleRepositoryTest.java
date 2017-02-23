@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.repository.model.Sample;
@@ -14,12 +15,11 @@ import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
 import uk.ac.ebi.subs.repository.repos.submittables.SampleRepository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,11 +34,19 @@ public class SampleRepositoryTest {
 
     Submission testSub;
 
-    List<Sample> samples = new ArrayList<>();
+    List<Sample> samples;
+
+    PageRequest pageRequest = new PageRequest(0, 10);
 
     @Before
     public void buildUp() {
         tearDown();
+
+
+    }
+
+    private void submissionWithTwoSamples() {
+        samples = new ArrayList<>();
 
         testSub = new Submission();
         testSub.getSubmitter().setEmail("test@example.ac.uk");
@@ -51,7 +59,13 @@ public class SampleRepositoryTest {
         samples.get(0).setAlias("one");
         samples.get(1).setAlias("two");
 
+        samples.forEach(s -> s.setId(UUID.randomUUID().toString()));
         samples.forEach(s -> s.setDomain(testSub.getDomain()));
+        samples.forEach(s -> s.setCreatedDate(new Date()));
+
+        submissionRepository.insert(testSub);
+        samples.forEach(s -> s.setSubmission(testSub));
+        sampleRepository.insert(samples);
 
     }
 
@@ -62,19 +76,42 @@ public class SampleRepositoryTest {
     }
 
     @Test
-    public void test() {
-        submissionRepository.insert(testSub);
-        samples.forEach(s -> s.setSubmission(testSub));
+    public void testOneSubmission() {
 
-        sampleRepository.save(samples);
+        submissionWithTwoSamples();
 
-        PageRequest pageRequest = new PageRequest(0,10);
 
-        assertThat(sampleRepository.findBySubmissionId(testSub.getId(),pageRequest).getTotalElements(),is(equalTo((long)samples.size())));
+        assertThat(sampleRepository.findBySubmissionId(testSub.getId(), pageRequest).getTotalElements(), is(equalTo((long) samples.size())));
 
-        assertThat(sampleRepository.submittablesInDomain(testSub.getDomain().getName(),pageRequest).getTotalElements(),is(equalTo((long)samples.size())));
+        assertThat(sampleRepository.submittablesInDomain(testSub.getDomain().getName(), pageRequest).getTotalElements(), is(equalTo((long) samples.size())));
 
-        assertThat(sampleRepository.findFirstByDomainNameAndAliasOrderByCreatedDateDesc(testSub.getDomain().getName(), "two"),notNullValue());
+        assertThat(sampleRepository.findFirstByDomainNameAndAliasOrderByCreatedDateDesc(testSub.getDomain().getName(), "two"), notNullValue());
+    }
+
+    @Test
+    public void testTwoSubmissions() {
+        submissionWithTwoSamples();
+        submissionWithTwoSamples();
+
+        Page<Sample> samplesInDomain = sampleRepository.submittablesInDomain(testSub.getDomain().getName(), pageRequest);
+
+        assertThat(samplesInDomain.getContent(), hasSize(2));
+
+        Page<Sample> sampleHistory = sampleRepository.findByDomainNameAndAliasOrderByCreatedDateDesc(
+                testSub.getDomain().getName(),
+                samples.get(1).getAlias(),
+                pageRequest
+        );
+
+        assertThat(sampleHistory.getContent(), hasSize(2));
+        sampleHistory.getContent().forEach(s -> assertThat(s.getAlias(), is(equalTo(samples.get(1).getAlias()))));
+        Sample topEntry = sampleHistory.getContent().get(0);
+        //should be most recent version
+        assertThat(topEntry.getCreatedDate(), is(equalTo(samples.get(1).getCreatedDate())));
+
+        Sample currentVersion = sampleRepository.findFirstByDomainNameAndAliasOrderByCreatedDateDesc(testSub.getDomain().getName(), samples.get(1).getAlias());
+        //should be most recent version
+        assertThat(currentVersion.getCreatedDate(), is(equalTo(samples.get(1).getCreatedDate())));
 
     }
 
