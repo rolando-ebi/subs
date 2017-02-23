@@ -9,12 +9,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.ArrayExpressAgentApplication;
 
 import uk.ac.ebi.subs.data.FullSubmission;
-import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.processing.ProcessingCertificate;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 
 import java.util.List;
 
@@ -41,26 +40,26 @@ public class AeAgentSubsProcessorTest {
     public void test(){
         List<ProcessingCertificate> certs = processor.processSubmission(subEnv);
 
-        String processedStatus = ProcessingStatus.Done.name();
+        String processedStatus = ProcessingStatusEnum.Done.name();
 
         assertThat("study accessioned", st.getAccession(), startsWith("AE-MTAB-"));
-        assertThat("study status", st.getStatus(),equalTo(processedStatus));
+
 
         assertThat("assay accessioned", as.getAccession(), nullValue());
-        assertThat("assay status", as.getStatus(),equalTo(processedStatus));
+
 
         assertThat("assay data accessioned", ad.getAccession(), nullValue());
-        assertThat("assay data status", ad.getStatus(),equalTo(processedStatus));
+
 
         assertThat("ena study untouched", enaStudy.getAccession(),nullValue());
-        assertThat("ena study status is null", enaStudy.getStatus(),nullValue());
+
 
        assertThat("correct certs",
                 certs,
                 containsInAnyOrder(
-                        new ProcessingCertificate(st,Archive.ArrayExpress, ProcessingStatus.Curation, st.getAccession()),
-                        new ProcessingCertificate(as,Archive.ArrayExpress, ProcessingStatus.Curation),
-                        new ProcessingCertificate(ad,Archive.ArrayExpress, ProcessingStatus.Curation)
+                        new ProcessingCertificate(st,Archive.ArrayExpress, ProcessingStatusEnum.Curation, st.getAccession()),
+                        new ProcessingCertificate(as,Archive.ArrayExpress, ProcessingStatusEnum.Curation),
+                        new ProcessingCertificate(ad,Archive.ArrayExpress, ProcessingStatusEnum.Curation)
                 )
 
                 );

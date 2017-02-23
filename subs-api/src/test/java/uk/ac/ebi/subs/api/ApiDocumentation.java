@@ -7,17 +7,20 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.rest.webmvc.RestMediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.subs.ApiApplication;
 import uk.ac.ebi.subs.DocumentationProducer;
-import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
+import uk.ac.ebi.subs.repository.model.Submission;
+import uk.ac.ebi.subs.repository.repos.status.SubmissionStatusRepository;
 
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -33,13 +36,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * using the files in src/resources/docs/ascidocs
  *
  * @see <a href="https://github.com/EBISPOT/OLS/blob/master/ols-web/src/test/java/uk/ac/ebi/spot/ols/api/ApiDocumentation.java">OLS ApiDocumentation.java</a>
- *
+ * <p>
  * gives this
- *
  * @see <a href="http://www.ebi.ac.uk/ols/docs/api">OLS API Docs<</a>
- *
+ * <p>
  * API documentation should learn from the excellent example at @see <a href="https://developer.github.com/v3/">GitHub</a>
- *
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ApiApplication.class)
@@ -54,6 +55,9 @@ public class ApiDocumentation {
 
     @Autowired
     SubmissionRepository submissionRepository;
+
+    @Autowired
+    SubmissionStatusRepository submissionStatusRepository;
 
     @Autowired
     private WebApplicationContext context;
@@ -80,10 +84,12 @@ public class ApiDocumentation {
 
         Submission sub = Helpers.generateTestSubmission();
 
+        this.submissionStatusRepository.save(sub.getSubmissionStatus());
         this.submissionRepository.save(sub);
 
-        this.mockMvc.perform(get("/api/submissions/search/findByDomainName?domainName={domainName}",sub.getDomain().getName())
-                .accept(MediaType.APPLICATION_JSON))
+
+        this.mockMvc.perform(get("/api/submissions/search/by-domain?domainName={domainName}", sub.getDomain().getName())
+                .accept(RestMediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
                 .andDo(
                         document("submissions/by-domain",
@@ -94,13 +100,29 @@ public class ApiDocumentation {
                                 responseFields(
                                         fieldWithPath("_links").description("Links to other resources"),
                                         fieldWithPath("_embedded.submissions").description("Submissions matching the domain name"),
-                                        fieldWithPath("page.size").description("The number of resources in this page"),
-                                        fieldWithPath("page.totalElements").description("The total number of resources"),
-                                        fieldWithPath("page.totalPages").description("The total number of pages"),
-                                        fieldWithPath("page.number").description("The page number")
+                                        paginationPageSizeDescriptor(),
+                                        paginationTotalElementsDescriptor(),
+                                        paginationTotalPagesDescriptor(),
+                                        paginationPageNumberDescriptor()
                                 )
                         )
                 );
+    }
+
+    private FieldDescriptor paginationPageNumberDescriptor() {
+        return fieldWithPath("page.number").description("The page number");
+    }
+
+    private FieldDescriptor paginationTotalPagesDescriptor() {
+        return fieldWithPath("page.totalPages").description("The total number of pages");
+    }
+
+    private FieldDescriptor paginationTotalElementsDescriptor() {
+        return fieldWithPath("page.totalElements").description("The total number of resources");
+    }
+
+    private FieldDescriptor paginationPageSizeDescriptor() {
+        return fieldWithPath("page.size").description("The number of resources in this page");
     }
 /*
     @Test

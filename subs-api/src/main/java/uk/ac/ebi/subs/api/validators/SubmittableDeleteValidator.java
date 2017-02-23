@@ -3,21 +3,23 @@ package uk.ac.ebi.subs.api.validators;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
-import uk.ac.ebi.subs.data.submittable.Submittable;
+import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
+import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 
 @Component
 public class SubmittableDeleteValidator implements Validator {
     @Override
     public boolean supports(Class<?> clazz) {
-        return Submittable.class.isAssignableFrom(clazz);
+        return StoredSubmittable.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        Submittable submittable = (Submittable) target;
+        StoredSubmittable submittable = (StoredSubmittable) target;
 
-        if (!ProcessingStatus.Draft.name().equals(submittable.getStatus())) {
+
+
+        if (!ProcessingStatusEnum.Draft.name().equals(submittable.getProcessingStatus().getStatus())) {
             errors.reject("cannotDeleteAfterSubmission", "Deletion is not possible after submission");
         }
 

@@ -8,12 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.status.Status;
-import uk.ac.ebi.subs.data.status.SubmissionStatus;
-import uk.ac.ebi.subs.repository.SubmissionRepository;
-
-import java.util.List;
+import uk.ac.ebi.subs.api.services.OperationControlService;
+import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
+import uk.ac.ebi.subs.repository.model.Submission;
 
 @Component
 public class SubmissionValidator implements Validator {
@@ -21,16 +18,24 @@ public class SubmissionValidator implements Validator {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    public SubmissionValidator(
+            SubmissionRepository submissionRepository,
+            DomainValidator domainValidator,
+            SubmitterValidator submitterValidator,
+            OperationControlService operationControlService
+    ) {
+        this.submissionRepository = submissionRepository;
+        this.domainValidator = domainValidator;
+        this.submitterValidator = submitterValidator;
+        this.operationControlService = operationControlService;
+    }
+
+
     private SubmissionRepository submissionRepository;
-
-    @Autowired
     private DomainValidator domainValidator;
-
-    @Autowired
     private SubmitterValidator submitterValidator;
+    private OperationControlService operationControlService;
 
-    @Autowired
-    private List<Status> submissionStatuses;
 
     @Override
     public void validate(Object target, Errors errors) {
@@ -38,7 +43,6 @@ public class SubmissionValidator implements Validator {
         Submission submission = (Submission) target;
 
         ValidationUtils.rejectIfEmpty(errors, "submitter", "required", "submitter is required");
-        ValidationUtils.rejectIfEmpty(errors, "status", "required", "status is required");
         ValidationUtils.rejectIfEmpty(errors, "domain", "required", "domain is required");
 
         try {
@@ -59,7 +63,9 @@ public class SubmissionValidator implements Validator {
             Submission storedVersion = submissionRepository.findOne(submission.getId());
 
             if (storedVersion != null) {
-                if (!storedVersion.getStatus().equals(SubmissionStatus.Draft.name())) {
+
+
+                if (!operationControlService.isUpdateable(submission)) {
                     errors.reject("submissionLocked", "Submission has been submitted, changes are not possible");
                 } else {
                     validateAgainstStoredVersion(submission, storedVersion, errors);
@@ -67,10 +73,9 @@ public class SubmissionValidator implements Validator {
             }
         }
 
-        if (errors.hasErrors()){
-            logger.error("validation has errors {}",errors.getAllErrors());
-        }
-        else {
+        if (errors.hasErrors()) {
+            logger.error("validation has errors {}", errors.getAllErrors());
+        } else {
             logger.error("no validation errors");
         }
 
@@ -82,21 +87,10 @@ public class SubmissionValidator implements Validator {
 
         domainCannotChange(target, storedVersion, errors);
 
-        statusChangeMustBePermitted(target, storedVersion, errors);
 
         createdDateCannotChange(target, storedVersion, errors);
 
         submittedDateCannotChange(target, storedVersion, errors);
-    }
-
-    private void statusChangeMustBePermitted(Submission target, Submission storedVersion, Errors errors) {
-        ValidationHelper.validateStatusChange(
-                target.getStatus(),
-                storedVersion.getStatus(),
-                submissionStatuses,
-                "status",
-                errors
-        );
     }
 
     private void submitterCannotChange(Submission target, Submission storedVersion, Errors errors) {

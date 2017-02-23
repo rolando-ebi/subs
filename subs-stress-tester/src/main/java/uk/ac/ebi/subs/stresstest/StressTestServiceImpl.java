@@ -2,27 +2,24 @@ package uk.ac.ebi.subs.stresstest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.http.client.methods.HttpRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.client.*;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 import uk.ac.ebi.subs.data.status.SubmissionStatus;
+import uk.ac.ebi.subs.data.status.SubmissionStatusEnum;
 
 import java.io.IOException;
 import java.net.URI;
@@ -139,8 +136,6 @@ public class StressTestServiceImpl implements StressTestService {
                     submission.allSubmissionItems().size()
             );
 
-            submission.setStatus(SubmissionStatus.Draft);
-
             Map<Class, String> domainTypeToSubmissionPath = itemSubmissionUri();
             Submission minimalSubmission = new Submission(submission);
 
@@ -160,7 +155,6 @@ public class StressTestServiceImpl implements StressTestService {
             submission.allSubmissionItemsStream().parallel().forEach(
                     item -> {
                         ((PartOfSubmission) item).setSubmission(submissionLocation.toASCIIString());
-                        item.setStatus(ProcessingStatus.Draft.name());
 
                         String itemUri = domainTypeToSubmissionPath.get(item.getClass());
 
@@ -192,15 +186,26 @@ public class StressTestServiceImpl implements StressTestService {
                     new ParameterizedTypeReference<Resource<Submission>>() {}
             );
 
+            Link subsStatusRel = subGetResponse.getBody().getLink("submissionStatus");
+            String subsStatusHref = subsStatusRel.getHref();
+
+            ResponseEntity<Resource<SubmissionStatus>> subStatusGetResponse = restTemplate.exchange(
+                    subsStatusHref,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Resource<SubmissionStatus>>() {}
+            );
+
+            String submissionStatusLocation = subStatusGetResponse.getBody().getLink("self").getHref();
 
 
             HttpEntity<StatusUpdate> putEntity = new HttpEntity<>(new StatusUpdate("Submitted"));
 
-            ResponseEntity<Resource<Submission>> subPatchResponse = restTemplate.exchange(
-                    submissionLocation,
+            ResponseEntity<Resource<SubmissionStatus>> subPatchResponse = restTemplate.exchange(
+                    submissionStatusLocation,
                     HttpMethod.PATCH,
                     putEntity,
-                    new ParameterizedTypeReference<Resource<Submission>>() {}
+                    new ParameterizedTypeReference<Resource<SubmissionStatus>>() {}
             );
 
 

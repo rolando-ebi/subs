@@ -7,7 +7,8 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.subs.data.FullSubmission;
-import uk.ac.ebi.subs.data.Submission;
+import uk.ac.ebi.subs.repository.model.ProcessingStatus;
+import uk.ac.ebi.subs.repository.model.Submission;
 
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.messaging.Exchanges;
@@ -17,11 +18,15 @@ import uk.ac.ebi.subs.processing.ProcessingCertificate;
 import uk.ac.ebi.subs.processing.ProcessingCertificateEnvelope;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.repository.FullSubmissionService;
-import uk.ac.ebi.subs.repository.SubmissionRepository;
+import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
+import uk.ac.ebi.subs.repository.model.SubmissionStatus;
 import uk.ac.ebi.subs.repository.processing.SupportingSample;
 import uk.ac.ebi.subs.repository.processing.SupportingSampleRepository;
-import uk.ac.ebi.subs.repository.repos.SubmittablesBulkOperations;
+import uk.ac.ebi.subs.repository.repos.status.ProcessingStatusRepository;
+import uk.ac.ebi.subs.repository.repos.status.SubmissionStatusRepository;
+import uk.ac.ebi.subs.repository.repos.submittables.SubmittablesBulkOperations;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +47,13 @@ public class QueueService {
     FullSubmissionService fullSubmissionService;
 
     @Autowired
+    ProcessingStatusRepository processingStatusRepository;
+
+    @Autowired
     SubmittablesBulkOperations submittablesBulkOperations;
+
+    @Autowired
+    SubmissionStatusRepository submissionStatusRepository;
 
 
     private RabbitMessagingTemplate rabbitMessagingTemplate;
@@ -60,9 +71,10 @@ public class QueueService {
 
         if (submission == null) return;
 
-        submission.setStatus(processingCertificate.getProcessingStatus().name()); //TODO rewrite this to use submission status
+        SubmissionStatus submissionStatus = submission.getSubmissionStatus();
+        submissionStatus.setStatus(processingCertificate.getProcessingStatus().name()); //TODO rewrite this to use submission status
 
-        submissionRepository.save(submission);
+        submissionStatusRepository.save(submissionStatus);
     }
 
     @RabbitListener(queues = Queues.SUBMISSION_SUPPORTING_INFO_PROVIDED)
@@ -96,6 +108,16 @@ public class QueueService {
         logger.info("received agent results for submission {} with {} certificates ",
                 processingCertificateEnvelope.getSubmissionId(), processingCertificateEnvelope.getProcessingCertificates().size());
 
+
+        for (ProcessingCertificate cert : processingCertificateEnvelope.getProcessingCertificates()){
+            ProcessingStatus processingStatus = processingStatusRepository.findBySubmittableId(cert.getSubmittableId());
+
+            processingStatus.setStatus(cert.getProcessingStatus());
+            processingStatus.setLastModifiedBy(cert.getArchive().name());
+            processingStatus.setLastModifiedDate(new Date());
+
+            processingStatusRepository.save(processingStatus);
+        }
 
         for (Class submittableClass : submittablesClassList) {
             submittablesBulkOperations.applyProcessingCertificates(processingCertificateEnvelope, submittableClass);

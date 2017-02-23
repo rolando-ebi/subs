@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.ac.ebi.subs.data.Submission;
+
 
 import java.util.Date;
 
@@ -18,6 +18,19 @@ import java.util.Date;
 })
 @Document
 public class EgaDac extends uk.ac.ebi.subs.data.submittable.EgaDac implements StoredSubmittable {
+
+    @DBRef
+    private ProcessingStatus processingStatus;
+
+    @Override
+    public ProcessingStatus getProcessingStatus() {
+        return processingStatus;
+    }
+
+    @Override
+    public void setProcessingStatus(ProcessingStatus processingStatus) {
+        this.processingStatus = processingStatus;
+    }
 
     @Version
     private Long version;

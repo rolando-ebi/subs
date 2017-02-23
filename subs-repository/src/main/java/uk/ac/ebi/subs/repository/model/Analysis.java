@@ -4,7 +4,6 @@ import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
-import uk.ac.ebi.subs.data.Submission;
 
 import java.util.Date;
 
@@ -15,6 +14,19 @@ import java.util.Date;
 })
 //@Document //TODO - there is a potential cyclic reference that is flagged up when you have @Document - reconsider design
 public class Analysis extends uk.ac.ebi.subs.data.submittable.Analysis implements StoredSubmittable {
+
+    @DBRef
+    private ProcessingStatus processingStatus;
+
+    @Override
+    public ProcessingStatus getProcessingStatus() {
+        return processingStatus;
+    }
+
+    @Override
+    public void setProcessingStatus(ProcessingStatus processingStatus) {
+        this.processingStatus = processingStatus;
+    }
 
     @Version
     private Long version;
