@@ -5,14 +5,8 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE")
-        classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3")
-        classpath("net.saliman:gradle-cobertura-plugin:2.4.0")
         classpath 'org.hidetake:gradle-ssh-plugin:1.1.3'
     }
-}
-repositories {
-    mavenCentral()
-    maven { url "https://plugins.gradle.org/m2/" }
 }
 
 
@@ -20,11 +14,7 @@ allprojects {
     ext.version_base = '1.0.0-SNAPSHOT'
     version = version_base
 
-    apply plugin: 'net.saliman.cobertura'
-    apply plugin: "com.github.kt3k.coveralls"
-
-    cobertura.coverageFormats = ['html', 'xml'] // coveralls plugin depends on xml format report
-    cobertura.coverageIgnoreTrivial = true // do not worry about getters and setters
+    apply plugin: 'base'
 
     task('externalCiTest', type: Test) {
         useJUnit {
