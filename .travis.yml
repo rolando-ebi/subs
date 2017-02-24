@@ -16,7 +16,7 @@ addons:
       - mongodb-org-server
       - mongodb-org-shell
 
-install: true
+install: ./gradlew assemble
 
 before_script:
   - sleep 15
