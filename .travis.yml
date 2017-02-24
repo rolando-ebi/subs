@@ -16,15 +16,14 @@ addons:
       - mongodb-org-server
       - mongodb-org-shell
 
-install: true
+install: ./gradlew assemble
 
 before_script:
   - sleep 15
 
-script: ./gradlew externalCiTest coberturaCheck
+script: ./gradlew externalCiTest
 
 after_success:
-  - ./gradlew cobertura coveralls
   - test $TRAVIS_BRANCH = "master" && ./gradlew subs-data-model:uploadArchives
   - test $TRAVIS_BRANCH = "master" && ./gradlew subs-messaging:uploadArchives
   - test $TRAVIS_BRANCH = "master" && ./gradlew subs-processing-model:uploadArchives
