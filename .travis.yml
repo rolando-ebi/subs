@@ -21,7 +21,7 @@ install: ./gradlew assemble
 before_script:
   - sleep 15
 
-script: ./gradlew build externalCiTest
+script: ./gradlew externalCiTest
 
 after_success:
   - test $TRAVIS_BRANCH = "master" && ./gradlew subs-data-model:uploadArchives
