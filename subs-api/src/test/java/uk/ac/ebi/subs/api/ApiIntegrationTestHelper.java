@@ -39,7 +39,7 @@ public class ApiIntegrationTestHelper {
 
     public HttpResponse<JsonNode> postSubmission(Map<String, String> rootRels, Submission submission) throws UnirestException {
         //create a new submission
-        HttpResponse<JsonNode> submissionResponse = Unirest.post(rootRels.get("submissions"))
+        HttpResponse<JsonNode> submissionResponse = Unirest.post(rootRels.get("submissions:create"))
                 .headers(standardPostHeaders())
                 .body(submission)
                 .asJson();
@@ -58,13 +58,13 @@ public class ApiIntegrationTestHelper {
 
         assertThat(submissionRels.get("samples"), notNullValue());
 
-        List<Sample> testSamples = Helpers.generateTestSamples();
+        List<Sample> testSamples = Helpers.generateTestClientSamples(2);
         //add samples to the submission
         for (Sample sample : testSamples) {
 
             sample.setSubmission(submissionLocation);
 
-            HttpResponse<JsonNode> sampleResponse = Unirest.post(rootRels.get("samples"))
+            HttpResponse<JsonNode> sampleResponse = Unirest.post(rootRels.get("samples:create"))
                     .headers(standardPostHeaders())
                     .body(sample)
                     .asJson();
@@ -113,9 +113,8 @@ public class ApiIntegrationTestHelper {
 
             Object linkJson = links.get(key.toString());
             Link link = objectMapper.readValue(linkJson.toString(), Link.class);
-            String href = link.withSelfRel().expand().getHref();
 
-            rels.put((String) key, href);
+            rels.put((String) key, link.getHref());
 
         }
         return rels;

@@ -1,5 +1,6 @@
 package uk.ac.ebi.subs.repository.projections;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.Domain;
@@ -22,17 +23,15 @@ import java.util.Date;
 })
 public interface SubmittableWithStatus {
 
-    ProcessingStatus getProcessingStatus();
-    Long getVersion();
-    Date getCreatedDate();
+    @Value("#{target.processingStatus.status}")
+    String getProcessingStatus();
+
     Date getLastModifiedDate();
-    String getCreatedBy();
     String getLastModifiedBy();
     Archive getArchive();
     String getAccession();
     Domain getDomain();
     String getAlias();
     String getTitle();
-    String getDescription();
 
 }

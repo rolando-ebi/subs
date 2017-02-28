@@ -105,7 +105,7 @@ public class ApiIntegrationTest {
     public void checkRootRels() throws UnirestException, IOException {
         Map<String, String> rootRels = testHelper.rootRels();
 
-        assertThat(rootRels.keySet(), hasItems("submissions", "samples"));
+        assertThat(rootRels.keySet(), hasItems("submissions:create", "samples:create"));
     }
 
     @Test
@@ -151,7 +151,7 @@ public class ApiIntegrationTest {
         int numberOfSubmissions = 5;
 
         Submission submission = Helpers.generateSubmission();
-        List<Sample> testSamples = Helpers.generateTestSamples();
+        List<Sample> testSamples = Helpers.generateTestClientSamples(2);
 
         for (int i = 0; i < numberOfSubmissions; i++) {
             HttpResponse<JsonNode> submissionResponse = testHelper.postSubmission(rootRels, submission);
@@ -166,7 +166,7 @@ public class ApiIntegrationTest {
 
                 sample.setSubmission(submissionLocation);
 
-                HttpResponse<JsonNode> sampleResponse = Unirest.post(rootRels.get("samples"))
+                HttpResponse<JsonNode> sampleResponse = Unirest.post(rootRels.get("samples:create"))
                         .headers(standardPostHeaders())
                         .body(sample)
                         .asJson();
@@ -238,12 +238,12 @@ public class ApiIntegrationTest {
 
         assertThat(submissionRels.get("samples"), notNullValue());
 
-        Sample sample = Helpers.generateTestSamples().get(0);
+        Sample sample = Helpers.generateTestClientSamples(1).get(0);
         //add samples to the submission
 
         sample.setSubmission(submissionLocation);
 
-        HttpResponse<JsonNode> sampleResponse = Unirest.post(rootRels.get("samples"))
+        HttpResponse<JsonNode> sampleResponse = Unirest.post(rootRels.get("samples:create"))
                 .headers(standardPostHeaders())
                 .body(sample)
                 .asJson();

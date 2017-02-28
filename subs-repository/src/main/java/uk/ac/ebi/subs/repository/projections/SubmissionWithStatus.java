@@ -1,5 +1,6 @@
 package uk.ac.ebi.subs.repository.projections;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.*;
 import org.springframework.data.rest.core.config.Projection;
 import uk.ac.ebi.subs.data.component.Domain;
@@ -11,12 +12,16 @@ import java.util.Date;
 
 @Projection(name = "withStatus",types = Submission.class)
 public interface SubmissionWithStatus {
-    SubmissionStatus getSubmissionStatus();
-    Domain getDomain();
-    Submitter getSubmitter();
-    Long getVersion();
-    Date getCreatedDate();
+
+    @Value("#{target.submissionStatus.status}")
+    String getSubmissionStatus();
+
+    @Value("#{target.domain.name}")
+    String getDomain();
+
+    @Value("#{target.submitter.email}")
+    String getSubmitter();
+
     Date getLastModifiedDate();
-    String getCreatedBy();
     String getLastModifiedBy();
 }
