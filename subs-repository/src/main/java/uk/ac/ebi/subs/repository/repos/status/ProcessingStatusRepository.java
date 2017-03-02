@@ -3,6 +3,7 @@ package uk.ac.ebi.subs.repository.repos.status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.repository.model.ProcessingStatus;
@@ -36,9 +37,12 @@ public interface ProcessingStatusRepository extends MongoRepository<ProcessingSt
     @RestResource(exported = false)
     List<ProcessingStatus> findBySubmissionId(String submissionId);
 
-    @RestResource(exported = false)
-    ProcessingStatus findBySubmittableId(String submittableId);
+    @RestResource(exported = true)
+    ProcessingStatus findBySubmittableId(@Param("submittableId") String submittableId);
 
     @RestResource(exported = false)
     void deleteBySubmissionId(String submissionId);
+
+    @RestResource(exported = true)
+    Page<ProcessingStatus> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 }
