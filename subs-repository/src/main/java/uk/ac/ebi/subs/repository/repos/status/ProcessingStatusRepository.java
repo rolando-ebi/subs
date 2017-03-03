@@ -43,6 +43,9 @@ public interface ProcessingStatusRepository extends MongoRepository<ProcessingSt
     @RestResource(exported = false)
     void deleteBySubmissionId(String submissionId);
 
-    @RestResource(exported = true)
+    @RestResource(exported = true,rel="by-submission")
     Page<ProcessingStatus> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
+
+    @RestResource(exported = true,rel="by-submission-and-type")
+    Page<ProcessingStatus> findBySubmissionIdAndSubmittableType(@Param("submissionId") String submissionId, @Param("type")String type, Pageable pageable);
 }
