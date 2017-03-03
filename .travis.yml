@@ -27,6 +27,7 @@ after_success:
   - test $TRAVIS_BRANCH = "master" && ./gradlew subs-data-model:uploadArchives
   - test $TRAVIS_BRANCH = "master" && ./gradlew subs-messaging:uploadArchives
   - test $TRAVIS_BRANCH = "master" && ./gradlew subs-processing-model:uploadArchives
+  - test $TRAVIS_BRANCH = "master" && ./gradlew subs-api:uploadArchives
 
 before_install:
 - openssl aes-256-cbc -K $encrypted_d65fefe7827f_key -iv $encrypted_d65fefe7827f_iv
