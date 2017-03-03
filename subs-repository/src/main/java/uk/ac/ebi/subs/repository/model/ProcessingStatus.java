@@ -18,11 +18,13 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
     public ProcessingStatus() {
     }
 
-    public static ProcessingStatus createForSubmittable(StoredSubmittable storedSubmittable){
+    public static ProcessingStatus createForSubmittable(StoredSubmittable storedSubmittable) {
         ProcessingStatus processingStatus = new ProcessingStatus(ProcessingStatusEnum.Draft);
 
         processingStatus.setSubmissionId(storedSubmittable.getSubmission().getId());
         processingStatus.setSubmittableId(storedSubmittable.getId());
+        processingStatus.setSubmittableType(storedSubmittable.getClass().getSimpleName());
+
         storedSubmittable.setProcessingStatus(processingStatus);
 
         return processingStatus;
@@ -31,9 +33,6 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
     public ProcessingStatus(ProcessingStatusEnum statusEnum) {
         super(statusEnum);
     }
-
-
-
 
     @Id
     private String id;
@@ -55,6 +54,8 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
 
     @Indexed
     private String submittableId;
+
+    private String submittableType;
 
     @Override
     public String getId() {
@@ -119,5 +120,13 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
 
     public void setSubmittableId(String submittableId) {
         this.submittableId = submittableId;
+    }
+
+    public String getSubmittableType() {
+        return submittableType;
+    }
+
+    public void setSubmittableType(String submittableType) {
+        this.submittableType = submittableType;
     }
 }

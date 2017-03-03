@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @RepositoryRestResource
-public interface ProcessingStatusRepository extends MongoRepository<ProcessingStatus, String> {
+public interface ProcessingStatusRepository extends MongoRepository<ProcessingStatus, String>, ProcessingStatusRepositoryCustom {
 
     // exported as GET /things/:id
     @Override
