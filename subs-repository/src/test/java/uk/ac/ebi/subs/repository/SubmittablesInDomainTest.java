@@ -15,6 +15,8 @@ import uk.ac.ebi.subs.data.component.Domain;
 import uk.ac.ebi.subs.repository.model.Sample;
 import uk.ac.ebi.subs.repository.repos.submittables.SampleRepository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
@@ -42,17 +44,20 @@ public class SubmittablesInDomainTest {
 
     @Test
     public void testAggregationWithNoData() {
-        Page<Sample> samples = sampleRepository.submittablesInDomain(domainName,new PageRequest(0,100));
+        Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 100));
         assertThat(samples, notNullValue());
         assertThat(samples, emptyIterable());
-        assertThat(samples.getTotalElements(),is(equalTo(0L)));
+        assertThat(samples.getTotalElements(), is(equalTo(0L)));
     }
 
     @Test
-    public void testAggregation() {
-        sampleRepository.save(sample("bob", "1st"));
-        sampleRepository.save(sample("bob", "2nd"));
-        sampleRepository.save(sample("bob", "3rd"));
+    public void testAggregation() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+
+
+        sampleRepository.save(sample("bob", "1st", sdf.parse("2000-01-01")));
+        sampleRepository.save(sample("bob", "2nd", sdf.parse("2000-01-02")));
+        sampleRepository.save(sample("bob", "3rd", sdf.parse("2000-01-03")));
         sampleRepository.save(sample("alice", "1st"));
         sampleRepository.save(sample("charlotte", "1st"));
 
@@ -62,6 +67,7 @@ public class SubmittablesInDomainTest {
         assertThat(samples, notNullValue());
         assertThat(samples.getTotalElements(), is(equalTo(3L)));
         assertThat(samples.getContent().get(0).getAlias(), equalTo("alice"));// alphabetical ordering works
+        assertThat(samples.getContent().get(0).getTitle(), equalTo("1st"));// alphabetical ordering works
         assertThat(samples.getContent().get(1).getAlias(), equalTo("bob"));//got bob
         assertThat(samples.getContent().get(1).getTitle(), equalTo("3rd"));//got most recent version of bob
         assertThat(samples.getTotalPages(), is(equalTo(2)));
@@ -75,13 +81,17 @@ public class SubmittablesInDomainTest {
 
 
     private Sample sample(String alias, String title) {
+        return sample(alias, title, new Date());
+    }
+
+    private Sample sample(String alias, String title, Date createdDate) {
         Sample s = new Sample();
         s.setDomain(domain);
         s.setAlias(alias);
 
         s.setTitle(title);
 
-        s.setCreatedDate(new Date());
+        s.setCreatedDate(createdDate);
 
         return s;
     }
