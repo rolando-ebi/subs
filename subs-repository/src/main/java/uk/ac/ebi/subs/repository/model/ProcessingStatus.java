@@ -57,6 +57,10 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
 
     private String submittableType;
 
+    private String accession;
+    private String message;
+    private String archive;
+
     @Override
     public String getId() {
         return id;
@@ -128,5 +132,29 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
 
     public void setSubmittableType(String submittableType) {
         this.submittableType = submittableType;
+    }
+
+    public String getAccession() {
+        return accession;
+    }
+
+    public void setAccession(String accession) {
+        this.accession = accession;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getArchive() {
+        return archive;
+    }
+
+    public void setArchive(String archive) {
+        this.archive = archive;
     }
 }
