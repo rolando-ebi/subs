@@ -49,17 +49,17 @@ public interface SubmittableRepository<T extends StoredSubmittable> extends Mong
     Page<T> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
 
 
-    @RestResource(exported = true, path = "by-domain", rel = "by-domain")
-    @Query("'domain.name': ?0")
+    @RestResource(exported = true, path = "by-team", rel = "by-team")
+    @Query("'team.name': ?0")
         //THIS IS A DUMMY QUERY, real implementation comes from Implementation of SubmittableRepositoryCustom
-    Page<T> submittablesInDomain(@Param("domainName") String domainName, Pageable pageable);
+    Page<T> submittablesInTeam(@Param("teamName") String teamName, Pageable pageable);
 
     @RestResource(exported = true, path = "current-version", rel = "current-version")
-    T findFirstByDomainNameAndAliasOrderByCreatedDateDesc(@Param("domainName") String domainName, @Param("alias") String alias);
+    T findFirstByTeamNameAndAliasOrderByCreatedDateDesc(@Param("teamName") String teamName, @Param("alias") String alias);
 
     @RestResource(exported = true, path = "history", rel = "history")
-    Page<T> findByDomainNameAndAliasOrderByCreatedDateDesc(
-            @Param("domainName") String domainName, @Param("alias") String alias,
+    Page<T> findByTeamNameAndAliasOrderByCreatedDateDesc(
+            @Param("teamName") String teamName, @Param("alias") String alias,
             Pageable pageable);
 
 

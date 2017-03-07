@@ -3,7 +3,7 @@ package uk.ac.ebi.subs.repository.projections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 import uk.ac.ebi.subs.data.component.Archive;
-import uk.ac.ebi.subs.data.component.Domain;
+import uk.ac.ebi.subs.data.component.Team;
 import uk.ac.ebi.subs.repository.model.*;
 
 import java.util.Date;
@@ -30,7 +30,7 @@ public interface SubmittableWithStatus {
     String getLastModifiedBy();
     Archive getArchive();
     String getAccession();
-    Domain getDomain();
+    Team getTeam();
     String getAlias();
     String getTitle();
 

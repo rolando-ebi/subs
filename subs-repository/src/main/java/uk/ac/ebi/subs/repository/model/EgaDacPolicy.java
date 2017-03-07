@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 
 @CompoundIndexes({
-        @CompoundIndex(name = "domain_alias", def = "{ 'domain.name': 1, 'alias': 1 }"),
+        @CompoundIndex(name = "team_alias", def = "{ 'team.name': 1, 'alias': 1 }"),
         @CompoundIndex(name = "accession", def = "{ 'accession': 1}"),
         @CompoundIndex(name = "submissionId_status", def = "{ 'submission.$id': 1, 'status': 1}")
 })

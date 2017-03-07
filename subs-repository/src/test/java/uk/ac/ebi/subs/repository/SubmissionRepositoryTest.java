@@ -28,7 +28,7 @@ public class SubmissionRepositoryTest {
     public void buildUp() {
         testSub = new Submission();
         testSub.getSubmitter().setEmail("test@example.ac.uk");
-        testSub.getDomain().setName("testDomain" + Math.random());
+        testSub.getTeam().setName("testTeam" + Math.random());
         testSub.setId(UUID.randomUUID().toString());
     }
 
@@ -46,7 +46,7 @@ public class SubmissionRepositoryTest {
 
     private void assertSubmissionStored() {
         Submission stored = submissionRepository.findOne(testSub.getId());
-        assertThat("Submission stored", stored.getDomain().getName(), equalTo(testSub.getDomain().getName()));
+        assertThat("Submission stored", stored.getTeam().getName(), equalTo(testSub.getTeam().getName()));
     }
 
 }
