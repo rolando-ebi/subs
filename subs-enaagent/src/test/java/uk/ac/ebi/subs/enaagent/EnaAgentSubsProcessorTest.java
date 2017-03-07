@@ -45,7 +45,7 @@ public class EnaAgentSubsProcessorTest {
         ProcessingCertificateEnvelope processingCertificateEnvelope = processor.processSubmission(subEnv);
         List<ProcessingCertificate> certs = processingCertificateEnvelope.getProcessingCertificates();
 
-        String processedStatus = ProcessingStatusEnum.Done.name();
+        String processedStatus = ProcessingStatusEnum.Completed.name();
 
         assertThat("study accessioned", st.getAccession(), startsWith("ENA-STU-"));
 
@@ -66,9 +66,9 @@ public class EnaAgentSubsProcessorTest {
         assertThat("correct certs",
                 certs,
                 containsInAnyOrder(
-                        new ProcessingCertificate(st, Archive.Ena, ProcessingStatusEnum.Done, st.getAccession()),
-                        new ProcessingCertificate(as, Archive.Ena, ProcessingStatusEnum.Done, as.getAccession()),
-                        new ProcessingCertificate(ad, Archive.Ena, ProcessingStatusEnum.Done, ad.getAccession())
+                        new ProcessingCertificate(st, Archive.Ena, ProcessingStatusEnum.Completed, st.getAccession()),
+                        new ProcessingCertificate(as, Archive.Ena, ProcessingStatusEnum.Completed, as.getAccession()),
+                        new ProcessingCertificate(ad, Archive.Ena, ProcessingStatusEnum.Completed, ad.getAccession())
                 )
 
         );
