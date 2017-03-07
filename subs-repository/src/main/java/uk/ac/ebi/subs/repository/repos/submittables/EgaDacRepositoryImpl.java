@@ -17,7 +17,7 @@ public class EgaDacRepositoryImpl implements SubmittableRepositoryCustom<EgaDac>
     }
 
     @Override
-    public Page<EgaDac> submittablesInDomain(String domainName, Pageable pageable) {
-        return aggregateSupport.itemsByDomain(domainName, pageable);
+    public Page<EgaDac> submittablesInTeam(String teamName, Pageable pageable) {
+        return aggregateSupport.itemsByTeam(teamName, pageable);
     }
 }

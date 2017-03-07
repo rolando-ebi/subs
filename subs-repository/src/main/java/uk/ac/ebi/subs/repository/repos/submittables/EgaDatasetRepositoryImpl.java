@@ -18,7 +18,7 @@ public class EgaDatasetRepositoryImpl implements SubmittableRepositoryCustom<Ega
     }
 
     @Override
-    public Page<EgaDataset> submittablesInDomain(String domainName, Pageable pageable) {
-        return aggregateSupport.itemsByDomain(domainName, pageable);
+    public Page<EgaDataset> submittablesInTeam(String teamName, Pageable pageable) {
+        return aggregateSupport.itemsByTeam(teamName, pageable);
     }
 }

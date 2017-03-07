@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.subs.data.component.Domain;
+import uk.ac.ebi.subs.data.component.Team;
 import uk.ac.ebi.subs.repository.model.Sample;
 import uk.ac.ebi.subs.repository.repos.submittables.SampleRepository;
 
@@ -24,27 +24,31 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = TestRepoApplication.class)
-public class SubmittablesInDomainTest {
+public class SubmittablesInTeamTest {
 
     @Autowired
     private SampleRepository sampleRepository;
 
-    private final String domainName = "testDomain";
-    private Domain domain;
+    private final String teamName = "testTeam";
+    private Team team;
 
-    private final Logger logger = LoggerFactory.getLogger(SubmittablesInDomainTest.class);
+    private final Logger logger = LoggerFactory.getLogger(SubmittablesInTeamTest.class);
 
 
     @Before
     public void buildUp() {
         sampleRepository.deleteAll();
-        domain = new Domain();
-        domain.setName(domainName);
+        team = new Team();
+        team.setName(teamName);
     }
 
     @Test
     public void testAggregationWithNoData() {
+<<<<<<< HEAD:subs-repository/src/test/java/uk/ac/ebi/subs/repository/SubmittablesInDomainTest.java
         Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 100));
+=======
+        Page<Sample> samples = sampleRepository.submittablesInTeam(teamName,new PageRequest(0,100));
+>>>>>>> master:subs-repository/src/test/java/uk/ac/ebi/subs/repository/SubmittablesInTeamTest.java
         assertThat(samples, notNullValue());
         assertThat(samples, emptyIterable());
         assertThat(samples.getTotalElements(), is(equalTo(0L)));
@@ -62,7 +66,7 @@ public class SubmittablesInDomainTest {
         sampleRepository.save(sample("charlotte", "1st"));
 
 
-        Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 2));
+        Page<Sample> samples = sampleRepository.submittablesInTeam(teamName, new PageRequest(0, 2));
 
         assertThat(samples, notNullValue());
         assertThat(samples.getTotalElements(), is(equalTo(3L)));
@@ -72,7 +76,7 @@ public class SubmittablesInDomainTest {
         assertThat(samples.getContent().get(1).getTitle(), equalTo("3rd"));//got most recent version of bob
         assertThat(samples.getTotalPages(), is(equalTo(2)));
 
-        samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(1, 2));
+        samples = sampleRepository.submittablesInTeam(teamName, new PageRequest(1, 2));
         assertThat(samples, notNullValue());
         assertThat(samples.getTotalElements(), is(equalTo(3L)));
         assertThat(samples.getContent().get(0).getAlias(), equalTo("charlotte"));
@@ -86,7 +90,7 @@ public class SubmittablesInDomainTest {
 
     private Sample sample(String alias, String title, Date createdDate) {
         Sample s = new Sample();
-        s.setDomain(domain);
+        s.setTeam(team);
         s.setAlias(alias);
 
         s.setTitle(title);

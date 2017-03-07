@@ -8,6 +8,6 @@ import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 
 public interface SubmittableRepositoryCustom<T extends StoredSubmittable> {
 
-    Page<T> submittablesInDomain(String domainName, Pageable pageable);
+    Page<T> submittablesInTeam(String teamName, Pageable pageable);
 
 }
