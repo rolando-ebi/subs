@@ -17,7 +17,7 @@ public class ProjectRepositoryImpl implements SubmittableRepositoryCustom<Projec
     }
 
     @Override
-    public Page<Project> submittablesInDomain(String domainName, Pageable pageable) {
-        return aggregateSupport.itemsByDomain(domainName, pageable);
+    public Page<Project> submittablesInTeam(String teamName, Pageable pageable) {
+        return aggregateSupport.itemsByTeam(teamName, pageable);
     }
 }

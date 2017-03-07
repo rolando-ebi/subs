@@ -50,7 +50,7 @@ public class SampleRepositoryTest {
 
         testSub = new Submission();
         testSub.getSubmitter().setEmail("test@example.ac.uk");
-        testSub.getDomain().setName("testDomain");
+        testSub.getTeam().setName("testTeam");
         testSub.setId(UUID.randomUUID().toString());
 
         samples.add(new Sample());
@@ -60,7 +60,7 @@ public class SampleRepositoryTest {
         samples.get(1).setAlias("two");
 
         samples.forEach(s -> s.setId(UUID.randomUUID().toString()));
-        samples.forEach(s -> s.setDomain(testSub.getDomain()));
+        samples.forEach(s -> s.setTeam(testSub.getTeam()));
         samples.forEach(s -> s.setCreatedDate(new Date()));
 
         submissionRepository.insert(testSub);
@@ -83,9 +83,9 @@ public class SampleRepositoryTest {
 
         assertThat(sampleRepository.findBySubmissionId(testSub.getId(), pageRequest).getTotalElements(), is(equalTo((long) samples.size())));
 
-        assertThat(sampleRepository.submittablesInDomain(testSub.getDomain().getName(), pageRequest).getTotalElements(), is(equalTo((long) samples.size())));
+        assertThat(sampleRepository.submittablesInTeam(testSub.getTeam().getName(), pageRequest).getTotalElements(), is(equalTo((long) samples.size())));
 
-        assertThat(sampleRepository.findFirstByDomainNameAndAliasOrderByCreatedDateDesc(testSub.getDomain().getName(), "two"), notNullValue());
+        assertThat(sampleRepository.findFirstByTeamNameAndAliasOrderByCreatedDateDesc(testSub.getTeam().getName(), "two"), notNullValue());
     }
 
     @Test
@@ -93,12 +93,12 @@ public class SampleRepositoryTest {
         submissionWithTwoSamples();
         submissionWithTwoSamples();
 
-        Page<Sample> samplesInDomain = sampleRepository.submittablesInDomain(testSub.getDomain().getName(), pageRequest);
+        Page<Sample> samplesInTeam = sampleRepository.submittablesInTeam(testSub.getTeam().getName(), pageRequest);
 
-        assertThat(samplesInDomain.getContent(), hasSize(2));
+        assertThat(samplesInTeam.getContent(), hasSize(2));
 
-        Page<Sample> sampleHistory = sampleRepository.findByDomainNameAndAliasOrderByCreatedDateDesc(
-                testSub.getDomain().getName(),
+        Page<Sample> sampleHistory = sampleRepository.findByTeamNameAndAliasOrderByCreatedDateDesc(
+                testSub.getTeam().getName(),
                 samples.get(1).getAlias(),
                 pageRequest
         );
@@ -109,7 +109,7 @@ public class SampleRepositoryTest {
         //should be most recent version
         assertThat(topEntry.getCreatedDate(), is(equalTo(samples.get(1).getCreatedDate())));
 
-        Sample currentVersion = sampleRepository.findFirstByDomainNameAndAliasOrderByCreatedDateDesc(testSub.getDomain().getName(), samples.get(1).getAlias());
+        Sample currentVersion = sampleRepository.findFirstByTeamNameAndAliasOrderByCreatedDateDesc(testSub.getTeam().getName(), samples.get(1).getAlias());
         //should be most recent version
         assertThat(currentVersion.getCreatedDate(), is(equalTo(samples.get(1).getCreatedDate())));
 

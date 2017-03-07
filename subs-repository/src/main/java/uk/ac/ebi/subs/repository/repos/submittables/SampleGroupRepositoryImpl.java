@@ -17,8 +17,8 @@ public class SampleGroupRepositoryImpl implements SubmittableRepositoryCustom<Sa
     }
 
     @Override
-    public Page<SampleGroup> submittablesInDomain(String domainName, Pageable pageable) {
-        return aggregateSupport.itemsByDomain(domainName, pageable);
+    public Page<SampleGroup> submittablesInTeam(String teamName, Pageable pageable) {
+        return aggregateSupport.itemsByTeam(teamName, pageable);
     }
 
 }

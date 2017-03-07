@@ -17,8 +17,8 @@ public class AnalysisRepositoryImpl implements SubmittableRepositoryCustom<Analy
     }
 
     @Override
-    public Page<Analysis> submittablesInDomain(String domainName, Pageable pageable) {
-        return aggregateSupport.itemsByDomain(domainName, pageable);
+    public Page<Analysis> submittablesInTeam(String teamName, Pageable pageable) {
+        return aggregateSupport.itemsByTeam(teamName, pageable);
     }
 
 

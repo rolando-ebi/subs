@@ -27,16 +27,16 @@ public class SubmittablesAggregateSupport<T extends StoredSubmittable> {
         this.clazz = clazz;
     }
 
-    public Page<T> itemsByDomain(String domainName, Pageable pageable) {
-        List<T> resultsList = getLimitedItemListByDomain(domainName, pageable);
-        long totalItemsCount = getTotalItemCountByDomain(domainName);
+    public Page<T> itemsByTeam(String teamName, Pageable pageable) {
+        List<T> resultsList = getLimitedItemListByTeam(teamName, pageable);
+        long totalItemsCount = getTotalItemCountByTeam(teamName);
         return new PageImpl<T>(resultsList, pageable, totalItemsCount);
     }
 
-    private long getTotalItemCountByDomain(String domainName) {
+    private long getTotalItemCountByTeam(String teamName) {
         AggregationResults aggregationResults = mongoTemplate.aggregate(
                 Aggregation.newAggregation(
-                        domainMatchOperation(domainName),
+                        teamMatchOperation(teamName),
                         groupByAlias(),
                         group().count().as("count")
                 ),
@@ -65,11 +65,11 @@ public class SubmittablesAggregateSupport<T extends StoredSubmittable> {
         return -1;
     }
 
-    private List<T> getLimitedItemListByDomain(String domainName, Pageable pageable) {
+    private List<T> getLimitedItemListByTeam(String teamName, Pageable pageable) {
         final List<T> resultsList = new ArrayList<>();
 
         AggregationResults aggregationResults = mongoTemplate.aggregate(Aggregation.newAggregation(
-                domainMatchOperation(domainName),
+                teamMatchOperation(teamName),
                 sortAliasCreatedDate(),
                 groupByAliasWithFirstItem(),
                 skip((long) pageable.getOffset()),
@@ -105,8 +105,8 @@ public class SubmittablesAggregateSupport<T extends StoredSubmittable> {
         return sort(Sort.Direction.DESC, "alias").and(Sort.Direction.DESC, "createdDate");
     }
 
-    private MatchOperation domainMatchOperation(String domainName) {
-        return match(where("domain.name").is(domainName));
+    private MatchOperation teamMatchOperation(String teamName) {
+        return match(where("team.name").is(teamName));
     }
 
 }
