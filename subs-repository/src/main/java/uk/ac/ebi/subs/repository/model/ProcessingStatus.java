@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.hateoas.Identifiable;
 import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
@@ -22,7 +23,7 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
         ProcessingStatus processingStatus = new ProcessingStatus(ProcessingStatusEnum.Draft);
 
         processingStatus.setSubmissionId(storedSubmittable.getSubmission().getId());
-        processingStatus.setSubmittableId(storedSubmittable.getId());
+        processingStatus.setItem(storedSubmittable);
         processingStatus.setSubmittableType(storedSubmittable.getClass().getSimpleName());
 
         storedSubmittable.setProcessingStatus(processingStatus);
@@ -36,6 +37,9 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
 
     @Id
     private String id;
+
+    @DBRef
+    private StoredSubmittable item;
 
     @Version
     private Long version;
@@ -52,14 +56,12 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
     @Indexed
     private String submissionId;
 
-    @Indexed
-    private String submittableId;
-
     private String submittableType;
 
     private String accession;
     private String message;
     private String archive;
+    private String alias;
 
     @Override
     public String getId() {
@@ -118,14 +120,6 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
         this.submissionId = submissionId;
     }
 
-    public String getSubmittableId() {
-        return submittableId;
-    }
-
-    public void setSubmittableId(String submittableId) {
-        this.submittableId = submittableId;
-    }
-
     public String getSubmittableType() {
         return submittableType;
     }
@@ -157,4 +151,13 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
     public void setArchive(String archive) {
         this.archive = archive;
     }
+
+    public StoredSubmittable getItem() {
+        return item;
+    }
+
+    public void setItem(StoredSubmittable item) {
+        this.item = item;
+    }
+
 }

@@ -44,11 +44,7 @@ public class SubmittablesInTeamTest {
 
     @Test
     public void testAggregationWithNoData() {
-<<<<<<< HEAD:subs-repository/src/test/java/uk/ac/ebi/subs/repository/SubmittablesInDomainTest.java
-        Page<Sample> samples = sampleRepository.submittablesInDomain(domainName, new PageRequest(0, 100));
-=======
         Page<Sample> samples = sampleRepository.submittablesInTeam(teamName,new PageRequest(0,100));
->>>>>>> master:subs-repository/src/test/java/uk/ac/ebi/subs/repository/SubmittablesInTeamTest.java
         assertThat(samples, notNullValue());
         assertThat(samples, emptyIterable());
         assertThat(samples.getTotalElements(), is(equalTo(0L)));
