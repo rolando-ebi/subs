@@ -5,6 +5,7 @@ dependencies {
     compile project(':subs-data-model')
     compile project(':subs-processing-model')
 
+
     compile ('org.atteo:evo-inflector:1.2.1') // better pluralisation
 
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
@@ -12,5 +13,8 @@ dependencies {
 
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile project(':subs-test-categories')
 
 }
+
+bootRepackage.enabled = false

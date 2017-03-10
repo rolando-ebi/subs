@@ -4,4 +4,7 @@ dependencies {
         compileOnly("org.projectlombok:lombok:1.16.12")
         compile project(':subs-data-model')
         testCompile("junit:junit")
+        testCompile project(':subs-test-categories')
 }
+
+bootRepackage.enabled = false

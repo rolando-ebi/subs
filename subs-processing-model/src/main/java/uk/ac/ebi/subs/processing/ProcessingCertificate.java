@@ -4,7 +4,7 @@ package uk.ac.ebi.subs.processing;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import uk.ac.ebi.subs.data.component.Archive;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
 @ToString
@@ -12,17 +12,17 @@ import uk.ac.ebi.subs.data.submittable.Submittable;
 public class ProcessingCertificate {
     private String submittableId;
     private Archive archive;
-    private ProcessingStatus processingStatus;
+    private ProcessingStatusEnum processingStatus;
     private String accession;
     private String message;
 
-    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatus processingStatus) {
+    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatusEnum processingStatus) {
         this.submittableId = submittable.getId();
         this.archive = archive;
         this.processingStatus = processingStatus;
     }
 
-    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatus processingStatus, String accession) {
+    public ProcessingCertificate(Submittable submittable, Archive archive, ProcessingStatusEnum processingStatus, String accession) {
         this(submittable, archive, processingStatus);
         this.accession = accession;
     }
@@ -47,11 +47,11 @@ public class ProcessingCertificate {
         this.archive = archive;
     }
 
-    public ProcessingStatus getProcessingStatus() {
+    public ProcessingStatusEnum getProcessingStatus() {
         return processingStatus;
     }
 
-    public void setProcessingStatus(ProcessingStatus processingStatus) {
+    public void setProcessingStatus(ProcessingStatusEnum processingStatus) {
         this.processingStatus = processingStatus;
     }
 

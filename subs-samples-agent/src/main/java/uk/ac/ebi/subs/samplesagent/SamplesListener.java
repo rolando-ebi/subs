@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.SampleRef;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Queues;
@@ -78,7 +78,7 @@ public class SamplesListener {
         // these samples must be updates, as they are already accessioned
         List<Sample> accessionedSamples = submission.getSamples().stream().filter(s -> s.getAccession() != null).collect(Collectors.toList());
 
-        //these samples might be updates, if the alias+domain are already used
+        //these samples might be updates, if the alias+team are already used
         List<Sample> samplesWithoutAccession = submission.getSamples().stream().filter(s -> s.getAccession() == null).collect(Collectors.toList());
 
         //we need the aliases in an array to make a bulk query
@@ -87,7 +87,7 @@ public class SamplesListener {
 
         // check the db for these aliases, store any by alias
         Map<String, Sample> knownSamplesByAlias = new HashMap<>();
-        repository.findByDomainAndAlias(submission.getDomain().getName(), aliasesForSamplesWithoutAccession).forEach(
+        repository.findByTeamAndAlias(submission.getTeam().getName(), aliasesForSamplesWithoutAccession).forEach(
                 sample -> knownSamplesByAlias.put(sample.getAlias(), sample)
         );
 
@@ -106,12 +106,11 @@ public class SamplesListener {
         }
 
         submission.getSamples().forEach(s -> {
-            s.setStatus(ProcessingStatus.Done);
 
             certs.add(new ProcessingCertificate(
                     s,
                     Archive.BioSamples,
-                    ProcessingStatus.Done,
+                    ProcessingStatusEnum.Completed,
                     s.getAccession())
             );
 
