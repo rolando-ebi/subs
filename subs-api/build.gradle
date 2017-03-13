@@ -19,6 +19,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator")
 
     compile("com.fasterxml.jackson.module:jackson-module-afterburner:2.7.1")
+    compile 'org.springframework.boot:spring-boot-starter-security'
 
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
@@ -28,7 +29,11 @@ dependencies {
 
     testCompile("com.mashape.unirest:unirest-java:1.4.9")
 
+
+
     testCompile project(':subs-test-categories')
+
+    compile 'org.springframework.security:spring-security-test:4.2.2.RELEASE'
 }
 
 ext {
