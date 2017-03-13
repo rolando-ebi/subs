@@ -8,6 +8,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@PostAuthorize("@authorizeUser.isAdminUser(authentication.details) or returnObject == null or @authorizeUser.canUseProcessingStatus(authentication.details,returnObject))")
+@PostAuthorize("returnObject == null or hasAnyRole(@authorizeUser.adminRole(),@authorizeUser.processingStatusTeam(returnObject))")
 public @interface PostAuthorizeProcessingStatusTeamName {
 }

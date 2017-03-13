@@ -6,6 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("@authorizeUser.isAdminUser(authentication.details) or @authorizeUser.canUseSubmissionStatus(authentication.details,#submissionStatus)")
+@PreAuthorize("hasAnyRole(@authorizeUser.adminRole(),@authorizeUser.submissionStatusTeam(#submissionStatus))")
 public @interface PreAuthorizeSubmissionStatusTeamName {
 }

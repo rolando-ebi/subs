@@ -7,6 +7,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("@authorizeUser.isAdminUser(authentication.details) or @authorizeUser.canUseProcessingStatus(authentication.details,#processingStatus)")
+@PreAuthorize("hasAnyRole(@authorizeUser.adminRole(),@authorizeUser.processingStatusTeam(#processingStatus))")
 public @interface PreAuthorizeProcessingStatusTeamName {
 }
