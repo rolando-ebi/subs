@@ -23,8 +23,10 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
         ProcessingStatus processingStatus = new ProcessingStatus(ProcessingStatusEnum.Draft);
 
         processingStatus.setSubmissionId(storedSubmittable.getSubmission().getId());
-        processingStatus.setItem(storedSubmittable);
+        processingStatus.setSubmittableId(storedSubmittable.getId());
         processingStatus.setSubmittableType(storedSubmittable.getClass().getSimpleName());
+        processingStatus.setArchive(storedSubmittable.getArchive().name());
+        processingStatus.setAlias(storedSubmittable.getAlias());
 
         storedSubmittable.setProcessingStatus(processingStatus);
 
@@ -37,9 +39,6 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
 
     @Id
     private String id;
-
-    @DBRef
-    private StoredSubmittable item;
 
     @Version
     private Long version;
@@ -56,6 +55,8 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
     @Indexed
     private String submissionId;
 
+
+    private String submittableId;
     private String submittableType;
 
     private String accession;
@@ -120,6 +121,14 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
         this.submissionId = submissionId;
     }
 
+    public String getSubmittableId() {
+        return submittableId;
+    }
+
+    public void setSubmittableId(String submittableId) {
+        this.submittableId = submittableId;
+    }
+
     public String getSubmittableType() {
         return submittableType;
     }
@@ -152,12 +161,11 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
         this.archive = archive;
     }
 
-    public StoredSubmittable getItem() {
-        return item;
+    public String getAlias() {
+        return alias;
     }
 
-    public void setItem(StoredSubmittable item) {
-        this.item = item;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
-
 }
