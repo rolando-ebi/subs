@@ -22,17 +22,22 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
     public static ProcessingStatus createForSubmittable(StoredSubmittable storedSubmittable) {
         ProcessingStatus processingStatus = new ProcessingStatus(ProcessingStatusEnum.Draft);
 
-        processingStatus.setSubmissionId(storedSubmittable.getSubmission().getId());
-        processingStatus.setSubmittableId(storedSubmittable.getId());
-        processingStatus.setSubmittableType(storedSubmittable.getClass().getSimpleName());
-
-        if (storedSubmittable.getArchive() != null) processingStatus.setArchive(storedSubmittable.getArchive().name());
-
-        processingStatus.setAlias(storedSubmittable.getAlias());
+        processingStatus.copyDetailsFromSubmittable(storedSubmittable);
 
         storedSubmittable.setProcessingStatus(processingStatus);
 
         return processingStatus;
+    }
+
+    public void copyDetailsFromSubmittable(StoredSubmittable storedSubmittable){
+        this.setSubmissionId(storedSubmittable.getSubmission().getId());
+        this.setSubmittableId(storedSubmittable.getId());
+        this.setSubmittableType(storedSubmittable.getClass().getSimpleName());
+
+        if (storedSubmittable.getArchive() != null) this.setArchive(storedSubmittable.getArchive().name());
+
+        this.setAlias(storedSubmittable.getAlias());
+
     }
 
     public ProcessingStatus(ProcessingStatusEnum statusEnum) {
