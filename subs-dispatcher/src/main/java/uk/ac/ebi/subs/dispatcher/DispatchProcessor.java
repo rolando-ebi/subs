@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.subs.data.FullSubmission;
@@ -20,6 +19,7 @@ import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.messaging.Topics;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.repository.FullSubmissionService;
+import uk.ac.ebi.subs.repository.model.ProcessingStatus;
 import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
 import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 import uk.ac.ebi.subs.repository.model.Submission;
@@ -91,6 +91,7 @@ public class DispatchProcessor {
         refreshedSubmission.getSubmissionStatus().setStatus(SubmissionStatusEnum.Processing);
         submissionStatusRepository.save(refreshedSubmission.getSubmissionStatus());
 
+
         rabbitMessagingTemplate.convertAndSend(
                 Exchanges.SUBMISSIONS,
                 Topics.EVENT_SUBMISSION_UPDATED,
@@ -110,6 +111,7 @@ public class DispatchProcessor {
 
         if (!submissionEnvelope.getSupportingSamplesRequired().isEmpty()) {
             //TODO refactor this to use a smaller object?
+
             rabbitMessagingTemplate.convertAndSend(
                     Exchanges.SUBMISSIONS,
                     Topics.EVENT_SUBMISSION_NEEDS_SAMPLES,
@@ -121,14 +123,18 @@ public class DispatchProcessor {
     @RabbitListener(queues = Queues.SUBMISSION_SUBMITTED_MARK_SUBMITTABLES)
     public void onSubmissionMarkSubmittablesSubmitted(Submission submission) {
         logger.info("Marking submittables as submitted for {}",submission.getId());
-        processingStatusRepository
-                .findBySubmissionId(submission.getId())
-                .stream()
-                .filter(processingStatus -> processingStatus.getStatus().equals(ProcessingStatusEnum.Draft.name()))
-                .forEach(processingStatus -> {
-                    processingStatus.setStatus(ProcessingStatusEnum.Submitted);
-                    processingStatusRepository.save(processingStatus);
-                })
+
+        fullSubmissionService.fetchOne(submission.getId())
+                .allSubmissionItemsStream()
+                .map(item -> ((StoredSubmittable)item))
+                .filter(item -> item.getProcessingStatus().getStatus().equals(ProcessingStatusEnum.Draft.name()))
+                .forEach(item -> {
+                    ProcessingStatus status = item.getProcessingStatus();
+                    status.copyDetailsFromSubmittable(item);
+                    status.setStatus(ProcessingStatusEnum.Submitted);
+                    processingStatusRepository.save(status);
+                });
+
         ;
 
 
@@ -213,6 +219,7 @@ public class DispatchProcessor {
             String targetTopic,
             Archive targetArchive
     ) {
+
         rabbitMessagingTemplate.convertAndSend(Exchanges.SUBMISSIONS, targetTopic, submissionEnvelope);
         logger.info("sent submission {} to {}", submissionEnvelope.getSubmission().getId(), targetTopic, itemsToProcess);
 

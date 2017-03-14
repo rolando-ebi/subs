@@ -3,16 +3,18 @@ package uk.ac.ebi.subs.repository.repos.status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.repository.model.ProcessingStatus;
+import uk.ac.ebi.subs.repository.projections.ProcessingStatusWithAlias;
 
 import java.util.List;
 
 
-@RepositoryRestResource
-public interface ProcessingStatusRepository extends MongoRepository<ProcessingStatus, String> {
+@RepositoryRestResource(excerptProjection = ProcessingStatusWithAlias.class)
+public interface ProcessingStatusRepository extends MongoRepository<ProcessingStatus, String>, ProcessingStatusRepositoryCustom {
 
     // exported as GET /things/:id
     @Override
@@ -38,11 +40,14 @@ public interface ProcessingStatusRepository extends MongoRepository<ProcessingSt
     List<ProcessingStatus> findBySubmissionId(String submissionId);
 
     @RestResource(exported = true)
-    ProcessingStatus findBySubmittableId(@Param("submittableId") String submittableId);
+    ProcessingStatus findBySubmittableId(@Param("itemId") String itemId);
 
     @RestResource(exported = false)
     void deleteBySubmissionId(String submissionId);
 
-    @RestResource(exported = true)
+    @RestResource(exported = true, rel = "by-submission")
     Page<ProcessingStatus> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
+
+    @RestResource(exported = true, rel = "by-submission-and-type")
+    Page<ProcessingStatus> findBySubmissionIdAndSubmittableType(@Param("submissionId") String submissionId, @Param("type") String type, Pageable pageable);
 }
