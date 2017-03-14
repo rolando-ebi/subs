@@ -25,7 +25,9 @@ public class ProcessingStatus extends uk.ac.ebi.subs.data.status.ProcessingStatu
         processingStatus.setSubmissionId(storedSubmittable.getSubmission().getId());
         processingStatus.setSubmittableId(storedSubmittable.getId());
         processingStatus.setSubmittableType(storedSubmittable.getClass().getSimpleName());
-        processingStatus.setArchive(storedSubmittable.getArchive().name());
+
+        if (storedSubmittable.getArchive() != null) processingStatus.setArchive(storedSubmittable.getArchive().name());
+
         processingStatus.setAlias(storedSubmittable.getAlias());
 
         storedSubmittable.setProcessingStatus(processingStatus);
