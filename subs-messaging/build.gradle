@@ -10,3 +10,7 @@ dependencies {
 }
 
 bootRepackage.enabled = false
+
+springBoot {
+    executable = true
+}
