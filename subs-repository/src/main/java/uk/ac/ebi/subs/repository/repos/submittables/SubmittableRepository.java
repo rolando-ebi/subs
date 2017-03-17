@@ -62,6 +62,8 @@ public interface SubmittableRepository<T extends StoredSubmittable> extends Mong
             @Param("teamName") String teamName, @Param("alias") String alias,
             Pageable pageable);
 
+    @RestResource(exported = true, path="by-accession", rel = "by-accession")
+    T findFirstByAccessionOrderByCreatedDateDesc(@Param("accession") String accession);
 
 
     @RestResource(exported = false)
