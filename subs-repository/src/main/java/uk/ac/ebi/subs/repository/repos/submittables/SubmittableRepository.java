@@ -11,6 +11,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @NoRepositoryBean
 @RepositoryRestResource
@@ -62,8 +63,15 @@ public interface SubmittableRepository<T extends StoredSubmittable> extends Mong
             @Param("teamName") String teamName, @Param("alias") String alias,
             Pageable pageable);
 
+    @RestResource(exported = false)
+    Stream<T> streamByTeamNameAndAliasOrderByCreatedDateDesc(
+            @Param("teamName") String teamName, @Param("alias") String alias);
+
     @RestResource(exported = true, path="by-accession", rel = "by-accession")
     T findFirstByAccessionOrderByCreatedDateDesc(@Param("accession") String accession);
+
+    @RestResource(exported = false)
+    List<T> findBySubmissionIdAndAlias(String submissionId, String alias);
 
 
     @RestResource(exported = false)
