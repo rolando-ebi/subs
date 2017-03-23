@@ -71,18 +71,6 @@ public class UsiInternalQueueConfig {
         return BindingBuilder.bind(onSubmitCheckForSupportingInfoQueue).to(submissionExchange).with(Queues.SUBMISSION_SUBMITTED_ROUTING_KEY);
     }
 
-    /**
-     * Queue for documents within a submission to have their status updated owhen the user submits the submission
-     * @return
-     */
-    @Bean Queue onSubmitMarkSubmittablesQueue() {return new Queue(Queues.SUBMISSION_SUBMITTED_MARK_SUBMITTABLES,true); }
-
-
-    @Bean
-    Binding onSubmitMarkSubmittablesBinding(Queue onSubmitMarkSubmittablesQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(onSubmitMarkSubmittablesQueue).to(submissionExchange).with(Queues.SUBMISSION_SUBMITTED_ROUTING_KEY);
-    }
-
 
 
 
