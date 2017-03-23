@@ -120,41 +120,9 @@ public class DispatchProcessor {
         }
     }
 
-    @RabbitListener(queues = Queues.SUBMISSION_SUBMITTED_MARK_SUBMITTABLES)
-    public void onSubmissionMarkSubmittablesSubmitted(Submission submission) {
-        logger.info("Marking submittables as submitted for {}",submission.getId());
-
-        fullSubmissionService.fetchOne(submission.getId())
-                .allSubmissionItemsStream()
-                .map(item -> ((StoredSubmittable)item))
-                .filter(item -> item.getProcessingStatus().getStatus().equals(ProcessingStatusEnum.Draft.name()))
-                .forEach(item -> {
-                    ProcessingStatus status = item.getProcessingStatus();
-                    status.copyDetailsFromSubmittable(item);
-                    status.setStatus(ProcessingStatusEnum.Submitted);
-                    processingStatusRepository.save(status);
-                });
-
-        ;
 
 
-    }
 
-    @RabbitListener(queues = Queues.SUBMISSION_DELETED_CLEANUP_CONTENTS)
-    public void onDeletionCleanupContents(Submission submission) {
-//TODO
-
-        for (SubmittableRepository<?> repo : submissionContentsRepositories){
-            repo.deleteBySubmissionId(submission.getId());
-        }
-
-        processingStatusRepository.deleteBySubmissionId(submission.getId());
-
-
-        submissionStatusRepository.delete(submission.getSubmissionStatus());
-
-
-    }
 
     @RabbitListener(queues = Queues.SUBMISSION_DISPATCHER)
     public void handleSubmissionEvent(SubmissionEnvelope submissionEnvelope) {
