@@ -67,6 +67,10 @@ public interface SubmittableRepository<T extends StoredSubmittable> extends Mong
     Stream<T> streamByTeamNameAndAliasOrderByCreatedDateDesc(
             @Param("teamName") String teamName, @Param("alias") String alias);
 
+    @RestResource(exported = false)
+    Stream<T> streamBySubmissionId(
+            @Param("submissionId") String submissionId);
+
     @RestResource(exported = true, path="by-accession", rel = "by-accession")
     T findFirstByAccessionOrderByCreatedDateDesc(@Param("accession") String accession);
 

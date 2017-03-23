@@ -84,15 +84,7 @@ public class UsiInternalQueueConfig {
     }
 
 
-    /**
-     * Queue for cleaning up contents of a submission if the user deletes it
-     */
-    @Bean Queue onDeleteCleanupSubmissionContentsQueue(){return new Queue(Queues.SUBMISSION_DELETED_CLEANUP_CONTENTS,true);}
 
-    @Bean
-    Binding onDeleteCleanupSubmissionContentsBinding(Queue onDeleteCleanupSubmissionContentsQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(onDeleteCleanupSubmissionContentsQueue).to(submissionExchange).with(Queues.SUBMISSION_DELETED_ROUTING_KEY);
-    }
 
 
 }
