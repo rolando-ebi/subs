@@ -15,9 +15,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Component
-public class AuthorizeUser {
+public class TeamNameExtractor {
 
-    public AuthorizeUser(List<SubmittableRepository<?>> submissionContentsRepositories, SubmissionRepository submissionRepository) {
+    public TeamNameExtractor(List<SubmittableRepository<?>> submissionContentsRepositories, SubmissionRepository submissionRepository) {
         this.submissionContentsRepositories = submissionContentsRepositories;
         this.submissionRepository = submissionRepository;
     }

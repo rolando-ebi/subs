@@ -6,6 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@PostAuthorize("returnObject == null or hasAnyRole(@authorizeUser.adminRole(),@authorizeUser.submissionStatusTeam(returnObject))")
+@PostAuthorize("returnObject == null or hasAnyRole(@roleLookup.adminRole(),@authorizeUser.submissionStatusTeam(returnObject))")
 public @interface PostAuthorizeSubmissionStatusTeamName {
 }

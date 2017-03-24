@@ -9,18 +9,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.data.component.Team;
+import uk.ac.ebi.subs.data.status.SubmissionStatusEnum;
 import uk.ac.ebi.subs.repository.model.ProcessingStatus;
 import uk.ac.ebi.subs.repository.model.Sample;
 import uk.ac.ebi.subs.repository.model.Submission;
+import uk.ac.ebi.subs.repository.model.SubmissionStatus;
+import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
+import uk.ac.ebi.subs.repository.repos.status.SubmissionStatusRepository;
 import uk.ac.ebi.subs.repository.repos.submittables.SampleRepository;
 import uk.ac.ebi.subs.repository.repos.submittables.SubmittableRepository;
-import uk.ac.ebi.subs.repository.security.AuthorizeUser;
+import uk.ac.ebi.subs.repository.security.TeamNameExtractor;
 import uk.ac.ebi.tsc.aap.client.model.Domain;
 import uk.ac.ebi.tsc.aap.client.model.User;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -28,17 +32,22 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = TestRepoApplication.class)
-public class AuthorizeUserTest {
+public class TeamNameExtractorTest {
 
-    private AuthorizeUser authorizeUser;
+    private TeamNameExtractor teamNameExtractor;
+
     @Autowired
     private List<SubmittableRepository<?>> submissionContentsRepositories;
     @Autowired
     private SampleRepository sampleRepository;
+    @Autowired
+    private SubmissionRepository submissionRepository;
+    @Autowired
+    private SubmissionStatusRepository submissionStatusRepository;
 
 
     @Test
-    public void findCorrectTeamName() {
+    public void findCorrectTeamNameFromProcessingStatus() {
         String teamName = "testTeam";
 
         Team team = createTeam(teamName);
@@ -48,43 +57,44 @@ public class AuthorizeUserTest {
         sampleRepository.insert(sample);
         ProcessingStatus status = ProcessingStatus.createForSubmittable(sample);
 
-        Team teamFromStatus = authorizeUser.processingStatusTeam(status);
+        String teamNameFromStatus = teamNameExtractor.processingStatusTeam(status);
 
-        assertThat(teamFromStatus, is(equalTo(team)));
+        assertThat(teamNameFromStatus, is(equalTo(teamName)));
     }
 
     @Test
-    public void userIsInTeam() {
+    public void findCorrectTeamNameFromSubmissionStatus() {
         String teamName = "testTeam";
 
-        User user = createUser(teamName);
-
         Team team = createTeam(teamName);
-        Sample sample = createSample(team);
+        Submission submission = createSubmission(team);
 
-        sampleRepository.insert(sample);
-        ProcessingStatus status = ProcessingStatus.createForSubmittable(sample);
+        submissionStatusRepository.insert(submission.getSubmissionStatus());
+        submissionRepository.insert(submission);
 
-        Boolean isAuthorised = authorizeUser.canUseProcessingStatus(user,status);
 
-        assertThat(isAuthorised, is(equalTo(true)));
+        String statusTeamName = teamNameExtractor.submissionStatusTeam(submission.getSubmissionStatus());
+
+        assertThat(statusTeamName, is(equalTo(teamName)));
     }
 
     @Test
-    public void userIsNotInTeam() {
+    public void findCorrectTeamNameFromSubmissionId() {
+        String teamName = "testTeam";
 
-        User user = createUser("testTeam");
+        Team team = createTeam(teamName);
+        Submission submission = createSubmission(team);
 
-        Team team = createTeam("bobbins");
-        Sample sample = createSample(team);
+        submissionStatusRepository.insert(submission.getSubmissionStatus());
+        submissionRepository.insert(submission);
 
-        sampleRepository.insert(sample);
-        ProcessingStatus status = ProcessingStatus.createForSubmittable(sample);
 
-        Boolean isAuthorised = authorizeUser.canUseProcessingStatus(user,status);
+        String submissionIdTeam = teamNameExtractor.submissionIdTeam(submission.getId());
 
-        assertThat(isAuthorised, is(equalTo(false)));
+        assertThat(submissionIdTeam, is(equalTo(teamName)));
     }
+
+
 
     private Team createTeam(String teamName) {
         Team team = new Team();
@@ -96,26 +106,28 @@ public class AuthorizeUserTest {
     public Sample createSample(Team team) {
         Sample sample = new Sample();
 
-        Submission submission = new Submission();
-        submission.setId(UUID.randomUUID().toString());
+        Submission submission = createSubmission(team);
 
         sample.setSubmission(submission);
-
         sample.setId(UUID.randomUUID().toString());
         sample.setTeam(team);
 
         return sample;
     }
 
+    public Submission createSubmission(Team team) {
+        Submission submission = new Submission();
+        submission.setId(UUID.randomUUID().toString());
 
-    private User createUser(String... domainNames) {
-        User user = new User();
-        user.setDomains(new HashSet<>());
-        for (String domainName : domainNames) {
-            addDomainToUser(user, domainName);
-        }
-        return user;
+        submission.setTeam(team);
+
+        submission.setSubmissionStatus(new SubmissionStatus(SubmissionStatusEnum.Draft));
+
+        return submission;
     }
+
+
+
 
     private void addDomainToUser(User user, String domainName) {
         user.getDomains().add(createDomain(domainName));
@@ -130,12 +142,19 @@ public class AuthorizeUserTest {
     @Before
     public void buildUp() {
         tearDown();
-        authorizeUser = new AuthorizeUser(submissionContentsRepositories);
+        teamNameExtractor = new TeamNameExtractor(submissionContentsRepositories,submissionRepository);
     }
 
     @After
     public void tearDown() {
-        submissionContentsRepositories.forEach(repo -> repo.deleteAll());
+
+        Stream.concat(
+                Stream.of(submissionRepository,submissionStatusRepository),
+                submissionContentsRepositories.stream()
+        ).forEach(
+                repo -> repo.deleteAll()
+        );
+
     }
 
 
