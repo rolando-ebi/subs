@@ -57,7 +57,7 @@ public interface SubmittableRepository<T extends StoredSubmittable> extends Mong
 
     @RestResource(exported = true, path = "by-submission", rel = "by-submission")
     @PreAuthorizeSubmissionIdTeamName
-    Page<T> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
+    Page<T> findBySubmissionId(@P("submissionId") @Param("submissionId") String submissionId, Pageable pageable);
 
 
     @RestResource(exported = true, path = "by-team", rel = "by-team")

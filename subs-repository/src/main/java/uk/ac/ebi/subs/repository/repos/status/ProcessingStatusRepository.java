@@ -56,7 +56,7 @@ public interface ProcessingStatusRepository extends MongoRepository<ProcessingSt
 
     @PreAuthorizeSubmissionIdTeamName
     @RestResource(exported = true, rel = "by-submission")
-    Page<ProcessingStatus> findBySubmissionId(@Param("submissionId") String submissionId, Pageable pageable);
+    Page<ProcessingStatus> findBySubmissionId(@P("submissionId") @Param("submissionId") String submissionId, Pageable pageable);
 
     @RestResource(exported = true, rel = "by-submission-and-type")
     Page<ProcessingStatus> findBySubmissionIdAndSubmittableType(@Param("submissionId") String submissionId, @Param("type") String type, Pageable pageable);
