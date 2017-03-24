@@ -1,10 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'application'
-mainClassName = "uk.ac.ebi.subs.DispatcherApplication"
+mainClassName = "uk.ac.ebi.subs.ApiSupportApplication"
 
 dependencies {
     compile project(':subs-data-model')
-    compile project(':subs-processing-model')
     compile project(':subs-messaging')
     compile project(':subs-repository')
 
