@@ -17,8 +17,6 @@ import java.util.*;
 @EqualsAndHashCode
 public class SubmissionEnvelope {
 
-    private String id;
-
     private FullSubmission submission;
 
     private Set<SampleRef> supportingSamplesRequired = new HashSet<>();
@@ -29,7 +27,6 @@ public class SubmissionEnvelope {
     public SubmissionEnvelope() {};
 
     public  SubmissionEnvelope(FullSubmission submission){
-        this.id = submission.getId();
         this.submission = submission;
     }
 

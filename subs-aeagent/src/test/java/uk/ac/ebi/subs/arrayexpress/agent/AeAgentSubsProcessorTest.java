@@ -9,12 +9,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.ArrayExpressAgentApplication;
 
 import uk.ac.ebi.subs.data.FullSubmission;
-import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.processing.ProcessingCertificate;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.submittable.*;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
+import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 
 import java.util.List;
 
@@ -41,26 +40,26 @@ public class AeAgentSubsProcessorTest {
     public void test(){
         List<ProcessingCertificate> certs = processor.processSubmission(subEnv);
 
-        String processedStatus = ProcessingStatus.Done.name();
+        String processedStatus = ProcessingStatusEnum.Completed.name();
 
         assertThat("study accessioned", st.getAccession(), startsWith("AE-MTAB-"));
-        assertThat("study status", st.getStatus(),equalTo(processedStatus));
+
 
         assertThat("assay accessioned", as.getAccession(), nullValue());
-        assertThat("assay status", as.getStatus(),equalTo(processedStatus));
+
 
         assertThat("assay data accessioned", ad.getAccession(), nullValue());
-        assertThat("assay data status", ad.getStatus(),equalTo(processedStatus));
+
 
         assertThat("ena study untouched", enaStudy.getAccession(),nullValue());
-        assertThat("ena study status is null", enaStudy.getStatus(),nullValue());
+
 
        assertThat("correct certs",
                 certs,
                 containsInAnyOrder(
-                        new ProcessingCertificate(st,Archive.ArrayExpress, ProcessingStatus.Curation, st.getAccession()),
-                        new ProcessingCertificate(as,Archive.ArrayExpress, ProcessingStatus.Curation),
-                        new ProcessingCertificate(ad,Archive.ArrayExpress, ProcessingStatus.Curation)
+                        new ProcessingCertificate(st,Archive.ArrayExpress, ProcessingStatusEnum.Curation, st.getAccession()),
+                        new ProcessingCertificate(as,Archive.ArrayExpress, ProcessingStatusEnum.Curation),
+                        new ProcessingCertificate(ad,Archive.ArrayExpress, ProcessingStatusEnum.Curation)
                 )
 
                 );
@@ -69,19 +68,19 @@ public class AeAgentSubsProcessorTest {
 
     @Before
     public void setUp(){
-        Domain domain = new Domain();
-        domain.setName("test domain");
+        Team team = new Team();
+        team.setName("test team");
 
         sa = new Sample();
         sa.setAlias("bob");
         sa.setAccession("S1");
         sa.setArchive(Archive.BioSamples);
-        sa.setDomain(domain);
+        sa.setTeam(team);
 
         st = new Study();
         st.setArchive(Archive.ArrayExpress);
         st.setAlias("study1");
-        st.setDomain(domain);
+        st.setTeam(team);
 
         as = new Assay();
         as.setArchive(Archive.ArrayExpress);
@@ -89,21 +88,21 @@ public class AeAgentSubsProcessorTest {
 
         as.getSampleUses().add(new SampleUse((SampleRef) sa.asRef()));
         as.setStudyRef((StudyRef)st.asRef());
-        as.setDomain(domain);
+        as.setTeam(team);
 
         ad = new AssayData();
         ad.setAlias("run1");
         ad.setArchive(Archive.ArrayExpress);
         ad.setAssayRef((AssayRef) as.asRef());
-        ad.setDomain(domain);
+        ad.setTeam(team);
 
         enaStudy = new Study();
         enaStudy.setArchive(Archive.Ena);
         enaStudy.setAlias("not to be accessioned here");
-        enaStudy.setDomain(domain);
+        enaStudy.setTeam(team);
 
         sub = new FullSubmission();
-        sub.setDomain(domain);
+        sub.setTeam(team);
         sub.getSamples().add(sa);
         sub.getStudies().add(st);
         sub.getAssays().add(as);

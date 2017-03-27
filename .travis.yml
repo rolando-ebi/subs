@@ -16,7 +16,7 @@ addons:
       - mongodb-org-server
       - mongodb-org-shell
 
-install: true
+install: ./gradlew assemble
 
 before_script:
   - sleep 15
@@ -24,10 +24,14 @@ before_script:
 script: ./gradlew externalCiTest
 
 after_success:
-  - ./gradlew cobertura coveralls
-  - ./gradlew subs-data-model:uploadArchives
-  - ./gradlew subs-messaging:uploadArchives
-  - ./gradlew subs-processing-model:uploadArchives
+  - test $TRAVIS_BRANCH = "master" && ./gradlew subs-data-model:uploadArchives
+  - test $TRAVIS_BRANCH = "master" && ./gradlew subs-messaging:uploadArchives
+  - test $TRAVIS_BRANCH = "master" && ./gradlew subs-processing-model:uploadArchives
+  - test $TRAVIS_BRANCH = "master" && ./gradlew subs-api:uploadArchives
+  - test $TRAVIS_BRANCH = "master" && ./gradlew subs-repository:uploadArchives
+  - test $TRAVIS_BRANCH = "master" && ./gradlew subs-progress-monitor:uploadArchives
+  - test $TRAVIS_BRANCH = "master" && ./gradlew subs-dispatcher:uploadArchives
+
 
 before_install:
 - openssl aes-256-cbc -K $encrypted_d65fefe7827f_key -iv $encrypted_d65fefe7827f_iv

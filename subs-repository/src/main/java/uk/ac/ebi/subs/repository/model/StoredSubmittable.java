@@ -1,7 +1,6 @@
 package uk.ac.ebi.subs.repository.model;
 
-import org.springframework.data.domain.Auditable;
-import uk.ac.ebi.subs.data.Submission;
+
 import uk.ac.ebi.subs.data.submittable.Submittable;
 
 import java.util.Date;
@@ -11,6 +10,9 @@ public interface StoredSubmittable extends Submittable {
 
     Submission getSubmission();
     void setSubmission(Submission submission);
+
+    ProcessingStatus getProcessingStatus();
+    void setProcessingStatus(ProcessingStatus processingStatus);
 
     Long getVersion();
     void setVersion(Long version);
@@ -22,6 +24,8 @@ public interface StoredSubmittable extends Submittable {
     void setCreatedBy(String createdBy);
     String getLastModifiedBy();
     void setLastModifiedBy(String lastModifiedBy);
+
+
 
 }
 

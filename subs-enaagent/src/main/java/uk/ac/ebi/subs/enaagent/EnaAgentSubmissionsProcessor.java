@@ -9,8 +9,8 @@ import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 
 import uk.ac.ebi.subs.data.FullSubmission;
-import uk.ac.ebi.subs.data.Submission;
-import uk.ac.ebi.subs.data.status.ProcessingStatus;
+
+import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 import uk.ac.ebi.subs.enarepo.EnaSampleRepository;
 import uk.ac.ebi.subs.processing.*;
 import uk.ac.ebi.subs.data.component.Archive;
@@ -32,7 +32,7 @@ public class EnaAgentSubmissionsProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(EnaAgentSubmissionsProcessor.class);
 
-    ProcessingStatus processedStatusValue = ProcessingStatus.Done;
+    ProcessingStatusEnum processedStatusValue = ProcessingStatusEnum.Completed;
 
     @Autowired
     EnaStudyRepository enaStudyRepository;
@@ -117,9 +117,9 @@ public class EnaAgentSubmissionsProcessor {
         }
 
         enaStudyRepository.save(study);
-        study.setStatus(processedStatusValue);
 
-        return new ProcessingCertificate(study,Archive.Ena, ProcessingStatus.Done, study.getAccession());
+
+        return new ProcessingCertificate(study,Archive.Ena, processedStatusValue, study.getAccession());
     }
 
 
@@ -147,9 +147,9 @@ public class EnaAgentSubmissionsProcessor {
         }
 
         enaAssayRepository.save(assay);
-        assay.setStatus(processedStatusValue);
 
-        return new ProcessingCertificate(assay,Archive.Ena, ProcessingStatus.Done, assay.getAccession());
+
+        return new ProcessingCertificate(assay,Archive.Ena, processedStatusValue, assay.getAccession());
     }
 
     private ProcessingCertificate processAssayData(AssayData assayData, SubmissionEnvelope submissionEnvelope) {
@@ -161,8 +161,8 @@ public class EnaAgentSubmissionsProcessor {
 
         enaAssayDataRepository.save(assayData);
 
-        assayData.setStatus(processedStatusValue);
 
-        return new ProcessingCertificate(assayData,Archive.Ena, ProcessingStatus.Done, assayData.getAccession());
+
+        return new ProcessingCertificate(assayData,Archive.Ena, processedStatusValue, assayData.getAccession());
     }
 }
