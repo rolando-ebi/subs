@@ -16,3 +16,4 @@ include 'subs-samples-agent'
 include "subs-upload"
 include "subs-test-categories"
 include "subs-api-support"
+include 'subs-samples-prototype-agent'
