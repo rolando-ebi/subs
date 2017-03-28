@@ -21,7 +21,7 @@ public class Topics {
     /**
      * The monitor has updated a Submission
      */
-    public static final String EVENT_SUBMISSION_UPDATED = "usi.submissionenvelope.updated";
+    public static final String EVENT_SUBMISSION_UPDATED = "usi.submission.updated";
 
 
 
