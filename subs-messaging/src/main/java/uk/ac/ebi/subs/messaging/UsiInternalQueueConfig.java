@@ -10,19 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UsiInternalQueueConfig {
 
-    /**
-     * Queue for submissions to be checked for dispatch to archive agents
-     * @return
-     */
-    @Bean
-    Queue dispatcherQueue() {
-        return new Queue(Queues.SUBMISSION_DISPATCHER,true);
-    }
 
-    @Bean
-    Binding dispatcherBinding(Queue dispatcherQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(dispatcherQueue).to(submissionExchange).with(Queues.SUBMISSION_DISPATCHER_ROUTING_KEY);
-    }
+
+
 
 
     /**
@@ -59,17 +49,7 @@ public class UsiInternalQueueConfig {
         return BindingBuilder.bind(onSubmitForwardToDispatchQueue).to(submissionExchange).with(Queues.SUBMISSION_SUBMITTED_ROUTING_KEY);
     }
 
-    /**
-     * Queue for submissions to be checked to see if they need supporting info
-     * @return
-     */
-    @Bean Queue onSubmitCheckForSupportingInfoQueue() {return new Queue(Queues.SUBMISSION_SUBMITTED_CHECK_SUPPORTING_INFO,true); }
-
-
-    @Bean
-    Binding suppInfoBinding(Queue onSubmitCheckForSupportingInfoQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(onSubmitCheckForSupportingInfoQueue).to(submissionExchange).with(Queues.SUBMISSION_SUBMITTED_ROUTING_KEY);
-    }
+    
 
 
 
