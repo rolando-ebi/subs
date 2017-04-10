@@ -17,11 +17,22 @@ public class Topics {
      */
     public static final String EVENT_SUBMISSION_DELETED = "usi.submission.deleted";
 
+    /**
+     * The User has created a Submission
+     */
+    public static final String EVENT_SUBMISSION_CREATED = "usi.submission.created";
+
 
     /**
      * The monitor has updated a Submission
      */
     public static final String EVENT_SUBMISSION_UPDATED = "usi.submission.updated";
+
+
+    /**
+     * The monitor has updated a Submission
+     */
+    public static final String EVENT_SUBMISSION_PROCESSING_UPDATED = "usi.submission.processingupdated";
 
 
 
