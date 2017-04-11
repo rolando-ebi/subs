@@ -5,12 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.subs.data.FullSubmission;
 import uk.ac.ebi.subs.repository.model.ProcessingStatus;
 import uk.ac.ebi.subs.repository.model.StoredSubmittable;
 import uk.ac.ebi.subs.repository.model.Submission;
 
-import uk.ac.ebi.subs.data.submittable.Sample;
 import uk.ac.ebi.subs.messaging.Exchanges;
 import uk.ac.ebi.subs.messaging.Queues;
 import uk.ac.ebi.subs.messaging.Topics;
@@ -134,23 +132,11 @@ public class QueueService {
      * @param submissionId
      */
     private void sendSubmissionUpdated(String submissionId) {
-        FullSubmission submission = fullSubmissionService.fetchOne(submissionId);
-
-        List<Sample> supportingSamples = supportingSampleRepository
-                .findBySubmissionId(submissionId)
-                .stream()
-                .map(ss -> ss.getSample())
-                .collect(Collectors.toList());
-
-
-        SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(submission);
-        submissionEnvelope.setSupportingSamples(supportingSamples);
-
 
         rabbitMessagingTemplate.convertAndSend(
                 Exchanges.SUBMISSIONS,
-                Topics.EVENT_SUBMISSION_UPDATED,
-                submissionEnvelope
+                Topics.EVENT_SUBMISSION_PROCESSING_UPDATED,
+                submissionRepository.findOne(submissionId)
         );
 
         logger.info("submission {} update message sent", submissionId);
