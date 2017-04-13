@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SamplesAgentApp {
+public class SamplesPrototypeAgent {
 
     public static void main(String[] args) {
-        SpringApplication.run(SamplesAgentApp.class, args);
+        SpringApplication.run(SamplesPrototypeAgent.class, args);
     }
 }

@@ -1,15 +1,50 @@
+buildscript {
+    repositories {
+        maven { url 'http://repo.spring.io/plugins-release' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'application'
-mainClassName = "uk.ac.ebi.subs.SamplesAgentApp"
+
+version = "1.0.0"
+
+mainClassName = "uk.ac.ebi.subs.SamplesAgentApplication"
+springBoot {
+    executable = true
+}
+
+configure(allprojects) {
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
+}
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-data-mongodb")
-
     compile project(':subs-data-model')
     compile project(':subs-processing-model')
     compile project(':subs-messaging')
+
+    optional("org.springframework.boot:spring-boot-configuration-processor")
+
+    compile('uk.ac.ebi.biosamples:models-core:4.0.0-SNAPSHOT') {
+        changing = true
+        exclude group: 'org.springframework.boot'
+    }
+
+    compile('uk.ac.ebi.biosamples:client:4.0.0-SNAPSHOT') {
+        changing = true
+        exclude group: 'org.springframework.boot'
+    }
 
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile project(':subs-test-categories')
 }
+
+compileJava.dependsOn(processResources)
