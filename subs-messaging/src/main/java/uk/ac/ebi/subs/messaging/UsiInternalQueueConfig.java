@@ -10,19 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UsiInternalQueueConfig {
 
-    /**
-     * Queue for submissions to be checked for dispatch to archive agents
-     * @return
-     */
-    @Bean
-    Queue dispatcherQueue() {
-        return new Queue(Queues.SUBMISSION_DISPATCHER,true);
-    }
 
-    @Bean
-    Binding dispatcherBinding(Queue dispatcherQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(dispatcherQueue).to(submissionExchange).with(Queues.SUBMISSION_DISPATCHER_ROUTING_KEY);
-    }
+
+
 
 
     /**
@@ -59,40 +49,10 @@ public class UsiInternalQueueConfig {
         return BindingBuilder.bind(onSubmitForwardToDispatchQueue).to(submissionExchange).with(Queues.SUBMISSION_SUBMITTED_ROUTING_KEY);
     }
 
-    /**
-     * Queue for submissions to be checked to see if they need supporting info
-     * @return
-     */
-    @Bean Queue onSubmitCheckForSupportingInfoQueue() {return new Queue(Queues.SUBMISSION_SUBMITTED_CHECK_SUPPORTING_INFO,true); }
+    
 
 
-    @Bean
-    Binding suppInfoBinding(Queue onSubmitCheckForSupportingInfoQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(onSubmitCheckForSupportingInfoQueue).to(submissionExchange).with(Queues.SUBMISSION_SUBMITTED_ROUTING_KEY);
-    }
 
-    /**
-     * Queue for documents within a submission to have their status updated owhen the user submits the submission
-     * @return
-     */
-    @Bean Queue onSubmitMarkSubmittablesQueue() {return new Queue(Queues.SUBMISSION_SUBMITTED_MARK_SUBMITTABLES,true); }
-
-
-    @Bean
-    Binding onSubmitMarkSubmittablesBinding(Queue onSubmitMarkSubmittablesQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(onSubmitMarkSubmittablesQueue).to(submissionExchange).with(Queues.SUBMISSION_SUBMITTED_ROUTING_KEY);
-    }
-
-
-    /**
-     * Queue for cleaning up contents of a submission if the user deletes it
-     */
-    @Bean Queue onDeleteCleanupSubmissionContentsQueue(){return new Queue(Queues.SUBMISSION_DELETED_CLEANUP_CONTENTS,true);}
-
-    @Bean
-    Binding onDeleteCleanupSubmissionContentsBinding(Queue onDeleteCleanupSubmissionContentsQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(onDeleteCleanupSubmissionContentsQueue).to(submissionExchange).with(Queues.SUBMISSION_DELETED_ROUTING_KEY);
-    }
 
 
 }

@@ -4,7 +4,6 @@ include "subs-data-model"
 include "subs-repository"
 include "subs-api"
 include "subs-validation"
-include 'subs-samples-agent'
 include "subs-messaging"
 include "subs-dispatcher"
 include "subs-enaagent"
@@ -13,6 +12,9 @@ include "subs-aeagent"
 include "subs-stress-tester"
 include "subs-processing-model"
 include "ae-subs-generator"
+include 'subs-samples-agent'
 include "subs-upload"
 include "subs-test-categories"
+include "subs-api-support"
+include 'subs-samples-prototype-agent'
 include "subs-ena-data-model"

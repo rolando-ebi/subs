@@ -17,7 +17,7 @@ public class Queues {
 
     public static final String SUBMISSION_DISPATCHER = "usi-submission-dispatcher";
     //will match usi.submissionenvelope.updated and usi.submissionenvelope.submitted, but not usi.submissionenvelope.dispatched.biosamples etc
-    public static final String SUBMISSION_DISPATCHER_ROUTING_KEY = Topics.EVENT_SUBMISSION_UPDATED;
+    public static final String SUBMISSION_PROCESSING_UPDATED_DISPATCHER_ROUTING_KEY = Topics.EVENT_SUBMISSION_PROCESSING_UPDATED;
 
     public static final String SUBMISSION_MONITOR_STATUS_UPDATE = "usi-submission-monitor-status";
     public static final String SUBMISSION_MONITOR_STATUS_UPDATE_ROUTING_KEY = Topics.EVENT_SUBMISSION_STATUS_CHANGE;

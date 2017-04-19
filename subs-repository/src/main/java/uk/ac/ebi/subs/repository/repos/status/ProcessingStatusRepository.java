@@ -11,6 +11,7 @@ import uk.ac.ebi.subs.repository.model.ProcessingStatus;
 import uk.ac.ebi.subs.repository.projections.ProcessingStatusWithAlias;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @RepositoryRestResource(excerptProjection = ProcessingStatusWithAlias.class)
