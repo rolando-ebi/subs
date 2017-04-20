@@ -7,6 +7,9 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class Team {
+
+    public Team () {}
+
     String name;
 
     public String getName() {

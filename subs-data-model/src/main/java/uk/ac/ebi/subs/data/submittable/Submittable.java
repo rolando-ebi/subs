@@ -1,6 +1,7 @@
 package uk.ac.ebi.subs.data.submittable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.Identifiable;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.Attribute;
