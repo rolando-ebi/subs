@@ -18,14 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.subs.ApiApplication;
 import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.client.Sample;
-import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
 import uk.ac.ebi.subs.repository.model.SubmissionStatus;
-import uk.ac.ebi.subs.repository.repos.submittables.SampleRepository;
+import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
 import uk.ac.ebi.subs.repository.repos.status.SubmissionStatusRepository;
+import uk.ac.ebi.subs.repository.repos.submittables.SampleRepository;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -36,11 +37,12 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-
-import static uk.ac.ebi.subs.api.ApiIntegrationTestHelper.*;
+import static uk.ac.ebi.subs.api.ApiIntegrationTestHelper.standardGetHeaders;
+import static uk.ac.ebi.subs.api.ApiIntegrationTestHelper.standardPostHeaders;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ApiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class ApiIntegrationTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -301,7 +303,8 @@ public class ApiIntegrationTest {
         }
 
         String teamName = submission.getTeam().getName();
-        String teamUrl = this.rootUri + "/teams/" + teamName;
+        String teamUrl = rootRels.get("team").replace("{teamName}",teamName);
+
         HttpResponse<JsonNode> teamQueryResponse = Unirest.get(teamUrl).headers(standardGetHeaders()).asJson();
 
         assertThat(teamQueryResponse.getStatus(), is(equalTo(HttpStatus.OK.value())));
