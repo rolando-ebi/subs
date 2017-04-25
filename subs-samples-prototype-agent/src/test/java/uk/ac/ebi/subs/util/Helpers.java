@@ -1,9 +1,9 @@
 package uk.ac.ebi.subs.util;
 
-
-import uk.ac.ebi.subs.data.FullSubmission;
+import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.Team;
 import uk.ac.ebi.subs.data.submittable.Sample;
+import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,12 +46,12 @@ public class Helpers {
         return samples;
     }
 
-    public static FullSubmission generateTestSubmission() {
-        FullSubmission sub = new FullSubmission();
-        sub.setSamples(generateTestSamples());
-        sub.getSubmitter().setEmail("test@ebi.ac.uk");
-        sub.getTeam().setName("test-subs");
-        return sub;
+    public static SubmissionEnvelope generateTestSubmission() {
+        SubmissionEnvelope submissionEnvelope = new SubmissionEnvelope(new Submission());
+        submissionEnvelope.setSamples(generateTestSamples());
+        submissionEnvelope.getSubmission().getSubmitter().setEmail("test@ebi.ac.uk");
+        submissionEnvelope.getSubmission().getTeam().setName("test-subs");
+        return submissionEnvelope;
     }
 
 }

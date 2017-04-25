@@ -1,9 +1,7 @@
 package uk.ac.ebi.subs.enaagent;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.subs.EnaAgentApplication;
-import uk.ac.ebi.subs.data.FullSubmission;
+import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.*;
 import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 import uk.ac.ebi.subs.data.submittable.Assay;
@@ -33,7 +31,7 @@ import static org.junit.Assert.assertThat;
 public class EnaAgentSubsProcessorTest {
 
     SubmissionEnvelope subEnv;
-    FullSubmission sub;
+    Submission sub;
     Sample sa;
     Study st;
     Assay as;
@@ -121,15 +119,15 @@ public class EnaAgentSubsProcessorTest {
         arrayStudy.setAlias("not to be accessioned here");
         arrayStudy.setTeam(team);
 
-        sub = new FullSubmission();
+        sub = new Submission();
         sub.setTeam(team);
-        sub.getSamples().add(sa);
-        sub.getStudies().add(st);
-        sub.getAssays().add(as);
-        sub.getAssayData().add(ad);
         sub.setId("this-is-a-fake-id");
 
         subEnv = new SubmissionEnvelope(sub);
+        subEnv.getSamples().add(sa);
+        subEnv.getStudies().add(st);
+        subEnv.getAssays().add(as);
+        subEnv.getAssayData().add(ad);
     }
 
 
