@@ -7,7 +7,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
-import uk.ac.ebi.subs.data.FullSubmission;
+import uk.ac.ebi.subs.data.Submission;
 import uk.ac.ebi.subs.data.component.Archive;
 import uk.ac.ebi.subs.data.component.SampleRef;
 import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
@@ -51,12 +51,12 @@ public class SamplesListener {
 
     @RabbitListener(queues = Queues.BIOSAMPLES_AGENT)
     public void handleSubmission(SubmissionEnvelope submissionEnvelope) {
-        FullSubmission submission = submissionEnvelope.getSubmission();
+        Submission submission = submissionEnvelope.getSubmission();
 
         logger.info("received submission {}, most recent handler was {}",
                 submission.getId());
 
-        List<ProcessingCertificate> certs = processSamples(submission);
+        List<ProcessingCertificate> certs = processSamples(submissionEnvelope);
 
         fillInSamples(submissionEnvelope);
 
@@ -72,14 +72,16 @@ public class SamplesListener {
         logger.info("sent submission {}", submission.getId());
     }
 
-    private List<ProcessingCertificate> processSamples(FullSubmission submission) {
+    private List<ProcessingCertificate> processSamples(SubmissionEnvelope submissionEnvelope) {
+        Submission submission = submissionEnvelope.getSubmission();
+
         List<ProcessingCertificate> certs = new ArrayList<>();
 
         // these samples must be updates, as they are already accessioned
-        List<Sample> accessionedSamples = submission.getSamples().stream().filter(s -> s.getAccession() != null).collect(Collectors.toList());
+        List<Sample> accessionedSamples = submissionEnvelope.getSamples().stream().filter(s -> s.getAccession() != null).collect(Collectors.toList());
 
         //these samples might be updates, if the alias+team are already used
-        List<Sample> samplesWithoutAccession = submission.getSamples().stream().filter(s -> s.getAccession() == null).collect(Collectors.toList());
+        List<Sample> samplesWithoutAccession = submissionEnvelope.getSamples().stream().filter(s -> s.getAccession() == null).collect(Collectors.toList());
 
         //we need the aliases in an array to make a bulk query
         String[] aliasesForSamplesWithoutAccession = new String[0];
@@ -87,7 +89,7 @@ public class SamplesListener {
 
         // check the db for these aliases, store any by alias
         Map<String, Sample> knownSamplesByAlias = new HashMap<>();
-        repository.findByTeamAndAlias(submission.getTeam().getName(), aliasesForSamplesWithoutAccession).forEach(
+        repository.findByTeamAndAlias(submissionEnvelope.getSubmission().getTeam().getName(), aliasesForSamplesWithoutAccession).forEach(
                 sample -> knownSamplesByAlias.put(sample.getAlias(), sample)
         );
 
@@ -105,7 +107,7 @@ public class SamplesListener {
             }
         }
 
-        submission.getSamples().forEach(s -> {
+        submissionEnvelope.getSamples().forEach(s -> {
 
             certs.add(new ProcessingCertificate(
                     s,
@@ -116,7 +118,7 @@ public class SamplesListener {
 
         });
         logger.info("submission {} has {} new samples and {} to update", submission.getId(), samplesWithoutAccession.size(), accessionedSamples.size());
-        repository.save(submission.getSamples());
+        repository.save(submissionEnvelope.getSamples());
 
 
         announceSampleUpdate(submission.getId(), accessionedSamples);
