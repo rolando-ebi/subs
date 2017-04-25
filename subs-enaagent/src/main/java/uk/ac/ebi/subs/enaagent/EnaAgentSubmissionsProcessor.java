@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 
-import uk.ac.ebi.subs.data.FullSubmission;
-
 import uk.ac.ebi.subs.data.status.ProcessingStatusEnum;
 import uk.ac.ebi.subs.enarepo.EnaSampleRepository;
 import uk.ac.ebi.subs.processing.*;
@@ -91,18 +89,18 @@ public class EnaAgentSubmissionsProcessor {
 
         List<ProcessingCertificate> certs = new ArrayList<>();
 
-        submissionEnvelope.getSubmission().getStudies().stream()
+        submissionEnvelope.getStudies().stream()
                 .filter(s -> s.getArchive() == Archive.Ena)
                 .forEach(s -> certs.add(processStudy(s, submissionEnvelope)));
 
 
-        submissionEnvelope.getSubmission().getAssays().stream()
+        submissionEnvelope.getAssays().stream()
                 .filter(a -> a.getArchive() == Archive.Ena)
                 .forEach(a -> certs.add(processAssay(a, submissionEnvelope)));
 
 
 
-        submissionEnvelope.getSubmission().getAssayData().stream()
+        submissionEnvelope.getAssayData().stream()
                 .filter(ad -> ad.getArchive() == Archive.Ena)
                 .forEach(ad -> certs.add(processAssayData(ad, submissionEnvelope)));
 
@@ -124,23 +122,16 @@ public class EnaAgentSubmissionsProcessor {
 
 
     private ProcessingCertificate processAssay(Assay assay, SubmissionEnvelope submissionEnvelope) {
-        FullSubmission submission = submissionEnvelope.getSubmission();
-
         for (SampleUse su : assay.getSampleUses()){
             SampleRef sr = su.getSampleRef();
-            Sample sample = sr.fillIn(submission.getSamples(),submissionEnvelope.getSupportingSamples());
+            Sample sample = sr.fillIn(submissionEnvelope.getSamples(),submissionEnvelope.getSupportingSamples());
 
             if (sample != null) {
                 enaSampleRepository.save(sample);
             }
         }
 
-
-
-
-        assay.getStudyRef().fillIn(submission.getStudies());
-
-
+        assay.getStudyRef().fillIn(submissionEnvelope.getStudies());
 
         if (!assay.isAccessioned()) {
             assay.setAccession("ENA-EXP-" + UUID.randomUUID());
@@ -148,12 +139,11 @@ public class EnaAgentSubmissionsProcessor {
 
         enaAssayRepository.save(assay);
 
-
         return new ProcessingCertificate(assay,Archive.Ena, processedStatusValue, assay.getAccession());
     }
 
     private ProcessingCertificate processAssayData(AssayData assayData, SubmissionEnvelope submissionEnvelope) {
-        assayData.getAssayRef().fillIn(submissionEnvelope.getSubmission().getAssays());
+        assayData.getAssayRef().fillIn(submissionEnvelope.getAssays());
 
         if (!assayData.isAccessioned()) {
             assayData.setAccession("ENA-RUN-" + UUID.randomUUID());
