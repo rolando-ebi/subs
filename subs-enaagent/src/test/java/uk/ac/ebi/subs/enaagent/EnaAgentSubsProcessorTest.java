@@ -1,6 +1,9 @@
 package uk.ac.ebi.subs.enaagent;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +22,7 @@ import uk.ac.ebi.subs.processing.ProcessingCertificate;
 import uk.ac.ebi.subs.processing.ProcessingCertificateEnvelope;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -39,6 +43,8 @@ public class EnaAgentSubsProcessorTest {
 
     @Autowired
     EnaAgentSubmissionsProcessor processor;
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void test() {
@@ -77,7 +83,7 @@ public class EnaAgentSubsProcessorTest {
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         Team team = new Team();
         team.setName("test team");
 
@@ -97,8 +103,12 @@ public class EnaAgentSubsProcessorTest {
         as.setAlias("exp1");
         as.getSampleUses().add(new SampleUse((SampleRef) sa.asRef()));
 
+        objectMapper.writeValue(System.out,as);
+
         as.setStudyRef((StudyRef) st.asRef());
         as.setTeam(team);
+
+        System.out.println(objectMapper.writeValueAsString(as));
 
         ad = new AssayData();
         ad.setAlias("run1");
