@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import uk.ac.ebi.subs.processing.ProcessingCertificate;
 import uk.ac.ebi.subs.processing.ProcessingCertificateEnvelope;
+import uk.ac.ebi.subs.repository.model.StoredSubmittable;
+
+import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -24,8 +27,20 @@ public class SubmittablesBulkOperations {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
+    public SubmittablesBulkOperations(List<Class<? extends StoredSubmittable>> submittablesClassList, MongoTemplate mongoTemplate) {
+        this.submittablesClassList = submittablesClassList;
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    private List<Class<? extends StoredSubmittable>> submittablesClassList;
     private MongoTemplate mongoTemplate;
+
+    public void applyProcessingCertificates(ProcessingCertificateEnvelope envelope) {
+        for (Class submittableClass : submittablesClassList){
+            this.applyProcessingCertificates(envelope,submittableClass);
+        }
+    }
+
 
 
     public void applyProcessingCertificates(ProcessingCertificateEnvelope envelope, Class submittableClass) {
