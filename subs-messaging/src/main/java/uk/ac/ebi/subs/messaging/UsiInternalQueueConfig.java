@@ -50,19 +50,6 @@ public class UsiInternalQueueConfig {
     }
 
     /**
-     * Create a {@code Binding} between the submission exchange and validation queue using the routing key of deleted submissions.
-     *
-     * @param validatorQueue {@code Queue} for validating submissions before submitting them
-     * @param submissionExchange {@code TopicExchange} for submissions
-     * @return a {@code Binding} between the submission exchange and validation queue using the routing key of deleted submissions.
-     */
-    @Bean
-    Binding validationForDeletedSubmissionBinding(Queue validatorQueue, TopicExchange submissionExchange) {
-        return BindingBuilder.bind(validatorQueue).to(submissionExchange)
-                .with(Queues.SUBMISSION_VALIDATOR_SUBMISSION_DELETED_ROUTING_KEY);
-    }
-
-    /**
      * Queue for certificate envelopes to update submission state
      *
      * @return
@@ -76,7 +63,6 @@ public class UsiInternalQueueConfig {
     Binding monitorBinding(Queue monitorQueue, TopicExchange submissionExchange) {
         return BindingBuilder.bind(monitorQueue).to(submissionExchange).with(Queues.SUBMISSION_MONITOR_ROUTING_KEY);
     }
-
 
     /**
      * Queue for submission envelopes that have had supporting information added
