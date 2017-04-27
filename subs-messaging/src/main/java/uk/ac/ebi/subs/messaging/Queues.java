@@ -2,7 +2,6 @@ package uk.ac.ebi.subs.messaging;
 
 public class Queues {
 
-
     public static final String SUBMISSION_SUBMITTED_ROUTING_KEY = Topics.EVENT_SUBMISSION_SUBMITTED;
     public static final String SUBMISSION_SUBMITTED_CHECK_SUPPORTING_INFO = "usi-submission-submitted-check-supp-info";
     public static final String SUBMISSION_SUBMITTED_MARK_SUBMITTABLES = "usi-submission-submitted-mark-submittables";
@@ -16,7 +15,7 @@ public class Queues {
     public static final String SUBMISSION_MONITOR_ROUTING_KEY = Topics.EVENT_SUBMISSION_AGENT_RESULTS;
 
     public static final String SUBMISSION_DISPATCHER = "usi-submission-dispatcher";
-    //will match usi.submissionenvelope.updated and usi.submissionenvelope.submitted, but not usi.submissionenvelope.dispatched.biosamples etc
+
     public static final String SUBMISSION_PROCESSING_UPDATED_DISPATCHER_ROUTING_KEY = Topics.EVENT_SUBMISSION_PROCESSING_UPDATED;
 
     public static final String SUBMISSION_MONITOR_STATUS_UPDATE = "usi-submission-monitor-status";
@@ -29,6 +28,11 @@ public class Queues {
 
     public static final String SUBMISSION_NEEDS_SAMPLE_INFO = "usi-submission-support-biosamples";
     public static final String SUBMISSION_NEEDS_SAMPLE_INFO_ROUTING_KEY = Topics.EVENT_SUBMISSION_NEEDS_SAMPLES;
+
+    public static final String SUBMISSION_VALIDATOR = "usi-submission-validator";
+    public static final String SUBMISSION_VALIDATOR_SUBMISSION_CREATED_ROUTING_KEY = Topics.EVENT_SUBMISSION_CREATED;
+    public static final String SUBMISSION_VALIDATOR_SUBMISSION_UPDATED_ROUTING_KEY = Topics.EVENT_SUBMISSION_UPDATED;
+    public static final String SUBMISSION_VALIDATOR_SUBMISSION_DELETED_ROUTING_KEY = Topics.EVENT_SUBMISSION_DELETED;
 
     public static final String BIOSAMPLES_AGENT = "usi-submission-agent-biosamples";
     public static final String ENA_AGENT = "usi-submission-agents-ena";
