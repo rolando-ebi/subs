@@ -35,13 +35,6 @@ public class Topics {
     public static final String EVENT_SUBMISSION_PROCESSING_UPDATED = "usi.submission.processingupdated";
 
 
-
-    /**
-     * The dispatcher thinks the submission status should change
-     */
-    public static final String EVENT_SUBMISSION_STATUS_CHANGE = "usi.certificate.submissionstatus.update";
-
-
     /**
      * An Agent has produced AgentResults
      */

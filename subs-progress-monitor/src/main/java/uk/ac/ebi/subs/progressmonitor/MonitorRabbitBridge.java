@@ -13,6 +13,10 @@ import uk.ac.ebi.subs.processing.ProcessingCertificateEnvelope;
 import uk.ac.ebi.subs.processing.SubmissionEnvelope;
 import uk.ac.ebi.subs.repository.repos.SubmissionRepository;
 
+/**
+ * Monitor is responsible for receiving information from archive agents and updating the state of the submission in our
+ * database. Once the state is updated, a notification has to be sent to Rabbit to prompt the next dispatch cycle
+ */
 @Component
 public class MonitorRabbitBridge {
     private static final Logger logger = LoggerFactory.getLogger(MonitorRabbitBridge.class);
@@ -28,22 +32,16 @@ public class MonitorRabbitBridge {
     private RabbitMessagingTemplate rabbitMessagingTemplate;
     private SubmissionRepository submissionRepository;
 
-    @RabbitListener(queues = Queues.SUBMISSION_MONITOR_STATUS_UPDATE)
-    public void submissionStatusUpdated(ProcessingCertificate processingCertificate) {
-        monitorService.submissionStatusUpdated(processingCertificate);
-    }
-
     @RabbitListener(queues = Queues.SUBMISSION_SUPPORTING_INFO_PROVIDED)
-    public void handleSupportingInfo(SubmissionEnvelope submissionEnvelope) {
-        monitorService.handleSupportingInfo(submissionEnvelope);
+    public void storeSupportingInformation(SubmissionEnvelope submissionEnvelope) {
+        monitorService.storeSupportingInformation(submissionEnvelope);
 
         sendSubmissionUpdated(submissionEnvelope.getSubmission().getId());
     }
 
-
     @RabbitListener(queues = Queues.SUBMISSION_MONITOR)
-    public void checkForProcessedSubmissions(ProcessingCertificateEnvelope processingCertificateEnvelope) {
-        monitorService.checkForProcessedSubmissions(processingCertificateEnvelope);
+    public void updateSubmittablesFromCertificates(ProcessingCertificateEnvelope processingCertificateEnvelope) {
+        monitorService.updateSubmittablesFromCertificates(processingCertificateEnvelope);
 
         sendSubmissionUpdated(processingCertificateEnvelope.getSubmissionId());
     }

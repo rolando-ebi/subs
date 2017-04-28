@@ -18,10 +18,6 @@ public class Queues {
 
     public static final String SUBMISSION_PROCESSING_UPDATED_DISPATCHER_ROUTING_KEY = Topics.EVENT_SUBMISSION_PROCESSING_UPDATED;
 
-    public static final String SUBMISSION_MONITOR_STATUS_UPDATE = "usi-submission-monitor-status";
-    public static final String SUBMISSION_MONITOR_STATUS_UPDATE_ROUTING_KEY = Topics.EVENT_SUBMISSION_STATUS_CHANGE;
-
-
     public static final String SUBMISSION_SUPPORTING_INFO_PROVIDED = "usi-submission-supp-inf-provided";
     public static final String SUBMISSION_SUPPORTING_INFO_PROVIDED_ROUTING_KEY = Topics.EVENT_SUBISSION_SUPPORTING_INFO_PROVIDED;
 
