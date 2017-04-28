@@ -25,17 +25,6 @@ public class AgentQueueConfig {
     }
 
     /**
-     * Queue for certificates to update submission status
-     * @return
-     */
-    @Bean Queue monitorSubStatusQueue() {return new Queue(Queues.SUBMISSION_MONITOR_STATUS_UPDATE);}
-
-    @Bean Binding monitorStatusUpdateBinding(Queue monitorSubStatusQueue, TopicExchange submissionExchange){
-        return BindingBuilder.bind(monitorSubStatusQueue).to(submissionExchange).with(Queues.SUBMISSION_MONITOR_STATUS_UPDATE_ROUTING_KEY);
-    }
-
-
-    /**
      * Queue for submission envelopes to be processed by ENA
      * @return
      */
